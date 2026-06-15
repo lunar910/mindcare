@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1b3a5c" />
+  <title>MindCare</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    /* ━━━━━━━━━━━━━━━━━━━━ TOKENS ━━━━━━━━━━━━━━━━━━━━ */
+    :root {
+      --navy:        #1b3a5c;
+      --navy-mid:    #254e7a;
+      --teal:        #2ec4a5;
+      --teal-dark:   #1da888;
+      --teal-light:  #e6f8f5;
+      --rose:        #e05c8a;
+      --rose-dark:   #c4416f;
+      --rose-light:  #fde8f0;
+      --amber:       #f4a23a;
+      --amber-light: #fef2e2;
+      --purple:      #8b7cf6;
+      --muted:       #8a9bb0;
+      --bg:          #f0f4f8;
+      --card:        #ffffff;
+      --border:      #eaeff5;
+      --text:        #1b3a5c;
+      --r-card:      20px;
+      --r-pill:      100px;
+      --shadow-sm:   0 2px 12px rgba(27,58,92,.07);
+      --shadow-md:   0 6px 24px rgba(27,58,92,.11);
+      --shadow-lg:   0 16px 48px rgba(27,58,92,.16);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+    .serif { font-family: 'DM Serif Display', serif; font-weight: 400; }
+    button { font-family: inherit; }
+
+    /* ━━━━━━━━━━━━━━━━━━━━ APP SHELL (responsive) ━━━━━━━━━━━━━━━━━━━━ */
+    /* Mobile-first : l'app remplit tout l'écran, quelle que soit la taille du téléphone */
+    .app {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      height: 100vh;        /* repli pour les navigateurs anciens */
+      height: 100svh;       /* hauteur visible stable (gère la barre d'adresse mobile) */
+      background: var(--bg);
+      display: flex; flex-direction: column;
+      overflow: hidden; position: relative;
+    }
+    /* Grand écran (tablette / ordinateur) : aperçu façon téléphone, centré */
+    @media (min-width: 600px) and (min-height: 720px) {
+      body { display: flex; justify-content: center; align-items: center; background: #c8d6e5; }
+      .app {
+        max-width: 412px;
+        height: 844px;
+        max-height: calc(100svh - 24px);
+        border-radius: 44px;
+        border: 10px solid #0e1d30;
+        box-shadow: 0 24px 80px rgba(0,0,0,.3);
+      }
+    }
+    /* Petits téléphones (≤ 360px) : on resserre un peu les marges et les tailles */
+    @media (max-width: 360px) {
+      .scroll { padding-left: 16px; padding-right: 16px; }
+      .header { padding: 18px 16px 26px; }
+      .greeting h1 { font-size: 24px; }
+      .mood { padding: 9px 0 7px; }
+      .mood .emoji { font-size: 20px; }
+      .mood .lbl { font-size: 9px; }
+      .breath-circle { width: 168px; height: 168px; }
+      .auth-inner { padding: 28px 20px; }
+      .tuto-slide { padding: 34px 24px; }
+      .tuto-ic { width: 104px; height: 104px; font-size: 46px; }
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━ SCREENS ━━━━━━━━━━━━━━━━━━━━ */
+    .screen { position: absolute; inset: 0; display: flex; flex-direction: column;
+      opacity: 0; pointer-events: none; transition: opacity .25s ease; background: var(--bg); }
+    .screen.active { opacity: 1; pointer-events: all; }
+
+    .scroll { flex: 1; overflow-y: auto; padding: 20px 22px calc(100px + var(--safe-bottom)); -webkit-overflow-scrolling: touch; }
+    .scroll::-webkit-scrollbar { width: 0; }
+
+    /* ━━━━━━━━━━━━━━━━━━━━ HOME HEADER ━━━━━━━━━━━━━━━━━━━━ */
+    .header {
+      background: linear-gradient(160deg, var(--navy) 0%, var(--navy-mid) 100%);
+      padding: 22px 22px 30px; border-radius: 0 0 28px 28px;
+      position: relative; flex-shrink: 0; color: #fff; overflow: hidden;
+    }
+    .header::after { content: ""; position: absolute; width: 180px; height: 180px;
+      background: radial-gradient(circle, rgba(46,196,165,.25), transparent 70%); top: -60px; right: -40px; border-radius: 50%; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 2; }
+    .logo-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.12);
+      backdrop-filter: blur(6px); color: #fff; font-weight: 700; font-size: 14px; padding: 7px 14px; border-radius: 12px; }
+    .logo-badge i { color: var(--teal); }
+    .header-icons { display: flex; gap: 10px; align-items: center; }
+    .icon-btn { width: 38px; height: 38px; border: none; border-radius: 12px; background: rgba(255,255,255,.12);
+      color: #fff; font-size: 17px; display: grid; place-items: center; cursor: pointer; transition: background .15s; }
+    .icon-btn:hover { background: rgba(255,255,255,.22); }
+    .streak-badge { display: inline-flex; align-items: center; gap: 5px; background: var(--amber);
+      color: #4a2c05; font-weight: 700; font-size: 13px; padding: 7px 12px; border-radius: var(--r-pill); }
+    .greeting { position: relative; z-index: 2; margin-top: 22px; }
+    .greeting .hello { font-size: 14px; opacity: .8; }
+    .greeting h1 { font-size: 27px; line-height: 1.15; margin-top: 2px; }
+    .mood-row { position: relative; z-index: 2; display: flex; justify-content: space-between; gap: 8px; margin-top: 20px; }
+    .mood { flex: 1; background: rgba(255,255,255,.1); border: 2px solid transparent; border-radius: 16px;
+      padding: 10px 0 8px; text-align: center; cursor: pointer; transition: all .15s; color: #fff; }
+    .mood .emoji { font-size: 22px; display: block; }
+    .mood .lbl { font-size: 10px; opacity: .8; margin-top: 3px; }
+    .mood:hover { background: rgba(255,255,255,.18); }
+    .mood.active { background: #fff; border-color: var(--teal); color: var(--navy); }
+    .mood.active .lbl { opacity: 1; font-weight: 600; }
+
+    /* ━━━━━━━━━━━━━━━━━━━━ TOPBAR (sub-pages) ━━━━━━━━━━━━━━━━━━━━ */
+    .topbar { background: var(--card); padding: 20px 22px 16px; border-bottom: 1px solid var(--border);
+      flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; }
+    .topbar h1 { font-size: 24px; }
+    .topbar .sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+    /* ━━━━━━━━━━━━━━━━━━━━ SHARED BLOCKS ━━━━━━━━━━━━━━━━━━━━ */
+    .section-head { display: flex; align-items: baseline; justify-content: space-between; margin: 26px 2px 12px; }
+    .section-head:first-child { margin-top: 4px; }
+    .section-head h2 { font-size: 17px; font-weight: 700; }
+    .section-head a { font-size: 13px; color: var(--teal-dark); text-decoration: none; font-weight: 600; cursor: pointer; }
+
+    .featured { background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%); border-radius: var(--r-card);
+      padding: 22px; color: #fff; position: relative; overflow: hidden; box-shadow: var(--shadow-md); cursor: pointer;
+      width: 100%; text-align: left; border: none; display: block; }
+    .featured::before { content: ""; position: absolute; width: 120px; height: 120px; background: rgba(255,255,255,.15);
+      border-radius: 50%; bottom: -40px; right: -20px; }
+    .featured .tag { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; opacity: .85; font-weight: 600; }
+    .featured h3 { font-size: 21px; margin: 6px 0 4px; position: relative; z-index: 2; }
+    .featured p { font-size: 13px; opacity: .9; margin-bottom: 16px; }
+    .featured .play { display: inline-flex; align-items: center; gap: 8px; background: #fff; color: var(--teal-dark);
+      font-weight: 700; font-size: 14px; padding: 10px 18px; border-radius: var(--r-pill); border: none; cursor: pointer; position: relative; z-index: 2; }
+
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .tile { background: var(--card); border: 1px solid var(--border); border-radius: var(--r-card); padding: 16px;
+      cursor: pointer; transition: transform .15s, box-shadow .15s; text-align: left; width: 100%; }
+    .tile:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+    .tile .ic { width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; font-size: 20px; margin-bottom: 12px; }
+    .tile h4 { font-size: 15px; font-weight: 700; }
+    .tile span { font-size: 12px; color: var(--muted); }
+    .ic.teal { background: var(--teal-light); color: var(--teal-dark); }
+    .ic.rose { background: var(--rose-light); color: var(--rose); }
+    .ic.amber { background: var(--amber-light); color: var(--amber); }
+    .ic.navy { background: #e7eef6; color: var(--navy-mid); }
+    .ic.purple { background: #efeafe; color: var(--purple); }
+
+    .h-scroll { display: flex; gap: 14px; overflow-x: auto; padding: 2px 2px 6px; scroll-snap-type: x mandatory; }
+    .h-scroll::-webkit-scrollbar { height: 0; }
+    .med-card { flex: 0 0 150px; scroll-snap-align: start; border-radius: var(--r-card); overflow: hidden; cursor: pointer;
+      box-shadow: var(--shadow-sm); background: var(--card); border: none; padding: 0; text-align: left; }
+    .med-card .thumb { height: 96px; display: flex; align-items: flex-end; padding: 10px; color: #fff; }
+    .med-card .thumb i { font-size: 26px; }
+    .med-card .body { padding: 11px 12px 13px; }
+    .med-card h5 { font-size: 13px; font-weight: 700; line-height: 1.25; }
+    .med-card span { font-size: 11px; color: var(--muted); }
+    .t1 { background: linear-gradient(135deg,#6a82fb,#a18cd1); }
+    .t2 { background: linear-gradient(135deg,#2ec4a5,#1da888); }
+    .t3 { background: linear-gradient(135deg,#f4a23a,#e0648a); }
+    .t4 { background: linear-gradient(135deg,#5b86e5,#36d1dc); }
+
+    .med-row { display: flex; align-items: center; gap: 14px; background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 12px; margin-bottom: 10px; cursor: pointer; transition: box-shadow .15s; width: 100%; text-align: left; }
+    .med-row:hover { box-shadow: var(--shadow-sm); }
+    .med-row .mthumb { width: 52px; height: 52px; border-radius: 14px; display: grid; place-items: center; color: #fff; font-size: 22px; flex-shrink: 0; }
+    .med-row .minfo { flex: 1; }
+    .med-row .minfo h4 { font-size: 15px; font-weight: 700; }
+    .med-row .minfo span { font-size: 12px; color: var(--muted); }
+    .med-row .mplay { color: var(--teal-dark); font-size: 24px; }
+
+    /* ━━━━━━━━━━━━━━━━━━━━ PROGRESS ━━━━━━━━━━━━━━━━━━━━ */
+    .streak-hero { background: linear-gradient(135deg, var(--amber) 0%, #ec7a4b 100%); border-radius: var(--r-card);
+      padding: 24px; color: #fff; text-align: center; box-shadow: var(--shadow-md); position: relative; overflow: hidden; }
+    .streak-hero .flame { font-size: 44px; }
+    .streak-hero .num { font-size: 48px; font-weight: 700; line-height: 1; margin: 4px 0; }
+    .streak-hero .lbl { font-size: 14px; opacity: .92; }
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+    .stat-box { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+    .stat-box .v { font-size: 26px; font-weight: 700; }
+    .stat-box .k { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .stat-box .v.teal { color: var(--teal-dark); }
+    .stat-box .v.rose { color: var(--rose); }
+    .stat-box .v.amber { color: var(--amber); }
+
+    .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r-card); padding: 18px; }
+    .chart { display: flex; align-items: flex-end; justify-content: space-between; gap: 6px; height: 140px; margin-top: 14px; }
+    .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+    .bar { width: 100%; max-width: 26px; border-radius: 8px; background: var(--teal); transition: height .5s ease; min-height: 6px; }
+    .bar-col .em { font-size: 15px; }
+    .bar-col .d { font-size: 10px; color: var(--muted); }
+    .bar.m0 { background: #d9534f; } .bar.m1 { background: var(--amber); } .bar.m2 { background: #7fb3d5; }
+    .bar.m3 { background: var(--teal); } .bar.m4 { background: var(--teal-dark); } .bar.none { background: #dde6ee; }
+
+    .jentry { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 14px 16px; margin-bottom: 10px; }
+    .jentry .jdate { font-size: 11px; color: var(--muted); margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
+    .jentry .jtext { font-size: 14px; line-height: 1.5; white-space: pre-wrap; }
+    .jentry .jdel { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; }
+    .empty { text-align: center; color: var(--muted); padding: 30px 10px; font-size: 14px; }
+    .empty i { font-size: 34px; display: block; margin-bottom: 8px; opacity: .5; }
+
+    /* ━━━━━━━━━━━━━━━━━━━━ PROFILE ━━━━━━━━━━━━━━━━━━━━ */
+    .profile-head { text-align: center; padding: 10px 0 18px; }
+    .avatar { width: 88px; height: 88px; border-radius: 50%; margin: 0 auto 12px;
+      background: linear-gradient(135deg, var(--teal), var(--navy-mid)); display: grid; place-items: center;
+      color: #fff; font-size: 36px; font-weight: 700; box-shadow: var(--shadow-md); }
+    .profile-head h2 { font-size: 22px; }
+    .profile-head .pmail { font-size: 13px; color: var(--muted); }
+    .setting-group { background: var(--card); border: 1px solid var(--border); border-radius: var(--r-card); overflow: hidden; margin-top: 14px; }
+    .setting { display: flex; align-items: center; gap: 14px; padding: 15px 16px; border-bottom: 1px solid var(--border); }
+    .setting:last-child { border-bottom: none; }
+    .setting .sic { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; font-size: 18px; flex-shrink: 0; }
+    .setting .stxt { flex: 1; }
+    .setting .stxt h4 { font-size: 15px; font-weight: 600; }
+    .setting .stxt span { font-size: 12px; color: var(--muted); }
+    .setting .chev { color: var(--muted); font-size: 16px; }
+    .group-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin: 24px 4px 8px; }
+    .toggle { width: 46px; height: 27px; border-radius: 20px; background: #d5dde6; position: relative; cursor: pointer; transition: background .2s; flex-shrink: 0; border: none; }
+    .toggle::after { content: ""; position: absolute; width: 21px; height: 21px; border-radius: 50%; background: #fff; top: 3px; left: 3px; transition: left .2s; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+    .toggle.on { background: var(--teal); }
+    .toggle.on::after { left: 22px; }
+
+    /* ━━━━━━━━━━━━━━━━━━━━ SOS BUTTON ━━━━━━━━━━━━━━━━━━━━ */
+    .sos-btn { position: absolute; right: 18px; bottom: calc(92px + var(--safe-bottom)); z-index: 30;
+      width: 58px; height: 58px; border-radius: 50%; border: none; background: var(--rose); color: #fff;
+      font-weight: 800; font-size: 13px; letter-spacing: .5px; box-shadow: 0 8px 22px rgba(224,92,138,.5);
+      cursor: pointer; display: grid; place-items: center; animation: pulse 2.4s infinite; }
+    @keyframes pulse {
+      0% { box-shadow: 0 8px 22px rgba(224,92,138,.5), 0 0 0 0 rgba(224,92,138,.4); }
+      70% { box-shadow: 0 8px 22px rgba(224,92,138,.5), 0 0 0 14px rgba(224,92,138,0); }
+      100% { box-shadow: 0 8px 22px rgba(224,92,138,.5), 0 0 0 0 rgba(224,92,138,0); }
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━ BOTTOM NAV ━━━━━━━━━━━━━━━━━━━━ */
+    .nav-bar { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,.96); backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 8px calc(10px + var(--safe-bottom)); z-index: 20; }
+    .nav-item { background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 3px;
+      color: var(--muted); font-size: 10px; font-weight: 600; cursor: pointer; padding: 4px 12px; transition: color .15s; }
+    .nav-item i { font-size: 21px; }
+    .nav-item.active { color: var(--teal-dark); }
+
+    /* ━━━━━━━━━━━━━━━━━━━━ SHEETS ━━━━━━━━━━━━━━━━━━━━ */
+    .sheet { position: absolute; inset: 0; z-index: 55; display: none; flex-direction: column; background: var(--bg); }
+    .sheet.show { display: flex; animation: slideUp .25s ease; }
+    @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+    .sheet-bar { display: flex; align-items: center; gap: 12px; padding: 18px 20px 14px; flex-shrink: 0; }
+    .sheet-bar .back { width: 38px; height: 38px; border-radius: 12px; border: 1px solid var(--border); background: var(--card);
+      color: var(--text); font-size: 18px; display: grid; place-items: center; cursor: pointer; }
+    .sheet-bar h2 { font-size: 19px; }
+    .sheet-body { flex: 1; overflow-y: auto; padding: 0 20px 30px; }
+    .sheet-body::-webkit-scrollbar { width: 0; }
+
+    .breath-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+    .breath-circle { width: 200px; height: 200px; border-radius: 50%; display: grid; place-items: center;
+      background: radial-gradient(circle at 35% 30%, var(--teal), var(--teal-dark));
+      box-shadow: 0 0 60px rgba(46,196,165,.5); transition: transform 4s ease-in-out; color: #fff; }
+    .breath-circle .phase { font-size: 20px; font-weight: 700; }
+    .breath-circle .count { font-size: 40px; font-weight: 700; font-family: 'DM Serif Display', serif; }
+    .breath-meta { margin-top: 34px; color: var(--muted); font-size: 14px; }
+    .breath-actions { display: flex; gap: 12px; margin-top: 26px; }
+    .btn-pill { border: none; border-radius: var(--r-pill); padding: 13px 26px; font-weight: 700; font-size: 15px; cursor: pointer; }
+    .btn-teal { background: var(--teal); color: #fff; }
+    .btn-ghost { background: var(--card); color: var(--text); border: 1px solid var(--border); }
+    .preset-row { display: flex; gap: 10px; margin-bottom: 20px; }
+    .preset { flex: 1; background: var(--card); border: 2px solid var(--border); border-radius: 16px; padding: 14px; cursor: pointer; text-align: center; }
+    .preset.active { border-color: var(--teal); background: var(--teal-light); }
+    .preset h4 { font-size: 14px; font-weight: 700; }
+    .preset span { font-size: 11px; color: var(--muted); }
+
+    .jeditor { width: 100%; min-height: 180px; border: 1px solid var(--border); border-radius: 16px; padding: 16px;
+      font-family: inherit; font-size: 15px; resize: vertical; color: var(--text); background: var(--card); }
+    .jeditor:focus { outline: none; border-color: var(--teal); }
+    .field { width: 100%; border: 1px solid var(--border); border-radius: 12px; padding: 13px 15px; font-family: inherit;
+      font-size: 15px; color: var(--text); background: var(--card); margin-bottom: 12px; }
+    .field:focus { outline: none; border-color: var(--teal); }
+
+    .yt-wrap { position: relative; padding-bottom: 56.25%; height: 0; border-radius: 16px; overflow: hidden; background: #000; margin-bottom: 14px; }
+    .yt-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+    /* ━━━━━━━━━━━━━━━━━━━━ SOS OVERLAY ━━━━━━━━━━━━━━━━━━━━ */
+    .sos-screen { position: absolute; inset: 0; z-index: 60; background: linear-gradient(170deg, #1b3a5c 0%, #102338 100%);
+      display: none; flex-direction: column; color: #fff; }
+    .sos-screen.show { display: flex; animation: fade .25s ease; }
+    .sos-top { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 6px; flex-shrink: 0; }
+    .sos-top .close { width: 38px; height: 38px; border-radius: 50%; border: none; background: rgba(255,255,255,.14);
+      color: #fff; font-size: 20px; cursor: pointer; display: grid; place-items: center; }
+    .sos-body { flex: 1; overflow-y: auto; padding: 6px 20px 30px; }
+    .sos-body::-webkit-scrollbar { width: 0; }
+    .sos-intro { text-align: center; padding: 6px 6px 22px; }
+    .sos-intro .pulse-dot { width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 16px; background: var(--rose);
+      display: grid; place-items: center; font-size: 28px; animation: pulse 2.4s infinite; }
+    .sos-intro h1 { font-size: 25px; line-height: 1.2; }
+    .sos-intro p { font-size: 15px; opacity: .85; margin-top: 10px; line-height: 1.55; }
+
+    .sos-section-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; opacity: .65; margin: 26px 2px 12px; }
+    .call-btn { display: flex; align-items: center; gap: 14px; width: 100%; text-decoration: none; color: #fff;
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 16px; padding: 15px 16px; margin-bottom: 11px; cursor: pointer; transition: background .15s; }
+    .call-btn:hover { background: rgba(255,255,255,.16); }
+    .call-btn .cic { width: 46px; height: 46px; border-radius: 13px; display: grid; place-items: center; font-size: 21px; flex-shrink: 0; }
+    .call-btn .cinfo { flex: 1; }
+    .call-btn .cinfo h4 { font-size: 16px; font-weight: 700; }
+    .call-btn .cinfo span { font-size: 12.5px; opacity: .78; display: block; margin-top: 1px; }
+    .call-btn .cnum { font-size: 19px; font-weight: 800; letter-spacing: .5px; }
+    .cic.urgent { background: var(--rose); } .cic.help { background: var(--teal); }
+    .cic.young { background: var(--amber); color:#3a2400; } .cic.contact { background: var(--purple); }
+
+    .sos-tool { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 18px; padding: 18px; margin-bottom: 12px; }
+    .sos-tool h3 { font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .sos-tool p { font-size: 13.5px; opacity: .82; margin-top: 6px; line-height: 1.5; }
+    .sos-tool .tool-btn { margin-top: 14px; border: none; background: var(--teal); color: #fff; font-weight: 700;
+      font-size: 14px; padding: 11px 20px; border-radius: var(--r-pill); cursor: pointer; }
+
+    .mini-breath { display: flex; flex-direction: column; align-items: center; margin-top: 16px; }
+    .mini-circle { width: 130px; height: 130px; border-radius: 50%; display: grid; place-items: center;
+      background: radial-gradient(circle at 35% 30%, var(--teal), var(--teal-dark)); box-shadow: 0 0 40px rgba(46,196,165,.45);
+      transition: transform 4s ease-in-out; color: #fff; }
+    .mini-circle .mphase { font-size: 15px; font-weight: 700; }
+    .mini-circle .mcount { font-size: 28px; font-weight: 700; font-family: 'DM Serif Display', serif; }
+
+    .ground-step { background: rgba(255,255,255,.06); border-radius: 14px; padding: 14px 16px; margin-top: 10px;
+      display: flex; align-items: center; gap: 13px; cursor: pointer; transition: background .15s; }
+    .ground-step:hover { background: rgba(255,255,255,.12); }
+    .ground-step .gnum { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,.15);
+      display: grid; place-items: center; font-weight: 800; font-size: 16px; flex-shrink: 0; }
+    .ground-step .gtxt { flex: 1; }
+    .ground-step .gtxt h4 { font-size: 14px; font-weight: 700; }
+    .ground-step .gtxt span { font-size: 12px; opacity: .75; }
+    .ground-step .gcheck { font-size: 22px; opacity: .35; color: var(--teal); }
+    .ground-step.done { background: rgba(46,196,165,.2); }
+    .ground-step.done .gcheck { opacity: 1; }
+    .ground-step.done .gtxt h4 { text-decoration: line-through; opacity: .7; }
+
+    .sos-disclaimer { font-size: 11.5px; opacity: .55; line-height: 1.5; text-align: center; margin-top: 22px; padding: 0 6px; }
+
+    .toast { position: absolute; bottom: 120px; left: 50%; transform: translateX(-50%); background: var(--navy);
+      color: #fff; font-size: 13px; font-weight: 600; padding: 11px 20px; border-radius: var(--r-pill); z-index: 90;
+      opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; box-shadow: var(--shadow-lg); white-space: nowrap; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(-8px); }
+
+    /* ━━━━━━━━━━━━━━━━━━━━ AUTH ━━━━━━━━━━━━━━━━━━━━ */
+    .auth-screen { position: absolute; inset: 0; z-index: 80; display: flex; flex-direction: column;
+      background: linear-gradient(170deg, #1b3a5c 0%, #0f2236 100%); color: #fff; overflow-y: auto; }
+    .auth-screen::-webkit-scrollbar { width: 0; }
+    .auth-inner { margin: auto; width: 100%; padding: 40px 26px; display: flex; flex-direction: column; }
+    .auth-brand { text-align: center; margin-bottom: 24px; }
+    .auth-logo { width: 66px; height: 66px; border-radius: 20px; margin: 0 auto 16px; display: grid; place-items: center;
+      background: linear-gradient(135deg, var(--teal), var(--teal-dark)); font-size: 30px; color: #fff; box-shadow: 0 10px 30px rgba(46,196,165,.4); }
+    .auth-brand h1 { font-size: 26px; line-height: 1.2; }
+    .auth-brand p { font-size: 14px; opacity: .8; margin-top: 8px; }
+    .auth-card { background: var(--card); color: var(--text); border-radius: 24px; padding: 22px; box-shadow: var(--shadow-lg); }
+    .auth-card label { font-size: 13px; font-weight: 600; display: block; margin-bottom: 6px; }
+    .auth-card .field { margin-bottom: 14px; }
+    .auth-error { color: var(--rose-dark); font-size: 13px; font-weight: 600; min-height: 18px; margin-bottom: 4px; }
+    .auth-switch { text-align: center; font-size: 14px; color: var(--muted); margin-top: 16px; }
+    .auth-switch a { color: var(--teal-dark); font-weight: 700; cursor: pointer; text-decoration: none; }
+    .auth-note { text-align: center; font-size: 11.5px; opacity: .5; margin-top: 20px; }
+
+    /* ━━━━━━━━━━━━━━━━━━━━ ONBOARDING / TUTO ━━━━━━━━━━━━━━━━━━━━ */
+    .tuto { position: absolute; inset: 0; z-index: 85; display: none; flex-direction: column;
+      background: linear-gradient(170deg, #1b3a5c 0%, #0f2236 100%); color: #fff; overflow: hidden; }
+    .tuto.show { display: flex; animation: fade .25s ease; }
+    .tuto-skip { position: absolute; top: 18px; right: 20px; z-index: 3; background: rgba(255,255,255,.12);
+      border: none; color: #fff; font-size: 13px; font-weight: 600; padding: 8px 16px; border-radius: var(--r-pill); cursor: pointer; }
+    .tuto-viewport { flex: 1; overflow: hidden; }
+    .tuto-track { display: flex; height: 100%; transition: transform .35s ease; }
+    .tuto-slide { flex: 0 0 100%; height: 100%; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; text-align: center; padding: 40px 34px; }
+    .tuto-ic { width: 120px; height: 120px; border-radius: 34px; display: grid; place-items: center;
+      font-size: 52px; color: #fff; margin-bottom: 30px; box-shadow: 0 16px 40px rgba(0,0,0,.3); }
+    .tuto-slide h2 { font-size: 27px; line-height: 1.2; margin-bottom: 14px; }
+    .tuto-slide p { font-size: 16px; opacity: .82; line-height: 1.55; max-width: 300px; }
+    .tuto-foot { padding: 0 30px calc(34px + var(--safe-bottom)); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .tuto-dots { display: flex; gap: 8px; }
+    .tuto-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.3); transition: all .25s; }
+    .tuto-dot.active { width: 22px; border-radius: 6px; background: var(--teal); }
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <!-- ══════════════ ÉCRAN CONNEXION / INSCRIPTION ══════════════ -->
+    <div class="auth-screen" id="authScreen">
+      <div class="auth-inner">
+        <div class="auth-brand">
+          <div class="auth-logo"><i class="bi bi-heart-pulse-fill"></i></div>
+          <h1 class="serif" id="authTitle">Bienvenue sur MindCare</h1>
+          <p id="authSubtitle">Crée ton compte et prends soin de toi.</p>
+        </div>
+        <form class="auth-card" id="authForm">
+          <div id="nameField">
+            <label for="authName">Prénom</label>
+            <input class="field" id="authName" type="text" placeholder="Ton prénom" autocomplete="given-name" />
+          </div>
+          <label for="authEmail">E-mail</label>
+          <input class="field" id="authEmail" type="email" placeholder="toi@exemple.com" autocomplete="email" />
+          <label for="authPassword">Mot de passe</label>
+          <input class="field" id="authPassword" type="password" placeholder="••••••••" autocomplete="current-password" />
+          <div id="confirmField">
+            <label for="authConfirm">Confirme le mot de passe</label>
+            <input class="field" id="authConfirm" type="password" placeholder="••••••••" autocomplete="new-password" />
+          </div>
+          <div class="auth-error" id="authError"></div>
+          <button type="submit" class="btn-pill btn-teal" id="authSubmit" style="width:100%;margin-top:6px">Se connecter</button>
+          <div class="auth-switch" id="switchText"></div>
+        </form>
+        <p class="auth-note">Prototype : tes identifiants sont enregistrés uniquement sur cet appareil.</p>
+      </div>
+    </div>
+
+    <!-- ══════════════ ÉCRAN ACCUEIL ══════════════ -->
+    <section class="screen active" data-screen="accueil">
+      <header class="header">
+        <div class="header-top">
+          <span class="logo-badge"><i class="bi bi-heart-pulse-fill"></i> MindCare</span>
+          <div class="header-icons">
+            <span class="streak-badge"><i class="bi bi-fire"></i> <span id="headerStreakNum">0</span> j</span>
+            <button class="icon-btn" aria-label="Notifications"><i class="bi bi-bell"></i></button>
+          </div>
+        </div>
+        <div class="greeting">
+          <div class="hello" id="todayDate">Prends un instant pour toi</div>
+          <h1 class="serif">Bonjour, <span id="userName">Léa</span> 🌿</h1>
+        </div>
+        <div class="mood-row" id="moodRow">
+          <button class="mood" data-mood="0"><span class="emoji">😔</span><span class="lbl">Difficile</span></button>
+          <button class="mood" data-mood="1"><span class="emoji">😕</span><span class="lbl">Bof</span></button>
+          <button class="mood" data-mood="2"><span class="emoji">🙂</span><span class="lbl">Ça va</span></button>
+          <button class="mood" data-mood="3"><span class="emoji">😄</span><span class="lbl">Bien</span></button>
+          <button class="mood" data-mood="4"><span class="emoji">🤩</span><span class="lbl">Super</span></button>
+        </div>
+      </header>
+      <main class="scroll">
+        <div class="section-head"><h2>Ta séance du jour</h2></div>
+        <button class="featured" data-action="breath">
+          <div class="tag">Respiration guidée · 5 min</div>
+          <h3 class="serif">Cohérence cardiaque</h3>
+          <p>Une pause guidée pour apaiser le mental avant ta journée.</p>
+          <span class="play"><i class="bi bi-play-fill"></i> Commencer</span>
+        </button>
+        <div class="section-head"><h2>Exercices</h2><a data-go="exercices">Tout voir</a></div>
+        <div class="grid">
+          <button class="tile" data-action="breath"><div class="ic teal"><i class="bi bi-wind"></i></div><h4>Respiration</h4><span>Cohérence cardiaque</span></button>
+          <button class="tile" data-action="journal"><div class="ic rose"><i class="bi bi-journal-text"></i></div><h4>Journal</h4><span>Note tes pensées</span></button>
+          <button class="tile" data-action="sleep"><div class="ic amber"><i class="bi bi-moon-stars"></i></div><h4>Sommeil</h4><span>Sons &amp; histoires</span></button>
+          <button class="tile" data-go="exercices"><div class="ic navy"><i class="bi bi-flower1"></i></div><h4>Méditation</h4><span>Pleine conscience</span></button>
+        </div>
+        <div class="section-head"><h2>Populaires</h2><a data-go="exercices">Tout voir</a></div>
+        <div class="h-scroll" id="popularRow"></div>
+      </main>
+    </section>
+
+    <!-- ══════════════ ÉCRAN EXERCICES ══════════════ -->
+    <section class="screen" data-screen="exercices">
+      <div class="topbar"><div><h1 class="serif">Exercices</h1><div class="sub">Respire, médite, écris</div></div><i class="bi bi-grid-3x3-gap" style="font-size:22px;color:var(--muted)"></i></div>
+      <main class="scroll">
+        <div class="section-head"><h2>Respiration</h2></div>
+        <button class="featured" data-action="breath" style="background:linear-gradient(135deg,#5b86e5,#36d1dc)">
+          <div class="tag">Exercice · 5 min</div>
+          <h3 class="serif">Cohérence cardiaque</h3>
+          <p>Inspire, expire. Régule ton rythme et calme ton système nerveux.</p>
+          <span class="play" style="color:#2a6bd4"><i class="bi bi-play-fill"></i> Démarrer</span>
+        </button>
+        <div class="section-head"><h2>Méditations guidées</h2></div>
+        <div id="medList"></div>
+        <div class="section-head"><h2>Écriture</h2></div>
+        <button class="tile" data-action="journal" style="display:flex;align-items:center;gap:14px">
+          <div class="ic rose"><i class="bi bi-journal-text"></i></div>
+          <div><h4>Journal de gratitude</h4><span>Pose tes pensées sur le papier</span></div>
+        </button>
+      </main>
+    </section>
+
+    <!-- ══════════════ ÉCRAN PROGRÈS ══════════════ -->
+    <section class="screen" data-screen="progres">
+      <div class="topbar"><div><h1 class="serif">Tes progrès</h1><div class="sub">Continue, tu avances 💪</div></div><i class="bi bi-graph-up-arrow" style="font-size:22px;color:var(--muted)"></i></div>
+      <main class="scroll">
+        <div class="streak-hero">
+          <div class="flame">🔥</div>
+          <div class="num" id="progStreak">0</div>
+          <div class="lbl">jours consécutifs</div>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-box"><div class="v teal" id="statSessions">0</div><div class="k">Séances</div></div>
+          <div class="stat-box"><div class="v rose" id="statJournal">0</div><div class="k">Notes journal</div></div>
+          <div class="stat-box"><div class="v amber" id="statMoods">0</div><div class="k">Humeurs notées</div></div>
+          <div class="stat-box"><div class="v" id="statMinutes">0</div><div class="k">Minutes calmes</div></div>
+        </div>
+        <div class="section-head"><h2>Ton humeur cette semaine</h2></div>
+        <div class="chart-card">
+          <div style="font-size:13px;color:var(--muted)">7 derniers jours</div>
+          <div class="chart" id="moodChart"></div>
+        </div>
+        <div class="section-head"><h2>Ton journal</h2><a data-action="journal">+ Ajouter</a></div>
+        <div id="journalHistory"></div>
+      </main>
+    </section>
+
+    <!-- ══════════════ ÉCRAN PROFIL ══════════════ -->
+    <section class="screen" data-screen="profil">
+      <div class="topbar"><div><h1 class="serif">Profil</h1></div><i class="bi bi-gear" style="font-size:22px;color:var(--muted)"></i></div>
+      <main class="scroll">
+        <div class="profile-head">
+          <div class="avatar" id="profileAvatar">L</div>
+          <h2 class="serif" id="profileName">Léa</h2>
+          <div class="pmail" id="profileEmail">lea@mindcare.app</div>
+        </div>
+
+        <div class="group-title">Bien-être</div>
+        <div class="setting-group">
+          <div class="setting"><div class="sic" style="background:var(--teal-light);color:var(--teal-dark)"><i class="bi bi-bullseye"></i></div>
+            <div class="stxt"><h4>Objectif quotidien</h4><span>1 séance par jour</span></div><i class="bi bi-chevron-right chev"></i></div>
+          <div class="setting"><div class="sic" style="background:var(--amber-light);color:var(--amber)"><i class="bi bi-bell"></i></div>
+            <div class="stxt"><h4>Rappels</h4><span>Recevoir des notifications</span></div>
+            <button class="toggle on" data-toggle="reminders" aria-label="Activer les rappels"></button></div>
+          <div class="setting"><div class="sic" style="background:#efeafe;color:var(--purple)"><i class="bi bi-moon"></i></div>
+            <div class="stxt"><h4>Mode sombre</h4><span>Bientôt disponible</span></div>
+            <button class="toggle" data-toggle="dark" aria-label="Mode sombre"></button></div>
+        </div>
+
+        <div class="group-title">Sécurité</div>
+        <div class="setting-group">
+          <button class="setting" data-action="contact" style="width:100%;background:none;border:none;border-bottom:1px solid var(--border);text-align:left">
+            <div class="sic" style="background:var(--rose-light);color:var(--rose)"><i class="bi bi-person-heart"></i></div>
+            <div class="stxt"><h4>Contact de confiance</h4><span id="contactSummary">Ajouter une personne à appeler</span></div><i class="bi bi-chevron-right chev"></i></button>
+          <button class="setting" data-action="sos" style="width:100%;background:none;border:none;text-align:left">
+            <div class="sic" style="background:var(--rose);color:#fff"><i class="bi bi-life-preserver"></i></div>
+            <div class="stxt"><h4>Mode SOS &amp; ressources</h4><span>Aide immédiate en cas de crise</span></div><i class="bi bi-chevron-right chev"></i></button>
+        </div>
+
+        <div class="group-title">À propos</div>
+        <div class="setting-group">
+          <div class="setting"><div class="sic" style="background:#e7eef6;color:var(--navy-mid)"><i class="bi bi-shield-check"></i></div>
+            <div class="stxt"><h4>Confidentialité</h4><span>Tes données restent sur ton appareil</span></div><i class="bi bi-chevron-right chev"></i></div>
+          <div class="setting"><div class="sic" style="background:var(--teal-light);color:var(--teal-dark)"><i class="bi bi-info-circle"></i></div>
+            <div class="stxt"><h4>MindCare</h4><span>Version 1.0</span></div></div>
+        </div>
+        <button class="btn-pill btn-teal" id="logoutBtn" style="width:100%;margin-top:18px"><i class="bi bi-box-arrow-right"></i> Se déconnecter</button>
+        <button class="btn-pill btn-ghost" id="resetBtn" style="width:100%;margin-top:10px;color:var(--rose)">Réinitialiser mes données</button>
+      </main>
+    </section>
+
+    <!-- SOS BUTTON + NAV -->
+    <button class="sos-btn" data-action="sos" aria-label="Aide d'urgence">SOS</button>
+    <nav class="nav-bar">
+      <button class="nav-item active" data-go="accueil"><i class="bi bi-house-door-fill"></i> Accueil</button>
+      <button class="nav-item" data-go="exercices"><i class="bi bi-grid"></i> Exercices</button>
+      <button class="nav-item" data-go="progres"><i class="bi bi-graph-up"></i> Progrès</button>
+      <button class="nav-item" data-go="profil"><i class="bi bi-person"></i> Profil</button>
+    </nav>
+
+    <!-- ══════════════ FEUILLE : RESPIRATION ══════════════ -->
+    <div class="sheet" id="breathSheet">
+      <div class="sheet-bar"><button class="back" data-close="breathSheet"><i class="bi bi-arrow-left"></i></button><h2 class="serif">Respiration</h2></div>
+      <div class="sheet-body">
+        <div class="preset-row" id="presetRow">
+          <button class="preset active" data-in="5" data-hold1="0" data-out="5" data-hold2="0"><h4>Cohérence</h4><span>5s · 5s</span></button>
+          <button class="preset" data-in="4" data-hold1="4" data-out="4" data-hold2="4"><h4>Carré</h4><span>4·4·4·4</span></button>
+          <button class="preset" data-in="4" data-hold1="7" data-out="8" data-hold2="0"><h4>4-7-8</h4><span>Détente</span></button>
+        </div>
+        <div class="breath-stage">
+          <div class="breath-circle" id="breathCircle"><div><div class="phase" id="breathPhase">Prêt ?</div><div class="count" id="breathCount">5</div></div></div>
+          <div class="breath-meta"><span id="breathCycles">0</span> cycles · <span id="breathTimer">0:00</span></div>
+          <div class="breath-actions">
+            <button class="btn-pill btn-teal" id="breathToggle">Démarrer</button>
+            <button class="btn-pill btn-ghost" id="breathDone">Terminer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ FEUILLE : JOURNAL ══════════════ -->
+    <div class="sheet" id="journalSheet">
+      <div class="sheet-bar"><button class="back" data-close="journalSheet"><i class="bi bi-arrow-left"></i></button><h2 class="serif">Mon journal</h2></div>
+      <div class="sheet-body">
+        <p style="font-size:14px;color:var(--muted);margin:4px 0 14px">Qu'est-ce qui occupe ton esprit aujourd'hui ? Écris librement, c'est pour toi seul·e.</p>
+        <textarea class="jeditor" id="journalText" placeholder="Aujourd'hui, je me sens…"></textarea>
+        <button class="btn-pill btn-teal" id="saveJournal" style="width:100%;margin-top:14px">Enregistrer</button>
+        <div class="section-head"><h2 style="font-size:16px">Entrées précédentes</h2></div>
+        <div id="journalSheetList"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════ FEUILLE : SOMMEIL ══════════════ -->
+    <div class="sheet" id="sleepSheet">
+      <div class="sheet-bar"><button class="back" data-close="sleepSheet"><i class="bi bi-arrow-left"></i></button><h2 class="serif">Sommeil</h2></div>
+      <div class="sheet-body">
+        <p style="font-size:14px;color:var(--muted);margin:4px 0 16px">Des sons et histoires pour t'aider à t'endormir.</p>
+        <div id="sleepList"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════ MODALE : LECTEUR (YouTube) ══════════════ -->
+    <div class="sheet" id="playerSheet">
+      <div class="sheet-bar"><button class="back" data-close="playerSheet"><i class="bi bi-arrow-left"></i></button><h2 class="serif" id="playerTitle">Méditation</h2></div>
+      <div class="sheet-body">
+        <div class="yt-wrap"><iframe id="ytFrame" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+        <p id="playerDesc" style="font-size:14px;color:var(--muted);line-height:1.55"></p>
+        <a id="ytFallback" href="#" target="_blank" rel="noopener" style="display:inline-block;margin-top:8px;font-size:13px;color:var(--teal-dark);font-weight:600;text-decoration:none">Ouvrir dans YouTube ↗</a>
+      </div>
+    </div>
+
+    <!-- ══════════════ FEUILLE : CONTACT DE CONFIANCE ══════════════ -->
+    <div class="sheet" id="contactSheet">
+      <div class="sheet-bar"><button class="back" data-close="contactSheet"><i class="bi bi-arrow-left"></i></button><h2 class="serif">Contact de confiance</h2></div>
+      <div class="sheet-body">
+        <p style="font-size:14px;color:var(--muted);margin:4px 0 16px">Choisis une personne en qui tu as confiance. Elle apparaîtra dans le mode SOS pour un appel rapide.</p>
+        <label style="font-size:13px;font-weight:600">Nom</label>
+        <input class="field" id="contactName" placeholder="Ex : Maman, Lucas…" style="margin-top:6px" />
+        <label style="font-size:13px;font-weight:600">Numéro</label>
+        <input class="field" id="contactPhone" type="tel" placeholder="Ex : 06 12 34 56 78" style="margin-top:6px" />
+        <button class="btn-pill btn-teal" id="saveContact" style="width:100%;margin-top:8px">Enregistrer</button>
+      </div>
+    </div>
+
+    <!-- ══════════════ MODE SOS ══════════════ -->
+    <div class="sos-screen" id="sosScreen">
+      <div class="sos-top">
+        <span style="font-weight:700;font-size:15px;display:flex;align-items:center;gap:7px"><i class="bi bi-life-preserver"></i> Mode SOS</span>
+        <button class="close" data-close="sosScreen" aria-label="Fermer"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="sos-body">
+        <div class="sos-intro">
+          <div class="pulse-dot"><i class="bi bi-heart-fill"></i></div>
+          <h1 class="serif">Tu n'es pas seul·e.</h1>
+          <p>Ce moment est difficile, mais il va passer. Respire avec moi, ou parle à quelqu'un dès maintenant. De l'aide est disponible, tout de suite.</p>
+        </div>
+
+        <div class="sos-section-title">Parler à quelqu'un maintenant</div>
+
+        <a class="call-btn" href="tel:3114">
+          <div class="cic urgent"><i class="bi bi-telephone-fill"></i></div>
+          <div class="cinfo"><h4>3114</h4><span>Prévention du suicide · gratuit, 24h/24</span></div>
+          <div class="cnum">3114</div>
+        </a>
+
+        <a class="call-btn" href="tel:0972394050">
+          <div class="cic help"><i class="bi bi-chat-heart-fill"></i></div>
+          <div class="cinfo"><h4>SOS Amitié</h4><span>Écoute anonyme · 24h/24, 7j/7</span></div>
+          <div class="cnum" style="font-size:14px">09 72 39 40 50</div>
+        </a>
+
+        <a class="call-btn" href="tel:0800235236">
+          <div class="cic young"><i class="bi bi-emoji-smile-fill"></i></div>
+          <div class="cinfo"><h4>Fil Santé Jeunes</h4><span>12-25 ans · gratuit, tous les jours 9h-23h</span></div>
+          <div class="cnum" style="font-size:13px">0 800 235 236</div>
+        </a>
+
+        <a class="call-btn" id="contactCallBtn" href="tel:" style="display:none">
+          <div class="cic contact"><i class="bi bi-person-heart"></i></div>
+          <div class="cinfo"><h4 id="contactCallName">Mon contact</h4><span>Ta personne de confiance</span></div>
+          <div class="cnum"><i class="bi bi-telephone-fill"></i></div>
+        </a>
+
+        <div class="sos-section-title">En cas d'urgence vitale</div>
+        <a class="call-btn" href="tel:15" style="border-color:rgba(224,92,138,.4)">
+          <div class="cic urgent"><i class="bi bi-hospital-fill"></i></div>
+          <div class="cinfo"><h4>SAMU — 15</h4><span>Urgence médicale · ou le 112 (Europe)</span></div>
+          <div class="cnum">15</div>
+        </a>
+
+        <div class="sos-section-title">Apaiser le moment</div>
+
+        <div class="sos-tool">
+          <h3><i class="bi bi-wind"></i> Respiration apaisante</h3>
+          <p>Suis le cercle : inspire quand il grandit, expire quand il rétrécit. Quelques cycles suffisent à calmer le corps.</p>
+          <div id="sosBreathArea" style="display:none">
+            <div class="mini-breath">
+              <div class="mini-circle" id="sosCircle"><div><div class="mphase" id="sosPhase">Inspire</div><div class="mcount" id="sosCount">4</div></div></div>
+            </div>
+          </div>
+          <button class="tool-btn" id="sosBreathBtn">Commencer à respirer</button>
+        </div>
+
+        <div class="sos-tool">
+          <h3><i class="bi bi-grid-3x3"></i> Ancrage 5-4-3-2-1</h3>
+          <p>Reviens à l'instant présent en sollicitant tes sens. Touche chaque étape une fois faite.</p>
+          <div id="groundSteps">
+            <div class="ground-step" data-ground><div class="gnum">5</div><div class="gtxt"><h4>5 choses que tu vois</h4><span>Regarde autour de toi</span></div><i class="bi bi-check-circle-fill gcheck"></i></div>
+            <div class="ground-step" data-ground><div class="gnum">4</div><div class="gtxt"><h4>4 choses que tu peux toucher</h4><span>Sens leur texture</span></div><i class="bi bi-check-circle-fill gcheck"></i></div>
+            <div class="ground-step" data-ground><div class="gnum">3</div><div class="gtxt"><h4>3 sons que tu entends</h4><span>Proches ou lointains</span></div><i class="bi bi-check-circle-fill gcheck"></i></div>
+            <div class="ground-step" data-ground><div class="gnum">2</div><div class="gtxt"><h4>2 odeurs que tu sens</h4><span>Prends une inspiration</span></div><i class="bi bi-check-circle-fill gcheck"></i></div>
+            <div class="ground-step" data-ground><div class="gnum">1</div><div class="gtxt"><h4>1 chose que tu peux goûter</h4><span>Ou une qualité que tu aimes en toi</span></div><i class="bi bi-check-circle-fill gcheck"></i></div>
+          </div>
+        </div>
+
+        <p class="sos-disclaimer">MindCare ne remplace pas un professionnel de santé. Si tu es en danger immédiat, appelle le 15 ou le 112. Tu mérites d'être aidé·e.</p>
+      </div>
+    </div>
+
+    <!-- ══════════════ TUTORIEL (nouveaux comptes uniquement) ══════════════ -->
+    <div class="tuto" id="tutoScreen">
+      <button class="tuto-skip" id="tutoSkip">Passer</button>
+      <div class="tuto-viewport">
+        <div class="tuto-track" id="tutoTrack">
+          <div class="tuto-slide">
+            <div class="tuto-ic" style="background:linear-gradient(135deg,var(--teal),var(--teal-dark))"><i class="bi bi-heart-pulse-fill"></i></div>
+            <h2 class="serif">Bienvenue, <span id="tutoName">toi</span> 🌿</h2>
+            <p>Ton espace pour prendre soin de ton esprit, un peu chaque jour. Laisse-moi te le présenter en 30 secondes.</p>
+          </div>
+          <div class="tuto-slide">
+            <div class="tuto-ic" style="background:linear-gradient(135deg,var(--amber),#ec7a4b)"><i class="bi bi-emoji-smile-fill"></i></div>
+            <h2 class="serif">Note ton humeur</h2>
+            <p>Chaque jour, dis comment tu te sens depuis l'accueil. MindCare suit ton évolution, sans jugement.</p>
+          </div>
+          <div class="tuto-slide">
+            <div class="tuto-ic" style="background:linear-gradient(135deg,#5b86e5,#36d1dc)"><i class="bi bi-wind"></i></div>
+            <h2 class="serif">Respire &amp; médite</h2>
+            <p>Respiration guidée, méditations et journal : des outils simples pour te recentrer quand tu en as besoin.</p>
+          </div>
+          <div class="tuto-slide">
+            <div class="tuto-ic" style="background:linear-gradient(135deg,#8b7cf6,#6a82fb)"><i class="bi bi-graph-up-arrow"></i></div>
+            <h2 class="serif">Suis tes progrès</h2>
+            <p>Garde ta série de jours et visualise ton humeur de la semaine. De quoi rester motivé·e sur la durée.</p>
+          </div>
+          <div class="tuto-slide">
+            <div class="tuto-ic" style="background:linear-gradient(135deg,var(--rose),var(--rose-dark))"><i class="bi bi-life-preserver"></i></div>
+            <h2 class="serif">Le bouton SOS</h2>
+            <p>En cas de coup dur, un seul tap suffit pour accéder à de l'aide immédiate et à des numéros d'urgence.</p>
+          </div>
+        </div>
+      </div>
+      <div class="tuto-foot">
+        <div class="tuto-dots" id="tutoDots"></div>
+        <button class="btn-pill btn-teal" id="tutoNext">Suivant</button>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <script>
+  (function(){
+    "use strict";
+
+    /* ───────── Stockage robuste (localStorage + repli mémoire) ───────── */
+    var Store = (function(){
+      var mem = {}, ok = false;
+      try { var k="__mc__"; localStorage.setItem(k,"1"); localStorage.removeItem(k); ok = true; } catch(e){ ok = false; }
+      return {
+        get: function(key, def){ try{ if(ok){ var v=localStorage.getItem(key); return v===null?def:JSON.parse(v); } }catch(e){} return (key in mem)?mem[key]:def; },
+        set: function(key, val){ try{ if(ok) localStorage.setItem(key, JSON.stringify(val)); }catch(e){} mem[key]=val; },
+        clear: function(){ try{ if(ok) localStorage.clear(); }catch(e){} mem={}; }
+      };
+    })();
+
+    var $  = function(s){ return document.querySelector(s); };
+    var $$ = function(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); };
+    var todayKey = function(){ return new Date().toISOString().slice(0,10); };
+
+    /* ───────── Comptes & session (prototype front-end — non sécurisé) ───────── */
+    function getAccounts(){ return Store.get('mc_accounts', {}); }
+    function setAccounts(a){ Store.set('mc_accounts', a); }
+    function getSession(){ return Store.get('mc_session', null); }
+    function setSession(e){ Store.set('mc_session', e); }
+    // hachage léger : évite de stocker le mot de passe en clair, mais NE remplace PAS un vrai backend
+    function hashPw(s){ var h=5381; for(var i=0;i<s.length;i++){ h=((h<<5)+h)+s.charCodeAt(i); h|=0; } return 'h'+(h>>>0).toString(16); }
+
+    var currentUser=null;
+    function uk(k){ return 'mc_u_'+(currentUser||'guest')+'_'+k; }
+
+    /* ───────── État (chargé par utilisateur connecté) ───────── */
+    var state={ moods:{}, sessions:0, minutes:0, journal:[], contact:null, reminders:true };
+    function loadUserState(){
+      state={
+        moods:    Store.get(uk('moods'), {}),
+        sessions: Store.get(uk('sessions'), 0),
+        minutes:  Store.get(uk('minutes'), 0),
+        journal:  Store.get(uk('journal'), []),
+        contact:  Store.get(uk('contact'), null),
+        reminders:Store.get(uk('reminders'), true)
+      };
+    }
+    function save(){
+      Store.set(uk('moods'),state.moods); Store.set(uk('sessions'),state.sessions);
+      Store.set(uk('minutes'),state.minutes); Store.set(uk('journal'),state.journal);
+      Store.set(uk('contact'),state.contact); Store.set(uk('reminders'),state.reminders);
+    }
+
+    var toastT;
+    function toast(msg){ var t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(function(){t.classList.remove('show');},2200); }
+
+    /* ───────── Navigation écrans ───────── */
+    function go(screen){
+      $$('.screen').forEach(function(s){ s.classList.toggle('active', s.dataset.screen===screen); });
+      $$('.nav-item').forEach(function(n){ n.classList.toggle('active', n.dataset.go===screen); });
+      var act=$('.screen.active .scroll'); if(act) act.scrollTop=0;
+      if(screen==='progres') renderProgress();
+    }
+    function openSheet(id){ $('#'+id).classList.add('show'); }
+    function closeSheet(id){ $('#'+id).classList.remove('show'); }
+
+    /* ───────── Streak ───────── */
+    function computeStreak(){
+      var days = state.moods, streak=0, d=new Date();
+      if(!days[todayKey()]){ d.setDate(d.getDate()-1); }
+      while(true){ var k=d.toISOString().slice(0,10); if(days[k]!==undefined){ streak++; d.setDate(d.getDate()-1); } else break; }
+      return streak;
+    }
+    function refreshStreak(){ $('#headerStreakNum').textContent=computeStreak(); }
+
+    /* ───────── Humeur ───────── */
+    var MOOD_EMOJI=['😔','😕','🙂','😄','🤩'];
+    function setMood(i){
+      state.moods[todayKey()]=i; save();
+      $$('#moodRow .mood').forEach(function(m){ m.classList.toggle('active', (+m.dataset.mood)===i); });
+      refreshStreak();
+      var txt=['Courage, ça va passer 💙','On note ça. Prends soin de toi.','Bien noté 🙂','Super, continue comme ça !','Génial ! 🌟'];
+      toast(txt[i]);
+    }
+    function restoreTodayMood(){ var t=state.moods[todayKey()]; if(t!==undefined) $$('#moodRow .mood').forEach(function(m){ m.classList.toggle('active', (+m.dataset.mood)===t); }); }
+
+    /* ───────── Contenus (vidéos YouTube d'EXEMPLE — remplace le champ "yt" par tes propres IDs) ───────── */
+    var MEDITATIONS=[
+      {title:'Calme du soir',     dur:'12 min', icon:'bi-cloud-moon',  grad:'t1', yt:'1ZYbCMUDMmo', desc:'Une méditation douce pour relâcher les tensions de la journée et préparer le sommeil.'},
+      {title:'Réveil en douceur', dur:'6 min',  icon:'bi-sun',         grad:'t2', yt:'inpok4MKVLM', desc:'Démarre la journée en pleine conscience, avec calme et clarté.'},
+      {title:'Gérer le stress',   dur:'9 min',  icon:'bi-heart',       grad:'t3', yt:'O-6f5wQXSu8', desc:"Un exercice guidé pour apaiser l'anxiété et retrouver ton centre."},
+      {title:'Pleine conscience', dur:'10 min', icon:'bi-flower1',     grad:'t4', yt:'ZToicYcHIOU', desc:"Observe tes pensées sans jugement et reviens à l'instant présent."}
+    ];
+    var SLEEP=[
+      {title:'Pluie apaisante',      dur:'8 h',     icon:'bi-cloud-rain', grad:'t1', yt:'mPZkdNFkNps', desc:"Sons de pluie pour t'accompagner toute la nuit."},
+      {title:"Vagues de l'océan",    dur:'8 h',     icon:'bi-water',      grad:'t4', yt:'WHPEKLQID4U', desc:"Le ressac régulier de la mer pour t'endormir."},
+      {title:'Histoire pour dormir', dur:'25 min',  icon:'bi-book',       grad:'t2', yt:'9R2bM_LHM_o', desc:'Une histoire calme et lente pour glisser dans le sommeil.'}
+    ];
+
+    function buildPopular(){
+      $('#popularRow').innerHTML = MEDITATIONS.slice(0,3).map(function(m,i){
+        return '<button class="med-card" data-med="'+i+'"><div class="thumb '+m.grad+'"><i class="bi '+m.icon+'"></i></div><div class="body"><h5>'+m.title+'</h5><span>'+m.dur+'</span></div></button>';
+      }).join('');
+    }
+    function buildMedList(){
+      $('#medList').innerHTML = MEDITATIONS.map(function(m,i){
+        return '<button class="med-row" data-med="'+i+'"><div class="mthumb '+m.grad+'"><i class="bi '+m.icon+'"></i></div><div class="minfo"><h4>'+m.title+'</h4><span>Méditation guidée · '+m.dur+'</span></div><i class="bi bi-play-circle-fill mplay"></i></button>';
+      }).join('');
+    }
+    function buildSleep(){
+      $('#sleepList').innerHTML = SLEEP.map(function(m,i){
+        return '<button class="med-row" data-sleep="'+i+'"><div class="mthumb '+m.grad+'"><i class="bi '+m.icon+'"></i></div><div class="minfo"><h4>'+m.title+'</h4><span>'+m.dur+'</span></div><i class="bi bi-play-circle-fill mplay"></i></button>';
+      }).join('');
+    }
+    function openPlayer(item){
+      $('#playerTitle').textContent=item.title;
+      $('#playerDesc').textContent=item.desc;
+      $('#ytFrame').src='https://www.youtube-nocookie.com/embed/'+item.yt+'?rel=0&autoplay=1';
+      $('#ytFallback').href='https://www.youtube.com/watch?v='+item.yt;
+      openSheet('playerSheet');
+      state.sessions++; save();
+    }
+
+    /* ───────── Respiration ───────── */
+    var bConf={in:5,hold1:0,out:5,hold2:0}, bRunning=false, bTimerId=null, bTickId=null, bCycles=0, bElapsed=0;
+    var circle=$('#breathCircle');
+    function setPreset(el){ $$('#presetRow .preset').forEach(function(p){ p.classList.remove('active'); }); el.classList.add('active');
+      bConf={in:+el.dataset.in,hold1:+el.dataset.hold1,out:+el.dataset.out,hold2:+el.dataset.hold2}; }
+    function fmt(s){ return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
+    function seqOf(){ var s=[]; s.push({n:'Inspire',d:bConf.in,sc:1.35});
+      if(bConf.hold1>0) s.push({n:'Retiens',d:bConf.hold1,sc:1.35});
+      s.push({n:'Expire',d:bConf.out,sc:0.85});
+      if(bConf.hold2>0) s.push({n:'Retiens',d:bConf.hold2,sc:0.85}); return s; }
+    function runBreath(){
+      var seq=seqOf(), pi=0, remain=seq[0].d;
+      circle.style.transitionDuration=seq[0].d+'s'; circle.style.transform='scale('+seq[0].sc+')';
+      $('#breathPhase').textContent=seq[0].n; $('#breathCount').textContent=remain;
+      bTickId=setInterval(function(){ remain--; if(remain<=0){ pi=(pi+1)%seq.length; if(pi===0){ bCycles++; $('#breathCycles').textContent=bCycles; }
+          remain=seq[pi].d; circle.style.transitionDuration=seq[pi].d+'s'; circle.style.transform='scale('+seq[pi].sc+')'; $('#breathPhase').textContent=seq[pi].n; }
+        $('#breathCount').textContent=remain; },1000);
+      bTimerId=setInterval(function(){ bElapsed++; $('#breathTimer').textContent=fmt(bElapsed); },1000);
+    }
+    function startBreath(){ bRunning=true; $('#breathToggle').textContent='Pause'; runBreath(); }
+    function pauseBreath(){ bRunning=false; $('#breathToggle').textContent='Reprendre'; clearInterval(bTickId); clearInterval(bTimerId); circle.style.transform='scale(1)'; }
+    function resetBreath(){ clearInterval(bTickId); clearInterval(bTimerId); bRunning=false; bCycles=0; bElapsed=0;
+      $('#breathCycles').textContent=0; $('#breathTimer').textContent='0:00'; $('#breathPhase').textContent='Prêt ?';
+      $('#breathCount').textContent=bConf.in; $('#breathToggle').textContent='Démarrer'; circle.style.transitionDuration='0.4s'; circle.style.transform='scale(1)'; }
+    function finishBreath(){ if(bElapsed>15){ state.sessions++; state.minutes+=Math.max(1,Math.round(bElapsed/60)); save(); toast('Séance enregistrée 🌿 '+bCycles+' cycles'); } resetBreath(); closeSheet('breathSheet'); }
+
+    /* ───────── Journal ───────── */
+    function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function renderJournalLists(){
+      var html = state.journal.length ? state.journal.map(function(e,i){
+        var d=new Date(e.ts), ds=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'}), tm=d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+        return '<div class="jentry"><div class="jdate"><span>'+ds+' · '+tm+'</span><button class="jdel" data-del="'+i+'"><i class="bi bi-trash3"></i></button></div><div class="jtext">'+esc(e.text)+'</div></div>';
+      }).join('') : '<div class="empty"><i class="bi bi-journal"></i>Aucune entrée pour l\'instant.<br>Écris ta première note.</div>';
+      $('#journalSheetList').innerHTML=html;
+      $('#journalHistory').innerHTML = state.journal.length ? html : '<div class="empty"><i class="bi bi-journal"></i>Ton journal est vide.</div>';
+    }
+    function addJournal(){
+      var t=$('#journalText').value.trim(); if(!t){ toast('Écris quelque chose d\'abord'); return; }
+      state.journal.unshift({ts:Date.now(), text:t}); save(); $('#journalText').value='';
+      renderJournalLists(); toast('Note enregistrée ✍️');
+    }
+
+    /* ───────── Progrès ───────── */
+    function renderProgress(){
+      $('#progStreak').textContent=computeStreak();
+      $('#statSessions').textContent=state.sessions;
+      $('#statJournal').textContent=state.journal.length;
+      $('#statMoods').textContent=Object.keys(state.moods).length;
+      $('#statMinutes').textContent=state.minutes;
+      var days=[]; for(var i=6;i>=0;i--){ var d=new Date(); d.setDate(d.getDate()-i); days.push(d); }
+      var labels=['D','L','M','M','J','V','S'];
+      $('#moodChart').innerHTML = days.map(function(d){
+        var k=d.toISOString().slice(0,10), m=state.moods[k], has=m!==undefined;
+        var h=has?(20+m*20):8, cls=has?('m'+m):'none', em=has?MOOD_EMOJI[m]:'·';
+        return '<div class="bar-col"><span class="em">'+em+'</span><div class="bar '+cls+'" style="height:'+h+'%"></div><span class="d">'+labels[d.getDay()]+'</span></div>';
+      }).join('');
+    }
+
+    /* ───────── Contact ───────── */
+    function refreshContact(){
+      if(state.contact && state.contact.phone){
+        $('#contactSummary').textContent=state.contact.name+' · '+state.contact.phone;
+        var b=$('#contactCallBtn'); b.style.display='flex'; b.href='tel:'+state.contact.phone.replace(/\s/g,'');
+        $('#contactCallName').textContent='Appeler '+state.contact.name;
+        $('#contactName').value=state.contact.name; $('#contactPhone').value=state.contact.phone;
+      } else { $('#contactSummary').textContent='Ajouter une personne à appeler'; $('#contactCallBtn').style.display='none'; }
+    }
+    function saveContact(){
+      var n=$('#contactName').value.trim(), p=$('#contactPhone').value.trim();
+      if(!n||!p){ toast('Renseigne un nom et un numéro'); return; }
+      state.contact={name:n,phone:p}; save(); refreshContact(); closeSheet('contactSheet'); toast('Contact enregistré 💜');
+    }
+
+    /* ───────── SOS respiration ───────── */
+    var sosRun=false, sosTick=null;
+    function sosBreathStart(){
+      sosRun=true; $('#sosBreathArea').style.display='block'; $('#sosBreathBtn').textContent='Arrêter';
+      var sc=$('#sosCircle'), seq=[{n:'Inspire',d:4,s:1.4},{n:'Retiens',d:4,s:1.4},{n:'Expire',d:6,s:0.8}], pi=0, r=seq[0].d;
+      sc.style.transitionDuration=seq[0].d+'s'; sc.style.transform='scale('+seq[0].s+')';
+      $('#sosPhase').textContent=seq[0].n; $('#sosCount').textContent=r;
+      sosTick=setInterval(function(){ r--; if(r<=0){ pi=(pi+1)%seq.length; r=seq[pi].d; sc.style.transitionDuration=seq[pi].d+'s';
+          sc.style.transform='scale('+seq[pi].s+')'; $('#sosPhase').textContent=seq[pi].n; } $('#sosCount').textContent=r; },1000);
+    }
+    function sosBreathStop(){ sosRun=false; clearInterval(sosTick); $('#sosBreathBtn').textContent='Reprendre'; $('#sosCircle').style.transform='scale(1)'; }
+    function openSOS(){ $('#sosScreen').classList.add('show'); $$('#groundSteps .ground-step').forEach(function(s){ s.classList.remove('done'); }); }
+    function closeSOS(){ $('#sosScreen').classList.remove('show'); if(sosRun) sosBreathStop(); }
+
+    /* ───────── Date ───────── */
+    function initDate(){
+      var d=new Date(), s=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+      $('#todayDate').textContent=s.charAt(0).toUpperCase()+s.slice(1)+' · prends un instant pour toi';
+    }
+
+    /* ───────── Délégation des clics ───────── */
+    document.addEventListener('click', function(e){
+      var t=e.target.closest('[data-go],[data-action],[data-close],[data-med],[data-sleep],[data-mood],[data-del],[data-ground],[data-toggle]');
+      if(!t) return;
+      if(t.dataset.go){ go(t.dataset.go); return; }
+      if(t.dataset.close){ closeSheet(t.dataset.close); if(t.dataset.close==='sosScreen') closeSOS(); if(t.dataset.close==='playerSheet'){ $('#ytFrame').src=''; } return; }
+      if(t.dataset.action){
+        var a=t.dataset.action;
+        if(a==='breath'){ resetBreath(); openSheet('breathSheet'); }
+        else if(a==='journal'){ renderJournalLists(); openSheet('journalSheet'); }
+        else if(a==='sleep'){ openSheet('sleepSheet'); }
+        else if(a==='contact'){ openSheet('contactSheet'); }
+        else if(a==='sos'){ openSOS(); }
+        return;
+      }
+      if(t.dataset.med!==undefined){ openPlayer(MEDITATIONS[+t.dataset.med]); return; }
+      if(t.dataset.sleep!==undefined){ openPlayer(SLEEP[+t.dataset.sleep]); return; }
+      if(t.dataset.mood!==undefined){ setMood(+t.dataset.mood); return; }
+      if(t.dataset.del!==undefined){ state.journal.splice(+t.dataset.del,1); save(); renderJournalLists();
+        if($('.screen[data-screen=progres]').classList.contains('active')) renderProgress(); toast('Note supprimée'); return; }
+      if(t.hasAttribute('data-ground')){ t.classList.toggle('done');
+        if($$('#groundSteps .ground-step.done').length===5) toast('Bien joué. Tu es revenu·e ici, maintenant. 🌿'); return; }
+      if(t.dataset.toggle){ t.classList.toggle('on');
+        if(t.dataset.toggle==='reminders'){ state.reminders=t.classList.contains('on'); save(); }
+        else if(t.dataset.toggle==='dark'){ t.classList.remove('on'); toast('Le mode sombre arrive bientôt 🌙'); } return; }
+    });
+
+    $('#presetRow').addEventListener('click', function(e){ var p=e.target.closest('.preset'); if(p){ setPreset(p); if(!bRunning){ $('#breathCount').textContent=bConf.in; } } });
+    $('#breathToggle').addEventListener('click', function(){ bRunning?pauseBreath():startBreath(); });
+    $('#breathDone').addEventListener('click', finishBreath);
+    $('#saveJournal').addEventListener('click', addJournal);
+    $('#saveContact').addEventListener('click', saveContact);
+    $('#sosBreathBtn').addEventListener('click', function(){ sosRun?sosBreathStop():sosBreathStart(); });
+    $('#resetBtn').addEventListener('click', function(){
+      if(confirm('Réinitialiser tes données (humeurs, journal, séances) ? Ton compte reste actif. Action définitive.')){
+        state={moods:{},sessions:0,minutes:0,journal:[],contact:null,reminders:true}; save();
+        $$('#moodRow .mood').forEach(function(m){ m.classList.remove('active'); });
+        refreshStreak(); refreshContact(); renderProgress(); renderJournalLists(); toast('Données réinitialisées');
+      }
+    });
+
+    /* ───────── Authentification (prototype front-end) ───────── */
+    var authMode='login';
+    function showAuth(){ $('#authScreen').style.display='flex'; }
+    function hideAuth(){ $('#authScreen').style.display='none'; }
+    function setAuthMode(mode){
+      var login=(mode==='login'); authMode=mode;
+      $('#authTitle').textContent    = login ? 'Content de te revoir' : 'Bienvenue sur MindCare';
+      $('#authSubtitle').textContent = login ? 'Connecte-toi pour continuer ton parcours.' : 'Crée ton compte et prends soin de toi.';
+      $('#nameField').style.display    = login ? 'none' : 'block';
+      $('#confirmField').style.display = login ? 'none' : 'block';
+      $('#authSubmit').textContent   = login ? 'Se connecter' : 'Créer mon compte';
+      $('#switchText').innerHTML = login
+        ? "Pas encore de compte ? <a id=\"goSignup\">Créer un compte</a>"
+        : "Déjà un compte ? <a id=\"goLogin\">Se connecter</a>";
+      $('#authError').textContent='';
+    }
+    function personalize(user){
+      var first=(user.name||'').trim().split(' ')[0] || 'toi';
+      $('#userName').textContent=first;
+      $('#profileName').textContent=user.name||first;
+      $('#profileEmail').textContent=user.email;
+      $('#profileAvatar').textContent=(first.charAt(0)||'M').toUpperCase();
+      var tn=$('#tutoName'); if(tn) tn.textContent=first;
+    }
+    function enterApp(user){
+      currentUser=user.email; loadUserState(); personalize(user); hideAuth();
+      $$('#moodRow .mood').forEach(function(m){ m.classList.remove('active'); });
+      restoreTodayMood(); refreshStreak(); refreshContact(); renderProgress(); renderJournalLists();
+      var rt=$('[data-toggle=reminders]'); if(rt) rt.classList.toggle('on', !!state.reminders);
+      go('accueil');
+      if(user.onboarded===false) startTuto();
+    }
+    function submitAuth(){
+      var email=$('#authEmail').value.trim().toLowerCase(), pw=$('#authPassword').value, err=$('#authError');
+      if(!email||!pw){ err.textContent='Renseigne ton e-mail et ton mot de passe.'; return; }
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ err.textContent='Adresse e-mail invalide.'; return; }
+      var accounts=getAccounts();
+      if(authMode==='signup'){
+        var name=$('#authName').value.trim(), conf=$('#authConfirm').value;
+        if(!name){ err.textContent='Indique ton prénom.'; return; }
+        if(pw.length<4){ err.textContent='Mot de passe trop court (4 caractères minimum).'; return; }
+        if(pw!==conf){ err.textContent='Les mots de passe ne correspondent pas.'; return; }
+        if(accounts[email]){ err.textContent='Un compte existe déjà avec cet e-mail.'; return; }
+        var u={name:name, email:email, pass:hashPw(pw), created:Date.now(), onboarded:false};
+        accounts[email]=u; setAccounts(accounts); setSession(email); toast('Compte créé, bienvenue ! 🌿'); enterApp(u);
+      } else {
+        var acc=accounts[email];
+        if(!acc || acc.pass!==hashPw(pw)){ err.textContent='E-mail ou mot de passe incorrect.'; return; }
+        setSession(email); toast('Connexion réussie 👋'); enterApp(acc);
+      }
+    }
+    function logout(){
+      setSession(null); currentUser=null;
+      ['authEmail','authPassword','authName','authConfirm'].forEach(function(id){ var el=$('#'+id); if(el) el.value=''; });
+      setAuthMode('login'); showAuth();
+    }
+    $('#authForm').addEventListener('submit', function(e){ e.preventDefault(); submitAuth(); });
+    document.addEventListener('click', function(e){
+      if(e.target && e.target.id==='goSignup'){ setAuthMode('signup'); }
+      else if(e.target && e.target.id==='goLogin'){ setAuthMode('login'); }
+      else if(e.target.closest && e.target.closest('#logoutBtn')){ logout(); }
+    });
+
+    /* ───────── Tutoriel (onboarding — nouveaux comptes) ───────── */
+    var tutoIdx=0, tutoCount=0;
+    function buildTutoDots(){ var s=''; for(var i=0;i<tutoCount;i++){ s+='<span class="tuto-dot'+(i===0?' active':'')+'"></span>'; } $('#tutoDots').innerHTML=s; }
+    function tutoGo(i){
+      tutoIdx=Math.max(0, Math.min(tutoCount-1, i));
+      $('#tutoTrack').style.transform='translateX(-'+(tutoIdx*100)+'%)';
+      $$('#tutoDots .tuto-dot').forEach(function(d,di){ d.classList.toggle('active', di===tutoIdx); });
+      $('#tutoNext').textContent=(tutoIdx===tutoCount-1)?'Commencer':'Suivant';
+      $('#tutoSkip').style.visibility=(tutoIdx===tutoCount-1)?'hidden':'visible';
+    }
+    function startTuto(){ tutoCount=$$('#tutoTrack .tuto-slide').length; buildTutoDots(); $('#tutoScreen').classList.add('show'); tutoGo(0); }
+    function finishTuto(){
+      $('#tutoScreen').classList.remove('show');
+      if(currentUser){ var a=getAccounts(); if(a[currentUser]){ a[currentUser].onboarded=true; setAccounts(a); } }
+    }
+    $('#tutoNext').addEventListener('click', function(){ if(tutoIdx>=tutoCount-1) finishTuto(); else tutoGo(tutoIdx+1); });
+    $('#tutoSkip').addEventListener('click', finishTuto);
+
+    /* ───────── Boot ───────── */
+    initDate(); buildPopular(); buildMedList(); buildSleep(); setAuthMode('login');
+    var sess=getSession(), accts=getAccounts();
+    if(sess && accts[sess]){ enterApp(accts[sess]); } else { showAuth(); }
+  })();
+  </script>
+</body>
+</html>
