@@ -117,15 +117,9 @@ def studio_world(strength=0.6):
 
 
 def room_lighting(R):
-    """Final look of the living room: warm lamp light inside, blue night outside."""
-    sc = bpy.context.scene
-    sc.world.node_tree.nodes['Background'].inputs['Color'].default_value = (0.3, 0.22, 0.17, 1)
-    sc.world.node_tree.nodes['Background'].inputs['Strength'].default_value = 0.55
-    R['L']['ceiling'].data.energy = 18
-    R['L']['ceiling'].data.color = (1.0, 0.72, 0.45)
-    R['L']['tv'].data.energy = 5
-    R['L']['moon'].data.energy = 700
-    R['L']['lamp'].data.energy = 70
+    """Kept for old scripts: the room lighting now lives in stage.py."""
+    import stage
+    stage.room_lighting(R)
 
 
 def render(path):

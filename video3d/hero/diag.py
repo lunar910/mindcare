@@ -12,7 +12,8 @@ Room views (seated in the living room with the final warm lighting; 640x480 like
 Do not mix studio and room views in one run.
 
 Environment variables: SAMPLES (default 32), SCALE (resolution multiplier, default 1), POSE (pose preset, default 'seated'),
-NOHAIR=1, NOCLOTHES=1, SAVE_BLEND=1 (writes OUTDIR/scene.blend)."""
+EXPR (expression preset of cfg_face.EXPRESSIONS), HAIR_STYLE (cut of cfg_hair.STYLES), NOHAIR=1, NOCLOTHES=1,
+SAVE_BLEND=1 (writes OUTDIR/scene.blend).  The room shots (cameras, lights) are defined in stage.py."""
 import os
 import sys
 import time
@@ -49,42 +50,27 @@ def size(w, h):
 if room_mode:
     herolib.pose(ch, os.environ.get('POSE', 'seated'))
     import posing
-    herolib.room_lighting(R)
-    e0 = herolib.eyes_mid(ch)
-    herolib.area('rim', e0 + V((0.9, 0.9, 0.5)), e0, 30, (0.5, 0.62, 1.0), 0.5)
+    import stage
+    if os.environ.get('EXPR'):
+        import face
+        face.set_expression(ch, os.environ['EXPR'])
+    stage.room_lighting(R)
     size(640, 480)
     for v in VIEWS:
-        e = herolib.eyes_mid(ch)
-        hips = herolib.bone_world(ch, 'spine05')
-        gaze_cam = True
-        if v == 'room_close':
-            pos, tgt, fov, key = e + V((-0.3, -0.66, -0.015)), e + V((0.005, 0.03, -0.022)), 20, (e + V((-0.8, -0.5, 0.3)), e, 12, 0.8)
-        elif v == 'room_portrait':
-            pos, tgt, fov, key = e + V((-0.42, -0.86, 0.03)), e + V((0.0, 0.03, -0.035)), 22, (e + V((-0.8, -0.55, 0.35)), e, 12, 0.8)
-        elif v == 'room_medium':
-            pos, tgt, fov, key = V((-0.45, -0.75, 1.1)), V((0.03, 1.15, 0.9)), 38, (V((-1.0, -0.3, 1.6)), V((0, 1.1, 1.0)), 55, 1.0)
-        elif v == 'room_wide':
-            pos, tgt, fov, key = V((0.0, -2.05, 1.06)), V((0.0, 1.0, 0.9)), 38, (V((-1.0, -0.6, 2.0)), V((0, 1.1, 0.9)), 110, 1.2)
-        elif v == 'room_side':
-            pos, tgt, fov, key = hips + V((-2.4, -0.25, 0.35)), hips + V((0, -0.15, 0.2)), 34, (hips + V((-1.5, -1.5, 1.5)), hips, 160, 1.2)
-            gaze_cam = False
-        elif v == 'room_top':
-            pos, tgt, fov, key = hips + V((0.0, -0.5, 2.3)), hips + V((0, -0.2, 0.0)), 40, (hips + V((-1.0, -1.0, 2.0)), hips, 160, 1.2)
-            gaze_cam = False
-        elif v == 'room_low':
-            pos, tgt, fov, key = V((0.5, -1.6, 0.35)), hips + V((0, -0.2, 0.05)), 40, (V((-1.0, -0.6, 1.6)), hips, 110, 1.2)
-            gaze_cam = False
-        else:
-            raise SystemExit('unknown view ' + v)
-        k = herolib.area('key', key[0], key[1], key[2], herolib.WARM, key[3])
+        pos, tgt, fov, gaze_cam = stage.shot(ch, v)
+        lights = stage.shot_lights(ch, v)
         if gaze_cam:
             posing.gaze(ch, pos)
         herolib.aim_camera(cam, pos, tgt, fov)
         herolib.render(os.path.join(OUT, v + '.png'))
-        bpy.data.objects.remove(k)
+        for k in lights:
+            bpy.data.objects.remove(k)
         print('rendered', v, round(time.time() - t0, 1), 's')
 else:
     herolib.studio_world()
+    if os.environ.get('EXPR'):
+        import face
+        face.set_expression(ch, os.environ['EXPR'])
     co = [ch['body'].matrix_world @ v.co for v in ch['body'].data.vertices]
     zmin, zmax = min(c.z for c in co), max(c.z for c in co)
     mid = V((0, 0, (zmin + zmax) / 2))
