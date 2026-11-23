@@ -34,7 +34,7 @@ def matte(ob):
 
 
 class Actor:
-    def __init__(self, name, rig, clips, scale=1.0, smooth=1.0):
+    def __init__(self, name, rig, clips, scale=1.0, smooth=1.0, glasses=False):
         before = set(bpy.data.objects)
         bpy.ops.import_scene.gltf(filepath=f'{RIG}/{rig}.glb')
         new = [o for o in bpy.data.objects if o not in before]
@@ -52,12 +52,23 @@ class Actor:
         bpy.context.view_layer.update()
         rigext.add_fingers(self.arm, self.mesh)
         matte(self.mesh)
+        # real facial expressions (shape keys) when the face has been located on this model (see faceprep.py)
+        self.face = None
+        import facemorph
+        if os.path.exists(f'{facemorph.OUT}/{name}_landmarks.json'):
+            self.face_keys, self.face_info, self.face = facemorph.build(self.mesh, self.arm, name, glasses=glasses)
         self.name, self.scale = name, scale
         self.root = bpy.data.objects.new(name + '_root', None)
         bpy.context.scene.collection.objects.link(self.root)
         self.arm.parent = self.root
         self.root.scale = (scale, scale, scale)
-        self.clips = {k: anim2.load_clip(f'{ANIM}/{name}_{k}.glb', f'{name}_{k}', smooth=smooth) for k in clips}
+        # clips: 'talk' = this character's own file, 'nox2:shrug' = a clip downloaded for another rig, re-targeted here
+        self.rest = anim2.rest_of(self.arm)
+        self.clips = {}
+        for k in clips:
+            src, key = k.split(':') if ':' in k else (name, k)
+            c = anim2.load_clip(f'{ANIM}/{src}_{key}.glb', f'{src}_{key}', smooth=smooth)
+            self.clips[key] = anim2.retarget(c, self.rest) if src != name else c
         # face texture variants (mouth shapes, blink): PS2-style texture swaps
         self.tex_node = next(n for m in self.mesh.data.materials for n in m.node_tree.nodes if n.type == 'TEX_IMAGE' and n.outputs['Color'].links)
         self.tex_base = self.tex_node.image
@@ -149,6 +160,12 @@ class Actor:
 
     def set_face(self, key):
         self.tex_node.image = self.variants.get(key, self.tex_base)
+
+    def express(self, values):
+        """Shape-key values of the face, e.g. {'browUp': 0.6, 'smile_L': 1, 'jawOpen': 0.3} (see facemorph.EXPR)."""
+        import facemorph
+        if self.face is not None:
+            facemorph.apply(self.mesh, facemorph.expand(values))
 
     def face_point(self):
         return self.joint('headfront')

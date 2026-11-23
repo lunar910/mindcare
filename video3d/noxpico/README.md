@@ -50,3 +50,16 @@ python post2.py video out                 # sous-titres + son -> MP4 30 i/s
 python check_video.py out                 # contrôle
 ```
 Aperçus : `apercus/v2_images_cles.jpg`, `apercus/v2_plans.jpg`, `apercus/v2_avant_apres.jpg`.
+
+### Expressions du visage (`ps2/faceprep.py`, `ps2/landmarks.py`, `ps2/facemorph.py`)
+Les modèles Meshy n'ont pas de squelette de visage. Les expressions sont donc fabriquées :
+1. `faceprep.py` rend la tête de face (pose de repos) avec la position 3D de chaque pixel, puis `landmarks.py` (MediaPipe Face
+   Landmarker, dans un environnement Python à part) y trouve 478 repères : yeux, sourcils, lèvres, contour ;
+2. `facemorph.py` affine le maillage du visage, coupe les lèvres le long de la bouche, ajoute l'intérieur de la bouche et deux
+   rangées de dents, puis crée des « shape keys » : sourcils (levés / froncés / tristes), yeux (écarquillés / plissés / fermés),
+   sourire, moue, bouche étroite / large, mâchoire. Les yeux et sourcils étant peints sur la texture, déplacer la surface les déplace.
+3. `excerpt2.py` : piste d'expressions par personnage (`FACE`), formes de bouche tirées du texte (`MOUTH`), clignements.
+
+`anim2.retarget` rejoue une animation Meshy sur un autre squelette Meshy (écart moyen ~3°) : pas besoin de racheter les clips.
+
+Aperçus : `apercus/v2_expressions.jpg` ; essais de personnages réalistes (style de la vidéo de référence) : `apercus/v3_concepts_realistes.jpg`.

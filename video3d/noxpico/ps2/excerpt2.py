@@ -58,6 +58,25 @@ NOX_LOOK_PICO = [(0.0, 0.0), (8.50, 0.0), (8.95, 0.6), (9.55, 0.6), (10.05, 0.0)
 PICO_LOOK_NOX = [(0.0, 0.0), (2.0, 0.0), (2.7, 0.6), (21.6, 0.6)]
 
 
+# what their faces do: (time, expression) keys, eased from one to the next; names are in facemorph.EXPR, a dict gives raw
+# shape-key values.  The mouth shapes of speech and the blinks are added on top.
+FACE = {
+    'pico': [(0.0, {'browUp': 0.5, 'eyeWide': 0.5}), (2.0, {'browUp': 0.5, 'eyeWide': 0.5}), (2.5, {'browUp': 0.8, 'eyeWide': 0.7}),
+             (3.2, {'browSad': 0.5, 'browUp': 0.3, 'eyeWide': 0.3}), (4.3, {'browUp': 0.6, 'eyeWide': 0.75}), (5.6, {'browSad': 0.6, 'eyeWide': 0.3}),
+             (7.0, {'browSad': 0.4}), (8.2, {'browDown': 0.25}), (11.5, {'browDown': 0.3}), (13.0, {'browDown': 0.55, 'frown': 0.45}),
+             (16.2, {'browDown': 0.6, 'frown': 0.5}), (16.5, {'browDown': 0.75, 'eyeSquint': 0.3, 'frown': 0.3}),
+             (18.1, {'browDown_R': 0.6, 'browUp_L': 0.7, 'frown': 0.2}), (19.2, {'browDown': 0.2}), (20.4, {'smile': 0.25}), (21.6, {'smile': 0.25})],
+    'nox': [(0.0, {'eyeSquint': 0.3, 'browDown': 0.2}), (7.0, {'eyeSquint': 0.3, 'browDown': 0.2}), (7.4, {'eyeSquint': 0.45}),
+            (8.7, {'eyeSquint': 0.45}), (9.0, {'eyeSquint': 0.3, 'browUp_L': 0.8, 'browDown_R': 0.3}), (9.6, {'eyeSquint': 0.3, 'browUp_L': 0.8, 'browDown_R': 0.3}),
+            (10.1, {'eyeSquint': 0.45}), (11.3, {'eyeSquint': 0.4}), (11.8, 'doubt'), (13.6, 'doubt'),
+            (14.3, {'browUp': 0.6, 'eyeWide': 0.4, 'smile_L': 0.5}), (16.0, {'browUp_L': 0.6, 'smile_L': 0.6, 'eyeSquint': 0.2}), (16.6, 'smug'),
+            (18.9, 'smug'), (19.3, {'browUp': 0.35, 'smile': 0.45}), (21.6, {'browUp': 0.2, 'smile': 0.6})],
+}
+MOUTH = {'aa': {'jawOpen': 0.75}, 'E': {'jawOpen': 0.42, 'mouthWide': 0.6}, 'I': {'jawOpen': 0.24, 'mouthWide': 0.8, 'lipsUp': 0.3},
+         'O': {'jawOpen': 0.5, 'mouthNarrow': 0.8}, 'U': {'jawOpen': 0.28, 'mouthNarrow': 1.0}, 'PP': {}, 'sil': {}}
+MOUTH_OTHER = {'jawOpen': 0.2}
+
+
 def pw(keys, t):
     if t <= keys[0][0]:
         return keys[0][1]
@@ -107,7 +126,7 @@ def build():
     import anim2
     A = AT.build()
     pico = cast2.Actor('pico', 'pico_rigged', ('sprintstop', 'talkleft', 'talk', 'listen', 'hip', 'idle'), scale=1.07)
-    nox = cast2.Actor('nox2', 'nox2_rigged', ('idle', 'talkright', 'shrug', 'listen', 'agree', 'talkopen'), scale=1.0)
+    nox = cast2.Actor('nox2', 'nox2_rigged', ('idle', 'talkright', 'shrug', 'listen', 'agree', 'talkopen'), scale=1.0, glasses=True)
     W = dict(A=A, AT=AT, pico=pico, nox=nox, hinge=A['door_hinge'])
     W['pico_track'] = anim2.Track(pico.clips, PICO_SEGS)
     W['nox_track'] = anim2.Track(nox.clips, NOX_SEGS)
@@ -167,6 +186,7 @@ VOW = {'aa': 'mouth_open', 'E': 'mouth_wide', 'I': 'mouth_wide', 'O': 'mouth_hal
 
 
 def mouth_track(text, t0, dur):
+    """[(start, end, viseme), ...] for a line, spread over its duration."""
     import speech_fr as SP
     seq = SP.french_visemes(text)
     tot = sum(d for _, d in seq) or 1.0
@@ -174,26 +194,79 @@ def mouth_track(text, t0, dur):
     out, t = [], t0
     for v, d in seq:
         if v != 'sil':
-            out.append((t, t + d * k, 'closed' if v == 'PP' else VOW.get(v, 'mouth_half')))
+            out.append((t, t + d * k, v))
         t += d * k
     return out
 
 
-def mouth_at(track, t):
-    for a, b, s in track:
+def viseme_at(track, t):
+    for a, b, v in track:
         if a <= t < b:
-            return s
-    return 'closed'
+            return v
+    return 'sil'
 
 
-def blink_at(name, t):
+def blink_times(name):
     rng = np.random.default_rng(7 if name == 'nox' else 3)
-    tt = 0.8 + rng.random() * 1.5
+    out, tt = [], 0.8 + rng.random() * 1.5
     while tt < 30:
-        if tt <= t < tt + 0.13:
-            return True
+        out.append(tt)
         tt += 2.6 + rng.random() * 1.8
-    return False
+    return out
+
+
+def blink_at(name, t, dur=0.16):
+    """0..1: how closed the eyes are (a quick close, a slightly slower opening)."""
+    for tb in blink_times(name):
+        if tb <= t < tb + dur:
+            x = (t - tb) / dur
+            return min(x / 0.35, (1 - x) / 0.65, 1.0) if x < 0.35 else max(0.0, (1 - x) / 0.65)
+    return 0.0
+
+
+def _expr_values(e):
+    import facemorph
+    return facemorph.expand(facemorph.EXPR[e] if isinstance(e, str) else e)
+
+
+def face_at(W, who, t):
+    """All shape-key values of one face at time t: expression track + speech + blink."""
+    keys = FACE[who]
+    vals = {}
+    if t <= keys[0][0]:
+        vals = dict(_expr_values(keys[0][1]))
+    else:
+        for (t0, e0), (t1, e1) in zip(keys, keys[1:]):
+            if t <= t1:
+                x = (t - t0) / max(t1 - t0, 1e-6)
+                x = x * x * (3 - 2 * x)
+                a, b = _expr_values(e0), _expr_values(e1)
+                vals = {k: a.get(k, 0.0) * (1 - x) + b.get(k, 0.0) * x for k in set(a) | set(b)}
+                break
+        else:
+            vals = dict(_expr_values(keys[-1][1]))
+    # speech: the mouth shape is averaged over a short window so that it glides from one sound to the next
+    mouth = {}
+    for dt, wgt in ((-0.05, 0.25), (0.0, 0.5), (0.05, 0.25)):
+        for lid, w_, t0, dur, text in LINES:
+            if w_ == who and t0 <= t + dt < t0 + dur:
+                if lid not in W['mouth']:
+                    W['mouth'][lid] = mouth_track(text, t0, dur)
+                v = viseme_at(W['mouth'][lid], t + dt)
+                for k, x in MOUTH.get(v, MOUTH_OTHER).items():
+                    mouth[k] = mouth.get(k, 0.0) + wgt * x
+    for k, x in mouth.items():
+        vals[k] = min(1.0, vals.get(k, 0.0) + x)
+    if mouth.get('jawOpen', 0) > 0.05:                                     # a talking mouth is not held in a pout
+        for k in ('frown_L', 'frown_R'):
+            vals[k] = vals.get(k, 0.0) * 0.5
+    b = blink_at(who, t)
+    if b > 0:
+        for k in ('eyeClosed_L', 'eyeClosed_R'):
+            vals[k] = max(vals.get(k, 0.0), b)
+        for k in ('eyeWide_L', 'eyeWide_R'):
+            vals[k] = vals.get(k, 0.0) * (1 - b)
+    return vals
 
 
 # ------------------------------------------------------------------ one instant
@@ -268,15 +341,18 @@ def pose_at(W, t):
     for a in (pico, nox):
         for s in ('L', 'R'):
             rigext.hand_pose(a.arm, s, curl=0.35, thumb=0.25)
-    # ---- faces
+    # ---- faces: expressions, speech and blinks drive the shape keys (older models without them swap textures)
     for a, who in ((pico, 'pico'), (nox, 'nox')):
+        if a.face is not None:
+            a.express(face_at(W, who, t))
+            continue
         key = 'closed'
         for lid, w_, t0, dur, text in LINES:
             if w_ == who and t0 <= t < t0 + dur:
                 if lid not in W['mouth']:
                     W['mouth'][lid] = mouth_track(text, t0, dur)
-                key = mouth_at(W['mouth'][lid], t)
-        if key == 'closed' and blink_at(who, t):
+                key = VOW.get(viseme_at(W['mouth'][lid], t), 'closed' if viseme_at(W['mouth'][lid], t) in ('PP', 'sil') else 'mouth_half')
+        if key == 'closed' and blink_at(who, t) > 0.5:
             key = 'blink'
         a.set_face(key)
     # ---- Bip hovers; it starts when the door bangs, looks at Pico, then goes back to watching Nox work

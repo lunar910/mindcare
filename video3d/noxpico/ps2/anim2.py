@@ -99,6 +99,8 @@ def load_clip(path, name, smooth=1.0, scene_fps=24.0):
             if 'rotation_quaternion' in ch:
                 for i, fc in ch['rotation_quaternion'].items():
                     quat[k, bi, i] = fc.evaluate(fr)
+    src_arm = next((o for o in bpy.data.objects if o not in before_obs and o.type == 'ARMATURE'), None)
+    rest = rest_of(src_arm) if src_arm is not None else None
     for o in [o for o in bpy.data.objects if o not in before_obs]:
         bpy.data.objects.remove(o, do_unlink=True)
     bpy.data.actions.remove(act)
@@ -114,6 +116,84 @@ def load_clip(path, name, smooth=1.0, scene_fps=24.0):
         loc = gaussian_filter1d(loc, sigma=smooth, axis=0, mode='nearest')
     c = Clip(name, bones, loc, quat)
     c.jitter_raw = raw.jitter()
+    c.rest = rest
+    return c
+
+
+# ------------------------------------------------------------------ the same clip on another skeleton
+def rest_of(arm):
+    """Rest pose of a rig: {bone: (3x3 orientation in armature space, parent name)} and the height of the hips."""
+    R = {b.name: (np.array(b.matrix_local.to_3x3()), b.parent.name if b.parent else None) for b in arm.data.bones}
+    feet = min(arm.data.bones[n].head_local.z for n in ('LeftFoot', 'RightFoot') if n in arm.data.bones)
+    return dict(bones=R, hips_h=float(arm.data.bones['Hips'].head_local.z - feet))
+
+
+def _q2m(q):
+    w, x, y, z = q[..., 0], q[..., 1], q[..., 2], q[..., 3]
+    m = np.empty(q.shape[:-1] + (3, 3))
+    m[..., 0, 0] = 1 - 2 * (y * y + z * z); m[..., 0, 1] = 2 * (x * y - z * w); m[..., 0, 2] = 2 * (x * z + y * w)
+    m[..., 1, 0] = 2 * (x * y + z * w); m[..., 1, 1] = 1 - 2 * (x * x + z * z); m[..., 1, 2] = 2 * (y * z - x * w)
+    m[..., 2, 0] = 2 * (x * z - y * w); m[..., 2, 1] = 2 * (y * z + x * w); m[..., 2, 2] = 1 - 2 * (x * x + y * y)
+    return m
+
+
+def _m2q(m):
+    q = np.empty(m.shape[:-2] + (4,))
+    t = m[..., 0, 0] + m[..., 1, 1] + m[..., 2, 2]
+    q[..., 0] = np.sqrt(np.maximum(0, 1 + t)) / 2
+    q[..., 1] = np.sqrt(np.maximum(0, 1 + m[..., 0, 0] - m[..., 1, 1] - m[..., 2, 2])) / 2
+    q[..., 2] = np.sqrt(np.maximum(0, 1 - m[..., 0, 0] + m[..., 1, 1] - m[..., 2, 2])) / 2
+    q[..., 3] = np.sqrt(np.maximum(0, 1 - m[..., 0, 0] - m[..., 1, 1] + m[..., 2, 2])) / 2
+    q[..., 1] = np.copysign(q[..., 1], m[..., 2, 1] - m[..., 1, 2])
+    q[..., 2] = np.copysign(q[..., 2], m[..., 0, 2] - m[..., 2, 0])
+    q[..., 3] = np.copysign(q[..., 3], m[..., 1, 0] - m[..., 0, 1])
+    return q / np.maximum(np.linalg.norm(q, axis=-1, keepdims=True), 1e-12)
+
+
+def retarget(clip, target_rest):
+    """The clip as it has to be keyed on another Meshy rig so that every bone points the same way in space.
+
+    Meshy rigs share bone names and hierarchy but each character has its own rest orientations and sizes, so copying
+    the rotations as they are bends wrists and ankles by up to ~10 degrees.  Here the rotation of each bone away from
+    its rest pose is measured in armature space on the source rig and re-expressed on the target rig; the travel of the
+    hips is scaled by the leg length."""
+    src, tgt = clip.rest['bones'], target_rest['bones']
+    n = clip.n
+    Q = {b: _q2m(clip.quat[:, i]) for i, b in enumerate(clip.bones)}
+    eye = np.broadcast_to(np.eye(3), (n, 3, 3))
+    order, done = [], set()
+
+    def visit(b):
+        if b in done or b not in src:
+            return
+        p = src[b][1]
+        if p:
+            visit(p)
+        done.add(b)
+        order.append(b)
+    for b in clip.bones:
+        visit(b)
+    As, At = {}, {}
+    out = clip.quat.copy()
+    for b in order:
+        Rs, p = src[b]
+        Rt = tgt[b][0] if b in tgt else Rs
+        q = Q.get(b, eye)
+        As[b] = (As[p] @ (src[p][0].T @ Rs) if p else Rs) @ q
+        At[b] = (As[b] @ Rs.T) @ Rt
+        local = ((At[p] @ ((tgt[p][0] if p in tgt else src[p][0]).T @ Rt)) if p else np.broadcast_to(Rt, (n, 3, 3)))
+        if b in Q:
+            out[:, clip.bones.index(b)] = _m2q(np.swapaxes(local, -1, -2) @ At[b])
+    for k in range(1, n):                                    # same hemisphere over time, as in load_clip
+        flip = (out[k] * out[k - 1]).sum(-1) < 0
+        out[k][flip] *= -1
+    loc = clip.loc.copy()
+    if 'Hips' in clip.bones and 'Hips' in tgt:
+        i = clip.bones.index('Hips')
+        k = target_rest['hips_h'] / clip.rest['hips_h']
+        loc[:, i] = (clip.loc[:, i] @ src['Hips'][0].T) @ tgt['Hips'][0] * k
+    c = Clip(clip.name, clip.bones, loc, out)
+    c.rest = target_rest
     return c
 
 
