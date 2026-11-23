@@ -21,3 +21,32 @@ python excerpt.py -- out --fps 12 --samples 20          # rendu (Blender en modu
 python excerpt_post.py frames out && python excerpt_post.py video out
 ```
 Les chemins des modèles Meshy sont en tête de `atelier.py` et `excerpt.py`.
+
+## Version 2 — rendu « cinématique PS2 » (dossier `ps2/`)
+
+Refonte après le premier extrait (image trop sombre, mouvements saccadés, décor aux proportions incohérentes, son gênant).
+
+**Ce qui change**
+- **Rendu** : Cycles ne sert plus que de « rasteriseur » (1 échantillon par pixel, passes de données : couleur, normale, position,
+  profondeur). L'éclairage est calculé ensuite en numpy comme sur une PS2 : lumière ambiante + quelques lampes, pas d'ombres
+  portées, ombres rondes sous les pieds, léger halo des lampes, image interne 432×768 agrandie en 1080×1920.
+  Le décor est rendu une fois par plan, les personnages à chaque image (≈ 1 s par image au lieu de 24 s) → 30 images/s.
+- **Décor** (`atelier2.py`, `tex2.py`) : tout est à l'échelle réelle (porte 2,04 m, établi à hauteur de hanches, outils de 15–30 cm) ;
+  le panneau d'outils, l'horloge et le tapis sont redessinés de face (les anciens étaient des images en perspective collées à plat) ;
+  vraie ouverture de porte avec un couloir éclairé derrière.
+- **Mise en scène** (`excerpt2.py`) : six plans (large, plan moyen de Pico, plan moyen de Nox, deux gros plans en champ / contrechamp,
+  plan à deux), personnages sur la même ligne, focales longues pour garder les proportions.
+- **Animation** (`anim2.py`, `cast2.py`) : clips Meshy échantillonnés à 30 Hz, lissés, recalés pour que les pieds restent sur la marque,
+  fondus doux entre les clips, changements de pose faits hors champ ; mains de Nox toujours à portée de l'établi.
+- **Son** (`post2.py`) : musique de la série, porte et pas ; plus de grésillement de fer à souder ; niveau réglé à −17 LUFS.
+- `fix_hood.py` repeint la doublure verte de la capuche de Pico ; `check_video.py` et `motion_report.py` contrôlent les sauts d'image
+  et les à-coups ; `meshy_pico_anim.py` a ajouté l'animation « Talk with Left Hand Raised » (3 crédits).
+
+**Lancer**
+```
+python excerpt2.py statics out            # décor + occlusion ambiante de chaque plan (une fois, ~9 min)
+python excerpt2.py frames out --frames 0:215   # images (lancer plusieurs plages en parallèle)
+python post2.py video out                 # sous-titres + son -> MP4 30 i/s
+python check_video.py out                 # contrôle
+```
+Aperçus : `apercus/v2_images_cles.jpg`, `apercus/v2_plans.jpg`, `apercus/v2_avant_apres.jpg`.
