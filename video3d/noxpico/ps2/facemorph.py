@@ -30,6 +30,8 @@ EYE_CORN = {'R': [33, 133], 'L': [263, 362]}                                    
 IRIS = {'R': 468, 'L': 473}
 CORNER = {'R': 61, 'L': 291}
 CHEEK = {'R': 205, 'L': 425}
+EYE_RING = {'R': [33, 7, 163, 144, 145, 153, 154, 155, 133, 173, 157, 158, 159, 160, 161, 246],        # outline of the eye opening
+            'L': [263, 249, 390, 373, 374, 380, 381, 382, 362, 398, 384, 385, 386, 387, 388, 466]}
 
 
 def _smooth(x, a, b):
@@ -301,6 +303,24 @@ def build(mesh, arm, name, refine=2, glasses=False):
         D = np.zeros_like(A)
         D[:, 2] = (line_z - A[:, 2]) * 0.92 * w
         add(f'eyeClosed_{s}', D)
+        # gaze: the painted iris slides inside the eye opening; the lids (the outline) do not move
+        ring = L[EYE_RING[s]][:, [0, 2]]
+        q = A[:, [0, 2]]
+        ins = np.zeros(len(q), bool)
+        dist = np.full(len(q), 1e9)
+        for i in range(len(ring)):
+            a, b = ring[i], ring[(i + 1) % len(ring)]
+            cond = (a[1] > q[:, 1]) != (b[1] > q[:, 1])
+            xi = (b[0] - a[0]) * (q[:, 1] - a[1]) / (b[1] - a[1] + 1e-12) + a[0]
+            ins ^= cond & (q[:, 0] < xi)
+            ab = b - a
+            tt = np.clip(((q - a) @ ab) / (ab @ ab + 1e-12), 0, 1)
+            dist = np.minimum(dist, np.linalg.norm(q - (a + tt[:, None] * ab), axis=1))
+        wg = np.where(ins, _smooth(dist, 0.0, 0.42 * eh), 0.0)[:, None]
+        add(f'eyeLookLeft_{s}', wg * right * (0.24 * ew))                      # towards the character's own left (+x)
+        add(f'eyeLookRight_{s}', wg * right * (-0.24 * ew))
+        add(f'eyeLookUp_{s}', wg * up * (0.30 * eh))
+        add(f'eyeLookDown_{s}', wg * up * (-0.34 * eh))
         c, ch = L[CORNER[s]], L[CHEEK[s]]
         add(f'smile_{s}', _field(A, [(c, up * 0.13 * io + right * sx * 0.08 * io + np.array([0, 0.03 * io, 0]), 0.17),
                                      (ch, up * 0.06 * io, 0.24)], io))

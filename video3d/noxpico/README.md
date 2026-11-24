@@ -144,3 +144,16 @@ Retours : « les personnages ne ressemblent pas à la DA de la vidéo », « Nox
 ./finish_v5.sh out_v5 v5         # vidéo finale avec sous-titres, musique et bruitages
 ```
 Aperçu : `apercus/v5_images_cles.jpg`.
+
+### Version 5.1 — retouches après critique (`./run_v5.sh out_v51` puis `./finish_v5.sh out_v51 v51`)
+- **Nuit** : murs, sol et plafond plus sombres, lumière d'ambiance bleutée, lampadaire plus chaud : le contraste
+  chaud / froid de la référence.
+- **Peau** (`cast5.living_skin`) : les texels de peau sont repérés par leur couleur, réchauffés et reçoivent plus de
+  diffusion sous la peau ; cheveux de Nox assombris ; fine trame sur les vêtements (moins « jouet en vinyle »).
+- **Montre** : un vrai bracelet en caoutchouc posé exactement sur la bande peinte du poignet de Pico (repérée dans la
+  texture), avec la LED verte qui pulse dessous.
+- **Regard** (`facemorph.py`) : l'iris glisse dans l'œil sans entraîner les paupières.
+- Porte qui ne traverse plus le mur, câble du fer qui suit l'établi, mains qui ne se chevauchent plus, geste « ok »
+  dans le cadre, cadrages resserrés.
+
+Aperçu : `apercus/v51_images_cles.jpg`.
