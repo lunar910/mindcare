@@ -1103,7 +1103,7 @@ def build_rug(collection=None, size=(2.6, 1.8), seed=7):
 
 
 # ================================================================== FLOOR LAMP
-def build_floor_lamp(collection=None, on=True, power=55.0):
+def build_floor_lamp(collection=None, on=True, power=170.0):
     """Tripod floor lamp: three oiled-oak legs, brass hub and stem, linen drum shade (0.46 x 0.30) glowing from a
     warm bulb inside (POINT light 'bulb'), fabric cable with a foot switch running off to the back."""
     P = kit5.Prop('floor_lamp', collection)

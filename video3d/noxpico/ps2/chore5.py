@@ -28,8 +28,8 @@ NOX_PIVOT = Vector((-3.10, 2.95, 0.0))
 SEAT_Z = 0.52
 PICO_MARK = Vector((-1.55, 1.75, 0.0))
 DOOR_PT = Vector((3.95, 1.22, 0.0))
-T_DOOR = 2.55                       # the door is flung open
-RUN_A = (2.40, 0.00)                # (time, clip time): through the door
+T_DOOR = 2.43                       # the door is flung open (before she reaches it: v5 critique)
+RUN_A = (2.52, 0.00)                # (time, clip time): through the door, once it is open
 RUN_B = (3.12, 0.55)                # (time, clip time): arriving behind Nox (after the cut)
 CLIP_PLANT = 1.45                   # clip time of the final plant
 ANCH = dict(board=Vector((-3.08, 3.33, 0.80)), stand=Vector((-2.62, 3.40, 0.86)))
@@ -100,7 +100,7 @@ def performers(W, E):
     t_stop = RUN_B[0] + (1.10 - RUN_B[1])
     base_p = PF.BaseTrack(pico, [(RUN_A[0], 'sprintstop', RUN_A[1], 1.0, 0.0, 'clamp'),
                                  (RUN_B[0], 'sprintstop', RUN_B[1], 1.0, 0.0, 'clamp'),
-                                 (t_plant + 0.10, 'hip', 0.55, 0.0, 0.42)])    # lands in a sporty recovery: left hand on hip (v4-acting)
+                                 (t_plant - 0.15, 'hip', 0.55, 0.0, 0.60)])    # lands in a sporty recovery: left hand on hip (v4-acting)
     # segment A: the feet cross the threshold (DOOR_PT) 0.17 s into the clip; segment B ends on the mark
     R = Matrix.Rotation(-run_h, 2)
     L = R @ (DOOR_PT - PICO_MARK).to_2d()
@@ -142,12 +142,17 @@ def performers(W, E):
         (10.45, (-0.20, 0.03, -0.52), None, None, 0.32),
     ], elbow=(-0.50, -0.30, -0.80), ease_in=0.50, ease_out=0.45, profile='minjerk', thumb=0.65)
     w_ok = word(E, 'l02c', 'ok')
-    g_ok = PF.Gesture('Right', [
-        (w_ok - 0.20, (0.20, 0.04, -0.50), None, None, 0.32),
-        (w_ok + 0.05, (0.16, 0.26, -0.34), (0.20, 0.10, 1.0), (0.10, 1.0, 0.10), 0.20),
-        (w_ok + 0.55, (0.17, 0.27, -0.35), (0.20, 0.10, 1.0), (0.10, 1.0, 0.10), 0.22),
-        (w_ok + 0.95, (0.20, 0.04, -0.50), None, None, 0.32),
-    ], elbow=(0.75, -0.3, -0.5), ease_in=0.25, thumb=0.3)
+    rest_r, palm_rest, fing_down = (0.18, 0.02, -0.56), (-1.0, 0.0, 0.0), (0.05, 0.10, -1.0)
+    ok_pos, palm_up, fing_fwd = (0.14, 0.28, -0.10), (0.2, 0.1, 1.0), (0.1, 1.0, 0.1)
+    g_ok = PF.Gesture('Right', [                    # the right arm never hangs in the clip's A-pose (v5 critique)
+        (t_stop - 0.05, rest_r, palm_rest, fing_down, 0.35),
+        (t_stop + 0.60, rest_r, palm_rest, fing_down, 0.35),
+        (w_ok - 0.30, rest_r, palm_rest, fing_down, 0.35),
+        (w_ok + 0.05, ok_pos, palm_up, fing_fwd, 0.20),
+        (w_ok + 0.55, (ok_pos[0] + 0.01, ok_pos[1] + 0.01, ok_pos[2] - 0.01), palm_up, fing_fwd, 0.22),
+        (w_ok + 0.95, rest_r, palm_rest, fing_down, 0.35),
+        (T_END + 1.0, rest_r, palm_rest, fing_down, 0.35),
+    ], elbow=(0.6, -0.5, -0.6), ease_in=0.55, ease_out=0.05, profile='minjerk', thumb=0.3)
     # the end: she gives him her left wrist (from her hip), reluctantly, into his open hand
     g_give = PF.Gesture('Left', [
         (23.65, (-0.22, 0.02, -0.38), None, None, 0.32),
@@ -230,13 +235,13 @@ def performers(W, E):
     # ================================================================ NOX
     base_n = PF.BaseTrack(nox, [(0.0, 'listen', 0.6, 0.0, 0.0)])          # a held pose (v4-body F9)
     board, stand = ANCH['board'], ANCH['stand']
-    T_IRON = (13.30, 13.72, 14.00)                        # reach the stand (0.42 s: placing a hot iron), iron in, hand back
-    T_SWIVEL = (13.95, 14.90)
+    T_IRON = (14.00, 14.36, 14.50)                        # reach the stand, iron in, hand back - on screen in the 'swivel' shot
+    T_SWIVEL = (14.42, 15.00)
     heading_n = [(0.0, NOX_WORK), (T_SWIVEL[0], NOX_WORK), (T_SWIVEL[1], NOX_TO_PICO), (T_END, NOX_TO_PICO)]
     lean_n = [(0.0, 13.0), (T_SWIVEL[0] - 0.1, 13.0), (T_SWIVEL[1], 2.0), (T_END, 2.0)]
     # soldering: the iron tip touches a joint and holds, lifts 1-2 cm, moves 2-3 cm to the next one in ~0.25 s;
     # the solder hand feeds wire at the same joint.  Only while nobody talks.
-    WORK = [(0.0, 4.25), (4.95, 5.10), (8.0, 9.85)]
+    WORK = [(0.0, 4.25), (4.95, 5.10), (8.0, 9.85), (11.35, 11.75)]     # + one stroke in the pause between his phrases
     JOINTS = [Vector((0, 0, 0)), Vector((0.022, -0.008, 0)), Vector((0.010, -0.026, 0)), Vector((-0.014, -0.018, 0)), Vector((0.004, 0.012, 0))]
 
     def work_w(t):
@@ -260,10 +265,10 @@ def performers(W, E):
             return p0.lerp(p1, w) + Vector((0, 0, 0.016 * math.sin(math.pi * w)))
         return p1
 
-    iron_tip = Vector((0.020, -0.050, 0.055))            # iron hand target above the joint, behind it (pen angle)
-    solder_hand = Vector((-0.11, -0.06, 0.05))
-    talk_rest = Vector((0.0, -0.03, 0.02))                # while he talks: the hands lift off the joint a little
-    rest_keys = [(0.0, 0.0), (9.85, 0.0), (10.10, 1.0), (13.0, 1.0)]
+    iron_tip = Vector((0.080, -0.090, 0.060))            # iron hand to the right of / behind the joint (pen angle)
+    solder_hand = Vector((-0.20, -0.05, 0.045))           # solder hand from the left: the two hands never overlap
+    talk_rest = Vector((0.0, -0.012, 0.010))              # while he talks: the hands lift off the joint a little
+    rest_keys = [(0.0, 0.0), (9.85, 0.0), (10.30, 1.0), (13.0, 1.0)]
 
     def knee_rest(P, s):
         arm = P.a.arm
@@ -276,8 +281,8 @@ def performers(W, E):
             return
         arm = P.a.arm
         f, r, u = AC.body_frame(P.a)
-        pole_r = AC.joint(arm, 'RightArm') + r * 0.6 - f * 0.4 - u * 0.6
-        pole_l = AC.joint(arm, 'LeftArm') - r * 0.6 - f * 0.4 - u * 0.6
+        pole_r = AC.joint(arm, 'RightArm') + r * 0.9 - f * 0.4 - u * 0.6        # elbows open: hands approach from either side
+        pole_l = AC.joint(arm, 'LeftArm') - r * 0.9 - f * 0.4 - u * 0.6
         # one target per hand, always at full IK weight; the transitions move the TARGET (never a blend with the clip pose):
         #   left  : solder wire at the joint -> onto the thigh (0.85 s)
         #   right : iron at the joint -> into the stand (careful, 0.42 s) -> onto the thigh (0.9 s)
@@ -317,8 +322,8 @@ def performers(W, E):
     ], elbow=(0.6, -0.4, -0.6), ease_in=0.45, ease_out=0.05, profile='minjerk', thumb=0.35)
     gaze_n = PF.Gaze([
         (0.0, board, 0),
-        (13.25, stand, 0, 0.6),                    # a glance at the stand to put the iron in
-        (13.78, pico_face, 0),                     # then up to her: eyes first, the head, then the stool turns
+        (13.98, stand, 0, 0.6),                    # a glance at the stand to put the iron in
+        (14.40, pico_face, 0),                     # then up to her: eyes first, the head, then the stool turns
     ], origin=[(0.0, tuple(nox_face_work)), (T_SWIVEL[0], tuple(nox_face_work)), (T_SWIVEL[1], tuple(nox_face_up))],
         head_delay=0.05, chest=0.25, chest_delay=0.12, head_weight=1.0, speed=1.0)
     v3b = face4.stressed_vowels(E, 'l02b', ['découvres'])
@@ -337,7 +342,7 @@ def performers(W, E):
                                    accents=acc_n, life=life_n, extra=nox_extra, relax_curl=0.45, torso_share=0.15)
     face_n = face4.FaceTrack(E, 'nox', perf_n, base=[
         (0.0, {'eyeSquint': 0.18, 'eyeClosed': 0.12}),                       # heavy lids, on his work
-        (14.6, {'eyeClosed': 0.28, 'eyeSquint': 0.15, 'browDown': 0.15}),     # turned round: the deadpan stare
+        (15.0, {'eyeClosed': 0.28, 'eyeSquint': 0.15, 'browDown': 0.15}),     # turned round: the deadpan stare
         (v3[1] - 0.05, {'browUp_R': 0.35, 'browUp_L': 0.35, 'eyeClosed': 0.25}, 0.17),   # "deux ANS…": brows up, lids heavy
         (w_allume - 0.05, {'browUp': 0.30, 'eyeClosed': 0.22}, 0.17),        # "s'allume ?"
         (18.95, {'browUp': 0.10, 'smile': 0.22, 'eyeSquint': 0.12, 'eyeClosed': 0.15}, 0.25),   # a closed-mouth smirk

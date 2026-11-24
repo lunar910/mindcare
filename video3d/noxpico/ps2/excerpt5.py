@@ -142,7 +142,9 @@ def room_lights(W):
     for i, x in enumerate((-3.9, -1.5, 0.9)):
         L[f'win{i}'] = look5.area(f'win{i}', (x, 3.85, 1.95), (x, 0.0, 1.2), 180.0, (0.42, 0.56, 1.0), 2.2, 2.2)
     # a faint bounce from the floor / room so that shadows are not black
-    L['amb'] = look5.area('amb', (0.0, -1.0, 3.3), (0.0, -1.0, 0.0), 60.0, (0.55, 0.62, 0.85), 6.0, 5.0)
+    L['amb'] = look5.area('amb', (0.0, -1.0, 3.3), (0.0, -1.0, 0.0), 20.0, (0.45, 0.55, 0.95), 6.0, 5.0)
+    # warm practicals that read as 'night at home': a strip under the kitchen wall shelf
+    L['kitchen'] = look5.area('kitchen_strip', (2.95, 3.80, 1.42), (2.95, 3.75, 0.9), 30.0, (1.0, 0.72, 0.45), 1.6, 0.08)
     return L
 
 
@@ -198,19 +200,19 @@ def camera_setup(W, cam, name, t=None):
     if name == 'establish':
         look5.aim(cam, (-1.15, 1.05, 1.48), (-2.95, 3.85, 1.42), 26)
     elif name == 'door':
-        look5.aim(cam, (2.05, -0.55, 1.22), (3.95, 1.20, 1.15), 24)
+        look5.aim(cam, (1.75, -0.85, 1.30), (3.95, 1.20, 1.10), 33)
     elif name == 'nox_work':
-        look5.aim(cam, (-4.30, 3.50, 1.20), (-2.20, 1.90, 1.15), 26)
-        look5.dof(cam, (Vector((-3.1, 2.95, 1.15)) - Vector((-4.30, 3.50, 1.20))).length, 4.0)
+        look5.aim(cam, (-4.35, 3.55, 1.28), (-2.30, 2.05, 1.02), 33)
+        look5.dof(cam, (Vector((-3.1, 3.10, 1.15)) - Vector((-4.35, 3.55, 1.28))).length, 4.0)
     elif name == 'pico_ms':
-        p, tg = (-3.25, 3.65, 1.78), M['pico_face'] - Vector((0, 0, 0.16))
-        look5.aim(cam, p, tg, 72)
+        p, tg = (-3.25, 3.65, 1.78), M['pico_face'] - Vector((0, 0, 0.26))
+        look5.aim(cam, p, tg, 100)
         look5.dof(cam, (tg - Vector(p)).length, 3.2)
     elif name == 'insert_watch':
         w = W['watch_pt']
         d = W['watch_view']
-        p = w + d * 0.36
-        look5.aim(cam, p, w, 60)
+        p = w + d * 0.58
+        look5.aim(cam, p, w, 95)
         look5.dof(cam, (w - p).length, 2.4)
     elif name == 'nox_cu_work':
         p, tg = (-3.45, 3.78, 1.24), Vector((-3.10, 3.10, 1.12))
@@ -222,8 +224,8 @@ def camera_setup(W, cam, name, t=None):
         f = Vector((math.sin(hp), -math.cos(hp), 0))
         a = math.radians(-38)
         d = Vector((f.x * math.cos(a) - f.y * math.sin(a), f.x * math.sin(a) + f.y * math.cos(a), 0))
-        tg = M['pico_face'] - Vector((0, 0, 0.12))
-        p = tg + d * 1.25 + Vector((0, 0, 0.02))
+        tg = M['pico_face'] - Vector((0, 0, 0.22))
+        p = tg + d * 1.25 + Vector((0, 0, 0.12))
         look5.aim(cam, p, tg, 60)
         look5.dof(cam, (tg - p).length, 2.8)
     elif name == 'swivel':
@@ -233,16 +235,18 @@ def camera_setup(W, cam, name, t=None):
         f = Vector((math.sin(h), -math.cos(h), 0))
         face = M['nox_face_up']
         dist = 0.85                                 # the slow push-in on the punchline is done in finish() (PUSH)
-        p = face + f * dist + Vector((0, 0, 0.13)) + Vector((-f.y, f.x, 0)) * 0.10
-        look5.aim(cam, p, face - Vector((0, 0, 0.06)), 50)
+        side = Vector((-f.y, f.x, 0))
+        p = face + f * dist + Vector((0, 0, 0.13)) + side * 0.10
+        look5.aim(cam, p, face - Vector((0, 0, 0.06)) + side * W.get('nox_cu_side', 0.22), 50)
         look5.dof(cam, (face - p).length, 2.8)
     elif name == 'pico_cu':
-        tg = M['pico_face'] - Vector((0, 0, 0.07))
-        p = M['nox_face_up'] + (tg - M['nox_face_up']).normalized() * 0.75 + Vector((0.08, 0.10, 0.10))
-        look5.aim(cam, p, tg, 66)
+        tg = M['pico_face'] - Vector((0, 0, 0.15))
+        p = M['nox_face_up'] + (tg - M['nox_face_up']).normalized() * 0.75 + Vector((0.08, 0.10, 0.12))
+        look5.aim(cam, p, tg, 75)
         look5.dof(cam, (tg - p).length, 2.8)
     elif name == 'two':
-        look5.aim(cam, (-3.60, 0.60, 1.30), (-2.20, 2.25, 1.10), 30)
+        look5.aim(cam, (-0.50, 1.63, 1.36), (-2.75, 2.80, 0.98), 48)
+        look5.dof(cam, 2.55, 4.0)
     return cam
 
 
@@ -278,10 +282,12 @@ def build():
     ld.shadow_soft_size = 0.004
     W['watch_led'] = bpy.data.objects.new('watch_led', ld)
     bpy.context.scene.collection.objects.link(W['watch_led'])
-    # where the wrist is in the insert (for its camera)
+    # the watch (fitted at the insert's pose), then the insert's view
     tm = 0.5 * sum(shot_range('insert_watch'))
+    _try(lambda: attach_watch(W, tm), 'watch')
     pose_at(W, tm)
-    W['watch_pt'] = watch_point(W)
+    if 'watch_objs' not in W:                 # (attach_watch sets W['watch_pt'] to the case centre)
+        W['watch_pt'] = watch_point(W)
     to_nox = CHORE.NOX_PIVOT + Vector((0, 0, 1.15)) - W['watch_pt']
     to_nox.z = 0.0
     side = Vector((-to_nox.y, to_nox.x, 0.0)).normalized()
@@ -316,6 +322,113 @@ E_SELF = sys.modules[__name__]
 CHORE_MOD = CHORE
 
 
+def attach_watch(W, t_fit):
+    """A real band on Pico's left wrist (v5 critique: the painted band falls apart in the close-up insert).  The painted
+    black band is found on the model (vertices near the wrist whose texture is near-black), its section is measured in
+    the forearm bone's frame, and a smooth rubber fitness band (with the heart-rate sensor underneath) is swept over it
+    with 1.5 mm clearance and parented to the forearm bone.  The pulsing green light stays at the band's edge."""
+    import mat5
+    arm, mesh = W['pico'].arm, W['pico'].mesh
+    pose_at(W, t_fit)
+    bpy.context.view_layer.update()
+    img = W['pico'].tex_base
+    wpx, hpx = img.size
+    px = np.empty(wpx * hpx * 4, np.float32)
+    img.pixels.foreach_get(px)
+    px = px.reshape(hpx, wpx, 4)
+    dg = bpy.context.evaluated_depsgraph_get()
+    ev = mesh.evaluated_get(dg)
+    me = ev.to_mesh()
+    Mw = mesh.matrix_world
+    pb = arm.pose.bones['LeftForeArm']
+    B = arm.matrix_world @ pb.matrix
+    R = B.to_3x3().normalized()
+    O = B.translation
+    L = (AC_joint(arm, 'LeftHand') - O).length
+    uv = me.uv_layers.active.data
+    Q = {}
+    for v in me.vertices:
+        q = R.transposed() @ (Mw @ v.co - O)
+        if L - 0.10 < q.y < L + 0.03 and math.hypot(q.x, q.z) < 0.06:
+            Q[v.index] = q
+    dark = {}
+    for poly in me.polygons:
+        for li, vi in zip(poly.loop_indices, poly.vertices):
+            if vi in Q and vi not in dark:
+                u, w_ = uv[li].uv
+                c4 = px[min(hpx - 1, max(0, int(w_ * hpx))), min(wpx - 1, max(0, int(u * wpx)))]
+                lum = 0.2126 * c4[0] + 0.7152 * c4[1] + 0.0722 * c4[2]
+                W.setdefault('_lums', []).append(lum)
+                dark[vi] = lum < W.get('band_lum', 0.12)
+    ev.to_mesh_clear()
+    print('watch fit: candidates', len(Q), 'sampled', len(dark), flush=True)
+    pts = np.array([(Q[i].x, Q[i].y, Q[i].z) for i, dk in dark.items() if dk])
+    if len(pts) < 12:
+        raise RuntimeError(f'painted band not found ({len(pts)} dark vertices)')
+    y0, y1 = np.percentile(pts[:, 1], 4), np.percentile(pts[:, 1], 96)
+    yw, w = 0.5 * (y0 + y1), min(0.024, max(0.016, (y1 - y0) + 0.003))
+    # the section: ALL the skin vertices at that height along the forearm (the dark ones are too few to fit a ring)
+    ring = np.array([(q.x, q.z) for q in Q.values() if abs(q.y - yw) < 0.012])
+    P2 = ring if len(ring) >= 8 else pts[:, [0, 2]]
+    c = P2.mean(axis=0)
+    U, Sg, Vt = np.linalg.svd(P2 - c, full_matrices=False)
+    ax1, ax2 = Vt[0], Vt[1]
+    pr = (P2 - c) @ Vt.T
+    a = np.percentile(np.abs(pr[:, 0]), 98) + 0.0018
+    b = np.percentile(np.abs(pr[:, 1]), 98) + 0.0018
+
+    def ell(th):
+        return c + ax1 * a * math.cos(th) + ax2 * b * math.sin(th)
+
+    def to_world(x, y, z):
+        return O + R @ Vector((x, y, z))
+
+    strap_m = mat5.rubber('watch_strap', (22, 24, 26), 0.42)
+    N, th = 72, 0.0030
+    verts, faces = [], []
+    for i in range(N):
+        t_ = 2 * math.pi * i / N
+        p_ = ell(t_)
+        dp = -ax1 * a * math.sin(t_) + ax2 * b * math.cos(t_)
+        n2 = np.array([dp[1], -dp[0]])
+        n2 /= np.linalg.norm(n2)
+        if np.dot(n2, p_ - c) < 0:
+            n2 = -n2
+        for (o, yy) in ((-th / 2, -w / 2), (th / 2, -w / 2 + 0.0008), (th / 2, w / 2 - 0.0008), (-th / 2, w / 2)):
+            q2 = p_ + n2 * o
+            verts.append(tuple(R @ Vector((q2[0], yw + yy, q2[1]))))
+    for i in range(N):
+        j = (i + 1) % N
+        for k in range(4):
+            k2 = (k + 1) % 4
+            faces.append((i * 4 + k, j * 4 + k, j * 4 + k2, i * 4 + k2))
+    mm = bpy.data.meshes.new('watch_strap')
+    mm.from_pydata(verts, [], faces)
+    mm.validate()
+    ob = bpy.data.objects.new('watch_strap', mm)
+    bpy.context.scene.collection.objects.link(ob)
+    ob.data.materials.append(strap_m)
+    for f_ in ob.data.polygons:
+        f_.use_smooth = True
+    ob.matrix_world = Matrix.Translation(O)
+    sub = ob.modifiers.new('sub', 'SUBSURF')
+    sub.levels = sub.render_levels = 1
+    objs = [ob]
+    for o in objs:
+        mw = o.matrix_world.copy()
+        o.parent, o.parent_type, o.parent_bone = arm, 'BONE', 'LeftForeArm'
+        bpy.context.view_layer.update()
+        o.matrix_world = mw
+    W['watch_objs'] = objs
+    W['watch_pt'] = to_world(c[0], yw, c[1])
+    print(f'watch: band {w * 1000:.0f} mm wide, section {2 * a * 1000:.0f} x {2 * b * 1000:.0f} mm, {len(pts)} dark / {len(P2)} ring vertices', flush=True)
+    return objs
+
+
+def AC_joint(arm, bone):
+    return arm.matrix_world @ arm.pose.bones[bone].head
+
+
 def watch_point(W):
     """The back of Pico's left wrist, where the watch sits (world)."""
     arm = W['pico'].arm
@@ -338,10 +451,10 @@ def pose_at(W, t):
         ang = 0.0
     else:
         x = t - td
-        ang = 104.0 * min(1.0, x / 0.16) ** 0.7 if x < 0.16 else 104.0 - 12.0 * math.sin(min(1.0, (x - 0.16) / 0.5) * math.pi) * math.exp(-(x - 0.16) * 2.0)
+        ang = 104.0 * min(1.0, x / 0.12) ** 0.7 if x < 0.12 else 104.0 - 12.0 * math.sin(min(1.0, (x - 0.12) / 0.5) * math.pi) * math.exp(-(x - 0.12) * 2.0)
     hinge.rotation_euler.z = -math.radians(ang)
     pico = W['pico']
-    pico.mesh.hide_render = t < CHORE.RUN_A[0] + 0.08
+    pico.mesh.hide_render = t < max(CHORE.RUN_A[0] + 0.08, CHORE.T_DOOR + 0.10)      # never through the closed door
     W['perf']['pico'].pose(max(t, CHORE.RUN_A[0]))
     W['perf']['nox'].pose(t)
     for who in ('pico', 'nox'):
@@ -368,8 +481,13 @@ def pose_at(W, t):
             iron.root.matrix_world = W.get('iron_parked', Matrix.Translation(CHORE.ANCH['stand']))
     # the watch light pulses (only after the run)
     led = W['watch_led']
-    led.location = watch_point(W)
-    led.data.energy = W.get('led_power', 0.6) * CHORE.pulse(t)
+    if 'watch_objs' not in W:
+        led.location = watch_point(W)
+    k = CHORE.pulse(t)
+    led.data.energy = W.get('led_power', 0.6) * k
+    if 'watch_led_mat' in W:
+        bs = next(n for n in W['watch_led_mat'].node_tree.nodes if n.type == 'BSDF_PRINCIPLED')
+        bs.inputs['Emission Strength'].default_value = 40.0 * k
     bpy.context.view_layer.update()
 
 
@@ -399,6 +517,7 @@ def dynamic_objects(W):
     st = W['set'].get('stool')
     if st is not None and 'pivot' in st.parts:
         out += [o for o in st.parts['pivot'].children_recursive if o.type in ('MESH', 'CURVE')]
+    out += [o for o in W.get('watch_objs', [])]
     cb = W['set'].get('cable')
     if cb is not None:
         out += [o for o in cb.col.objects if o.type in ('MESH', 'CURVE')]

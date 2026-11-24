@@ -5,7 +5,7 @@ cd "$(dirname "$0")"
 PY=../blender-venv/bin/python
 OUT=${1:-out_v5}
 mkdir -p $OUT/px $OUT/plates
-$PY excerpt5.py stills $OUT --plates --times 1.2,3.0,4.40,6.4,9.13,11.0,13.7,14.6,16.6,20.0,23.2 > $OUT/plates.log 2>&1
+$PY excerpt5.py stills $OUT --plates --times 1.2,2.75,4.40,6.4,9.13,11.0,13.7,14.2,16.6,20.7,23.4 > $OUT/plates.log 2>&1
 for r in 0:368 369:737; do
   $PY excerpt5.py frames $OUT --plates --frames $r > $OUT/frames_${r/:/_}.log 2>&1 &
 done

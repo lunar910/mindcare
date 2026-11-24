@@ -73,5 +73,5 @@ def word_times(line_id):
 
 # sound effects (post2.mix_audio): the door sample starts so that its bang lands on the door (chore5.T_DOOR = 2.55),
 # the running steps from the moment she bursts in until she stops behind Nox
-DOOR_SFX = 2.30
-STEPS_SFX = 2.50
+DOOR_SFX = 2.18
+STEPS_SFX = 2.62
