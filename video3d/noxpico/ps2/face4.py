@@ -36,6 +36,42 @@ VIS = {
     'sil': {},
 }
 MOUTH_KEYS = ('jawOpen', 'mouthWide', 'mouthNarrow', 'lipsUp')
+OPEN = {k: v.get('jawOpen', 0.0) for k, v in VIS.items()}             # how open each sound is (to find the stressed vowels)
+
+# Version 6 faces (face6.py: real teeth, a jaw that turns, lips with their own keys).  Measured on the reference: when
+# a character speaks, the lips do most of the work (the lower lip moves about twice as much as the chin), the upper
+# teeth show under the upper lip, the nose, cheeks and forehead do not move.  jawOpen = 1 is 10 degrees of jaw.
+VIS6 = {
+    # open vowels: the gap comes from the lips more than from the jaw; each consonant between two vowels closes the
+    # mouth to a third or less, so every syllable is one pulse of the mouth
+    'aa': {'jawOpen': 0.36, 'lipLowerDown': 0.80, 'lipUpperUp': 0.50},
+    'E': {'jawOpen': 0.22, 'mouthWide': 0.35, 'lipLowerDown': 0.50, 'lipUpperUp': 0.40},
+    'I': {'jawOpen': 0.10, 'mouthWide': 0.60, 'lipLowerDown': 0.30, 'lipUpperUp': 0.45},
+    'O': {'jawOpen': 0.34, 'mouthNarrow': 0.60, 'lipLowerDown': 0.60, 'lipUpperUp': 0.25},
+    'U': {'jawOpen': 0.16, 'mouthNarrow': 1.00, 'lipLowerDown': 0.30, 'lipUpperUp': 0.15},
+    'PP': {'lipsPress': 1.0},
+    'FF': {'jawOpen': 0.05, 'lipsPress': 0.45, 'lipUpperUp': 0.35},
+    'DD': {'jawOpen': 0.08, 'lipLowerDown': 0.20, 'lipUpperUp': 0.20, 'tongueUp': 0.8},
+    'nn': {'jawOpen': 0.07, 'lipLowerDown': 0.18, 'lipUpperUp': 0.18, 'tongueUp': 0.8},
+    'SS': {'jawOpen': 0.05, 'mouthWide': 0.25, 'lipLowerDown': 0.25, 'lipUpperUp': 0.30},
+    'kk': {'jawOpen': 0.10, 'lipLowerDown': 0.15, 'lipUpperUp': 0.15},
+    'RR': {'jawOpen': 0.10, 'mouthNarrow': 0.15, 'lipLowerDown': 0.18, 'lipUpperUp': 0.15},
+    'CH': {'jawOpen': 0.14, 'mouthNarrow': 0.45, 'lipLowerDown': 0.40, 'lipUpperUp': 0.40},
+    'TH': {'jawOpen': 0.08, 'lipLowerDown': 0.15, 'lipUpperUp': 0.15},
+    'sil': {},
+}
+MOUTH_KEYS6 = ('jawOpen', 'mouthWide', 'mouthNarrow', 'lipLowerDown', 'lipUpperUp', 'lipsPress', 'tongueUp')
+VERSION = 4
+
+
+def use_version(v):
+    """4: the stretched-skin faces (facemorph.py); 6: the faces made of parts (face6.py)."""
+    global VERSION
+    VERSION = v
+
+
+def _vis():
+    return (VIS6, MOUTH_KEYS6) if VERSION == 6 else (VIS, MOUTH_KEYS)
 
 
 def line_segments(E, lid, min_close=0.10, min_vis=0.067):
@@ -87,10 +123,10 @@ def stressed_vowels(E, lid, words):
         we = next(e for ww, s, e in chore.word_times(E, lid) if abs(s - ws) < 1e-6)
         best = None
         for t0, t1, v in segs:
-            if t1 > ws and t0 < we and v in VIS and VIS[v].get('jawOpen', 0) >= 0.5:
+            if t1 > ws and t0 < we and OPEN.get(v, 0) >= 0.5:
                 c = (t0 + t1) / 2
-                if best is None or VIS[v]['jawOpen'] > best[1]:
-                    best = (c, VIS[v]['jawOpen'])
+                if best is None or OPEN[v] > best[1]:
+                    best = (c, OPEN[v])
         out.append(best[0] if best else (ws + we) / 2)
     return out
 
@@ -111,6 +147,8 @@ class FaceTrack:
     # ---- speech
     def _bake_mouth(self):
         n = int(math.ceil(self.t_end * RATE)) + 1
+        VIS, MOUTH_KEYS = _vis()
+        self.mouth_keys = MOUTH_KEYS
         tgt = np.zeros((n, len(MOUTH_KEYS)))
         talk = np.zeros(n)
         for l in self.E.LINES:
@@ -128,6 +166,8 @@ class FaceTrack:
                     x = vals.get(key, 0.0) * (self.amp if key == 'jawOpen' else 1.0)
                     if key == 'jawOpen':
                         x *= boost
+                    elif key in ('lipLowerDown', 'lipUpperUp'):
+                        x *= 1.0 + 0.5 * (boost - 1.0)
                     tgt[i0:i1, j] = min(x, 1.0)
                 talk[i0:i1] = 1.0
         # 10-90 % in about 70 ms: a critically damped follower with a 15 ms half-life
@@ -144,11 +184,11 @@ class FaceTrack:
         items = []
         if self.perf is not None and self.perf.gaze is not None and hasattr(self.perf.gaze, 'head_segs'):
             for t_peak, deg, d in self.perf.gaze.turns(15.0):
-                hold = 0.22 if deg >= 30 else 0.04
-                close = 0.12
-                items.append((t_peak - close - hold / 2, close, hold, 0.20))
+                hold = 0.20 if deg >= 30 else 0.035
+                close = 0.075
+                items.append((t_peak - close - hold / 2, close, hold, 0.14))
         for t in extra:
-            items.append((t, 0.12, 0.03, 0.20))
+            items.append((t, 0.07, 0.035, 0.13))             # 2 frames down, 1 shut, 4 up
         items.sort()
         kept = []
         for it in items:                                 # never two blinks closer than 0.6 s
@@ -192,7 +232,7 @@ class FaceTrack:
                 if k in vals:
                     vals[k] *= 1.0 - 0.7 * talk
         m = self.mouth.at(t)
-        for j, k in enumerate(MOUTH_KEYS):
+        for j, k in enumerate(self.mouth_keys):
             vals[k] = min(1.0, vals.get(k, 0.0) + float(m[j]))
         b = self.blink(t)
         if b > 0:

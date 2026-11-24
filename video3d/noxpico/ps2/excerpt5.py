@@ -24,6 +24,7 @@ from script5 import LINES, PHRASES, SHOTS, T_END
 import chore5 as CHORE
 
 FPS = 30
+FACE6 = os.environ.get("NP_FACE", "6") == "6"      # version 6 faces (face6.py); NP_FACE=5 gives the version 5 faces
 RES = (480, 854)
 OUT_SIZE = (1080, 1920)
 SAMPLES = 24
@@ -173,11 +174,46 @@ SHOT_LIGHT = {
 }
 
 
+def eye_light(W):
+    """Version 6 faces: a small lamp next to the camera that lights ONLY the eyeballs (light linking): the catch-light
+    every eye of the reference has."""
+    import look5
+    C = W['clights']
+    eyes = [f6['parts']['eye' + sd]['eye'] for who in ('pico', 'nox') for f6 in [getattr(W[who], 'face6', None)] if f6 for sd in 'RL']
+    if not eyes:
+        return
+    C['eye'] = look5.area('char_eye', (0, 0, 2), (0, 0, 1), 0.0, (1.0, 0.95, 0.88), 0.10)
+    coll = bpy.data.collections.new('eye_light_receivers')
+    bpy.context.scene.collection.children.link(coll)
+    for o in eyes:
+        coll.objects.link(o)
+    try:
+        C['eye'].light_linking.receiver_collection = coll
+    except Exception as e:
+        print('light linking not available:', repr(e)[:120])
+        C.pop('eye')
+
+
+EYE_LIGHT = {'nox_cu': 1.6, 'pico_cu': 1.4, 'pico_ms': 2.5, 'pico_react': 2.2, 'nox_cu_work': 1.2, 'two': 3.0}     # watts
+
+
 def set_shot_lights(W, shot):
     C = W['clights']
     cfg = SHOT_LIGHT.get(shot)
     for k in ('key', 'rim'):
         C[k].data.energy = 0.0
+    if 'eye' in C:                                                    # next to the camera, up and to its left
+        cam = W['cam']
+        bpy.context.view_layer.update()
+        Mc = cam.matrix_world
+        fwd = -(Mc.to_3x3() @ Vector((0, 0, 1)))
+        lft = -(Mc.to_3x3() @ Vector((1, 0, 0)))
+        upv = Mc.to_3x3() @ Vector((0, 1, 0))
+        pos = Mc.translation + lft * 0.30 + upv * 0.28
+        tgt = Mc.translation + fwd * 1.0
+        C['eye'].location = pos
+        C['eye'].rotation_euler = (tgt - pos).to_track_quat('-Z', 'Y').to_euler()
+        C['eye'].data.energy = EYE_LIGHT.get(shot, 0.0)
     if not cfg:
         return
     kp, kt, kw, rp, rt, rw = cfg
@@ -196,6 +232,7 @@ def camera_setup(W, cam, name, t=None):
     the close shots.  'nox_cu' pushes in slowly; 'insert_watch' is aimed at the wrist found at build time."""
     import look5
     cam.data.dof.use_dof = False
+    cam.data.dof.focus_object = None
     M = W['marks_extra']
     if name == 'establish':
         look5.aim(cam, (-1.15, 1.05, 1.48), (-2.95, 3.85, 1.42), 26)
@@ -234,16 +271,18 @@ def camera_setup(W, cam, name, t=None):
         h = W['headings']['nox_to_pico']
         f = Vector((math.sin(h), -math.cos(h), 0))
         face = M['nox_face_up']
-        dist = 0.85                                 # the slow push-in on the punchline is done in finish() (PUSH)
+        dist = 0.68                                 # the slow push-in on the punchline is done in finish() (PUSH)
         side = Vector((-f.y, f.x, 0))
-        p = face + f * dist + Vector((0, 0, 0.13)) + side * 0.10
-        look5.aim(cam, p, face - Vector((0, 0, 0.06)) + side * W.get('nox_cu_side', 0.22), 50)
-        look5.dof(cam, (face - p).length, 2.8)
+        p = face + f * dist + Vector((0, 0, 0.11)) + side * 0.10
+        look5.aim(cam, p, face - Vector((0, 0, 0.07)) + side * W.get('nox_cu_side', 0.10), 50)
+        f6 = getattr(W['nox'], 'face6', None)
+        look5.dof(cam, f6['focus'] if f6 else (face - p).length, 4.0 if f6 else 2.8)
     elif name == 'pico_cu':
         tg = M['pico_face'] - Vector((0, 0, 0.15))
         p = M['nox_face_up'] + (tg - M['nox_face_up']).normalized() * 0.75 + Vector((0.08, 0.10, 0.12))
         look5.aim(cam, p, tg, 75)
-        look5.dof(cam, (tg - p).length, 2.8)
+        f6 = getattr(W['pico'], 'face6', None)
+        look5.dof(cam, f6['focus'] if f6 else (tg - p).length, 3.5 if f6 else 2.8)
     elif name == 'two':
         look5.aim(cam, (-0.50, 1.63, 1.36), (-2.75, 2.80, 0.98), 48)
         look5.dof(cam, 2.55, 4.0)
@@ -270,8 +309,16 @@ def build():
         look5.world((0.008, 0.012, 0.028), 1.0)
     W['lights'] = room_lights(W)
     W['clights'] = character_lights(W)
-    W['pico'] = cast5.actor('pico', CHORE.PICO_CLIPS)
-    W['nox'] = cast5.actor('nox', CHORE.NOX_CLIPS)
+    if FACE6:
+        import cast6
+        import face4
+        face4.use_version(6)
+        W['pico'] = cast6.actor('pico', CHORE.PICO_CLIPS)
+        W['nox'] = cast6.actor('nox', CHORE.NOX_CLIPS)
+        eye_light(W)
+    else:
+        W['pico'] = cast5.actor('pico', CHORE.PICO_CLIPS)
+        W['nox'] = cast5.actor('nox', CHORE.NOX_CLIPS)
     if W.get('anchors'):
         CHORE.set_anchors(**W['anchors'])
     W['perf'] = CHORE.performers(W, sys.modules[__name__])
@@ -505,6 +552,10 @@ PUSH = {'nox_cu': (1.0, 1.14)}            # 2D push-in over the shot (start, end
 
 def dynamic_objects(W):
     out = [W['pico'].mesh, W['nox'].mesh]
+    for who in ('pico', 'nox'):                                     # version 6: the parts of the faces
+        f6 = getattr(W[who], 'face6', None)
+        if f6 is not None:
+            out += [o for o in f6['objects'] if o not in out]
     for o in bpy.context.scene.objects:
         if o.type == 'MESH' and o.name.startswith(('noxR', 'picoR')) and o not in out and not o.hide_render:
             if o.parent in (W['pico'].arm, W['nox'].arm):

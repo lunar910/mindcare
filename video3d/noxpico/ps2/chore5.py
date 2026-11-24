@@ -219,17 +219,19 @@ def performers(W, E):
         (0.0, {'browUp': 0.12, 'eyeWide': 0.25}),
         (t_stop, {'browUp': 0.30, 'browSad': 0.25, 'eyeWide': 0.30}),             # puzzled, out of breath
         (w_run + 0.10, {'browUp': 0.40, 'eyeWide': 0.35}, 0.17),                  # "run ?": expectant
-        (9.0, {'browUp': 0.30, 'eyeWide': 0.40, 'mouthNarrow': 0.20}, 0.2),       # staring at the green light
+        (9.0, {'browUp': 0.30, 'eyeWide': 0.40, 'mouthNarrow': 0.15}, 0.2),       # staring at the green light
         (10.3, {'browUp': 0.18, 'eyeWide': 0.20}),
-        (11.9, {'browDown': 0.25, 'frown': 0.35, 'mouthNarrow': 0.20}, 0.07),     # "fais comme chez toi": miffed (snap)
-        (15.5, {'browDown': 0.12, 'frown': 0.20}),
-        (19.0, {'frown': 0.75, 'mouthNarrow': 0.40, 'browUp': 0.30, 'browSad': 0.20, 'eyeWide': 0.25}),   # the pout
-        (w_jamais - 0.02, {'browSad': 0.55, 'frown': 0.25, 'eyeSquint': 0.10}, 0.07),
-        (w_ok - 0.04, {'browUp': 0.35, 'frown': 0.15, 'eyeWide': 0.20}, 0.07),                            # defiant
-        (21.25, {'frown': 0.65, 'mouthNarrow': 0.30, 'browDown': 0.25}, 0.20),                            # sulky
+        (11.9, {'browDown': 0.45, 'frown_L': 0.45, 'frown_R': 0.25, 'mouthNarrow': 0.15}, 0.07),   # "fais comme chez toi": miffed (snap)
+        (15.5, {'browDown': 0.20, 'frown': 0.20}),
+        (19.0, {'frown_L': 0.80, 'frown_R': 0.55, 'mouthNarrow': 0.30, 'browUp': 0.30, 'browSad': 0.35, 'eyeWide': 0.15}),   # the pout (lopsided)
+        (w_jamais - 0.02, {'browSad': 0.80, 'browUp': 0.20, 'frown_L': 0.30, 'frown_R': 0.12, 'eyeSquint': 0.12}, 0.07),   # on the defensive
+        (w_ok - 0.04, {'browUp': 0.60, 'frown': 0.12, 'eyeWide': 0.35}, 0.07),                            # defiant
+        (21.05, {'browUp': 0.25, 'frown_L': 0.35, 'frown_R': 0.25, 'mouthNarrow': 0.15}, 0.25),           # the mouth closes into...
+        (21.40, {'frown_L': 0.85, 'frown_R': 0.50, 'mouthNarrow': 0.30, 'browDown': 0.60, 'eyeSquint': 0.25}, 0.35),   # ...a glare, not the pout she started from
     ], events=[(v1[0], {'browUp': 0.22}, 0.17, 0.25, 0.30),
+               (v4[0], {'browUp': 0.28}, 0.20, 0.20, 0.30),                                               # "desSOUS"
                (23.15, {'eyeClosed': 0.35, 'browUp': 0.20}, 0.12, 0.30, 0.25)],                          # the eye-roll: heavy lids
-        blinks=[], amp=1.15, t_end=T_END,
+        blinks=[], amp=1.0, t_end=T_END,
         stress=[('l01', ['nox', 'montre', 'vertes', 'run']), ('l02c', ['jamais', 'dessous', 'ok'])])
 
     # ================================================================ NOX
@@ -341,21 +343,21 @@ def performers(W, E):
                                    heading_keys=heading_n, lean_keys=lean_n, gaze=gaze_n, gestures=[g_give_n],
                                    accents=acc_n, life=life_n, extra=nox_extra, relax_curl=0.45, torso_share=0.15)
     face_n = face4.FaceTrack(E, 'nox', perf_n, base=[
-        (0.0, {'eyeSquint': 0.18, 'eyeClosed': 0.12}),                       # heavy lids, on his work
-        (15.0, {'eyeClosed': 0.28, 'eyeSquint': 0.15, 'browDown': 0.15}),     # turned round: the deadpan stare
-        (v3[1] - 0.05, {'browUp_R': 0.35, 'browUp_L': 0.35, 'eyeClosed': 0.25}, 0.17),   # "deux ANS…": brows up, lids heavy
-        (w_allume - 0.05, {'browUp': 0.30, 'eyeClosed': 0.22}, 0.17),        # "s'allume ?"
-        (18.95, {'browUp': 0.10, 'smile': 0.22, 'eyeSquint': 0.12, 'eyeClosed': 0.15}, 0.25),   # a closed-mouth smirk
-        (21.9, {'eyeSquint': 0.10, 'smile': 0.08, 'eyeClosed': 0.15}),
+        (0.0, {'eyeSquint': 0.18, 'eyeClosed': 0.10}),                       # heavy lids, on his work
+        (15.0, {'eyeClosed': 0.20, 'eyeSquint': 0.15, 'browDown': 0.20}),     # turned round: the deadpan stare
+        (v3[1] - 0.05, {'browUp_R': 0.50, 'browUp_L': 0.30, 'eyeClosed': 0.18}, 0.17),   # "deux ANS…": one brow higher, lids heavy
+        (w_allume - 0.05, {'browUp_R': 0.45, 'browUp_L': 0.30, 'eyeClosed': 0.15}, 0.17),        # "s'allume ?"
+        (18.95, {'browUp_R': 0.20, 'smile_L': 0.40, 'smile_R': 0.06, 'eyeSquint': 0.15, 'eyeClosed': 0.12}, 0.30),   # a one-sided smirk
+        (21.9, {'eyeSquint': 0.10, 'smile_L': 0.15, 'eyeClosed': 0.12}),
     ], events=[
         (w_pico + 0.05, {'browUp': 0.12}, 0.17, 0.30, 0.30),
         (v5[0], {'eyeClosed': 0.6}, 0.12, 0.22, 0.25),
-    ], blinks=[], amp=1.2, t_end=T_END, stress=[('l02b', ['montre', 'deux', 'allume']), ('l02d', ['bon'])])
+    ], blinks=[], amp=1.0, t_end=T_END, stress=[('l02b', ['montre', 'deux', 'allume']), ('l02d', ['bon'])])
 
     for P in (perf_p, perf_n):
         P.prepare(T_END)
-    face_p._blinks([12.4, 16.2])
-    face_n._blinks([w_nox + 0.12, 7.4, 11.9, 17.25])    # "Nox !": he blinks, that is all; 17.25: a deadpan blink in the pause
+    face_p._blinks([12.4, 16.2, 19.30, 20.60, 21.32])       # on her head tilt, on the turn before 'ok ?', inside the glare
+    face_n._blinks([w_nox + 0.12, 7.4, 11.9, 15.42, 17.25])    # "Nox !": he blinks, that is all; 17.25: a deadpan blink in the pause
     W['face'] = {'pico': face_p, 'nox': face_n}
     W['marks_extra'] = dict(nox_face_work=nox_face_work, nox_face_up=nox_face_up, pico_face=pico_face)
     W['times'] = dict(t_plant=t_plant, t_stop=t_stop, iron=T_IRON, swivel=T_SWIVEL, run_h=run_h)

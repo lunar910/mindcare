@@ -157,3 +157,50 @@ Aperçu : `apercus/v5_images_cles.jpg`.
   dans le cadre, cadrages resserrés.
 
 Aperçu : `apercus/v51_images_cles.jpg`.
+
+## Version 6 — des visages en pièces séparées (`ps2/face6.py`)
+
+Retour : « quand ils parlent, tout le visage se déforme ; dans la vidéo de référence, non » et « Nox n'est pas beau
+avec ses yeux sur les lunettes ».
+
+### Ce que montre l'analyse de la référence
+- **Fabrication** : la référence est très probablement une vidéo générée par IA plan par plan (image de départ façon
+  « jeu PS2 », puis animation par un générateur vidéo, sous-titres au montage) : d'un plan à l'autre la basilique, les
+  mèches vertes et la cicatrice du personnage changent de forme, ce qui n'arrive pas avec un vrai modèle 3D.
+- **Mouvement des visages** (`ps2/study/nonrigid.py`, mouvement de la tête retiré, en % de l'écart entre les yeux) :
+
+  | quand ça parle | menton | lèvre du bas | lèvre du haut | coins | joues, nez, front |
+  |---|---|---|---|---|---|
+  | référence | 3 à 9 | 7 à 13 | 2 à 8 | 4 à 11 | 1 à 3 (bruit de mesure) |
+  | nous, v5.1 (`t_nonrigid6.py 5`) | 24 à 27 | 20 à 22 | 2 | 6 | 1 |
+  | nous, v6 (`t_nonrigid6.py 6`) | 7 | 7,5 | 3 | 6 | 0,2 |
+
+  Chez eux ce sont les lèvres qui travaillent ; chez nous tout le bas du visage descendait d'un bloc.
+- **Cause chez nous** : les modèles générés sont une seule peau, les yeux y sont peints (sur les verres pour Nox) et
+  la bouche est une fente ; chaque expression étirait cette peau.
+
+### Ce qui change
+Les têtes sont reconstruites comme celles d'un personnage de jeu, à partir d'une vue de face de chaque tête
+(`face6prep.py`) et des repères du visage :
+- **Yeux** (`eyes6.py`, `face6.cut_eye`, `face6.build_lids`) : ouverture découpée dans la peau, vrai globe oculaire
+  derrière (l'iris glisse à la surface du globe pour le regard), paupières en coques séparées qui tournent sur le globe
+  pour cligner : la peau autour des yeux ne bouge plus.
+- **Bouche** (`teeth6.py`, `face6.cut_mouth`) : lèvres refaites en maillage propre avec leur épaisseur, vraies dents
+  (les dents du haut sont fixées au crâne, celles du bas et la langue tournent avec la mâchoire autour de son axe,
+  devant les oreilles), intérieur de bouche sombre.
+- **Parole** (`face4.VIS6`) : ce sont les lèvres qui travaillent (lèvre du bas, lèvre du haut, avancée pour « ou »,
+  étirement pour « i »), la mâchoire tourne peu, le crâne, le nez et le front ne bougent pas.
+- **Nox** (`face6.erase_glasses`, `glasses6.py`) : l'ancien bloc de lunettes fusionné au visage est effacé (maillage
+  lissé à son emplacement, peau et sourcils repeints dans la vue de face), il a de vrais yeux, et de vraies lunettes
+  à verres transparents posées devant.
+
+```
+python face6prep.py noxR ../meshy/models/rig/noxR_rigged.glb     # vue de face haute définition (une fois par personnage)
+python t_face6.py noxR full tex                                  # tête seule, 3 vues ; SHEET=... pour une planche d'expressions
+NP_FACE=6 ./run_v5.sh out_v6 && ./finish_v5.sh out_v6 v6         # l'extrait avec les nouveaux visages (NP_FACE=5 : anciens)
+```
+
+Aperçus : `apercus/v6_avant_apres.jpg`, `apercus/v6_expressions_nox.jpg`, `apercus/v6_expressions_pico.jpg`.
+La version 6 a été relue par trois critiques indépendants (animation, défauts, style) ; corrigé depuis : dents en
+barre blanche, bouches trop peu ouvertes et formes de sons trop proches, reflets des verres devant les yeux de Nox,
+paupières fermées d'une autre couleur que la peau, clignements manquants, expressions trop symétriques.

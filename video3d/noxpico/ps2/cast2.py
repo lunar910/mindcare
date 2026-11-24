@@ -15,6 +15,7 @@ ANIM = S + '/meshy/models/anim'
 VAR = S + '/np3d_prod/out_face/var'
 FIX = S + '/ps2/out_fix'
 MATTE = True          # v2-v4: flat PS2 materials; v5 keeps Meshy's full PBR maps (normal, roughness)
+FACE = 'facemorph'    # 'face6': the face rebuilt from separate parts (eyeballs, lids, teeth, tongue, jaw: face6.py)
 
 
 def matte(ob):
@@ -56,8 +57,13 @@ class Actor:
             matte(self.mesh)
         # real facial expressions (shape keys) when the face has been located on this model (see faceprep.py)
         self.face = None
+        self.face6 = None
         import facemorph
-        if os.path.exists(f'{facemorph.OUT}/{name}_landmarks.json'):
+        if FACE == 'face6' and os.path.exists(f'{facemorph.OUT}/../out_face6/{name}_meta.json'):
+            import face6
+            self.face6 = face6.build(self.mesh, self.arm, name)
+            self.face, self.face_keys, self.face_info = self.face6['F'], self.face6['keys'], {}
+        elif os.path.exists(f'{facemorph.OUT}/{name}_landmarks.json'):
             self.face_keys, self.face_info, self.face = facemorph.build(self.mesh, self.arm, name, glasses=glasses)
         self.name, self.scale = name, scale
         self.root = bpy.data.objects.new(name + '_root', None)
@@ -166,7 +172,10 @@ class Actor:
     def express(self, values):
         """Shape-key values of the face, e.g. {'browUp': 0.6, 'smile_L': 1, 'jawOpen': 0.3} (see facemorph.EXPR)."""
         import facemorph
-        if self.face is not None:
+        if self.face6 is not None:
+            import face6
+            face6.apply(self.face6, values)
+        elif self.face is not None:
             facemorph.apply(self.mesh, facemorph.expand(values))
 
     def face_point(self):

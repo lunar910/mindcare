@@ -401,7 +401,7 @@ def expand(expr):
     """{'browUp': .5, 'smile_L': 1} -> per-side shape key values."""
     out = {}
     for k, v in expr.items():
-        if k.endswith(('_L', '_R')) or k in ('jawOpen', 'mouthNarrow', 'mouthWide', 'lipsUp'):
+        if k.endswith(('_L', '_R')) or k in ('jawOpen', 'mouthNarrow', 'mouthWide', 'lipsUp', 'lipLowerDown', 'lipUpperUp', 'lipsPress', 'tongueUp', 'tongueOut'):
             out[k] = v
         else:
             out.setdefault(k + '_L', v)
