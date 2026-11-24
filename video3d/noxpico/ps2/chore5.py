@@ -24,13 +24,13 @@ import seat5
 PICO_CLIPS = ('sprintstop', 'listen', 'hip')
 NOX_CLIPS = ('listen',)
 
-NOX_PIVOT = Vector((-3.10, 2.80, 0.0))
+NOX_PIVOT = Vector((-3.10, 2.95, 0.0))
 SEAT_Z = 0.52
 PICO_MARK = Vector((-1.55, 1.75, 0.0))
 DOOR_PT = Vector((3.95, 1.22, 0.0))
 T_DOOR = 2.55                       # the door is flung open
 RUN_A = (2.40, 0.00)                # (time, clip time): through the door
-RUN_B = (3.60, 0.55)                # (time, clip time): arriving behind Nox (after the cut)
+RUN_B = (3.12, 0.55)                # (time, clip time): arriving behind Nox (after the cut)
 CLIP_PLANT = 1.45                   # clip time of the final plant
 ANCH = dict(board=Vector((-3.08, 3.33, 0.80)), stand=Vector((-2.62, 3.40, 0.86)))
 
@@ -100,7 +100,7 @@ def performers(W, E):
     t_stop = RUN_B[0] + (1.10 - RUN_B[1])
     base_p = PF.BaseTrack(pico, [(RUN_A[0], 'sprintstop', RUN_A[1], 1.0, 0.0, 'clamp'),
                                  (RUN_B[0], 'sprintstop', RUN_B[1], 1.0, 0.0, 'clamp'),
-                                 (t_plant + 0.10, 'hip', 0.55, 0.0, 0.30)])    # lands in a sporty recovery: left hand on hip (v4-acting)
+                                 (t_plant + 0.10, 'hip', 0.55, 0.0, 0.42)])    # lands in a sporty recovery: left hand on hip (v4-acting)
     # segment A: the feet cross the threshold (DOOR_PT) 0.17 s into the clip; segment B ends on the mark
     R = Matrix.Rotation(-run_h, 2)
     L = R @ (DOOR_PT - PICO_MARK).to_2d()
@@ -189,9 +189,25 @@ def performers(W, E):
                      pant=(t_stop, t_stop + 5.0, 0.70, 1.0),
                      events=[(t_stop + 0.10, 0.25, 0.0, 0.35, 1.5),
                              (13.45, 0.12, 0.10, 0.45, -1.2)])                 # "pff": a short exhale through the nose
+    # after the hard stop she settles her feet with two small steps (the clip blend moves them; each foot lifts as it
+    # goes), then the feet are planted for good in the relaxed hip stance
+    def pico_extra(P, t, phase):
+        if phase != 'body':
+            return
+        arm = P.a.arm
+        f, r, u = AC.body_frame(P.a)
+        for s_, t0 in (('Left', t_plant + 0.12), ('Right', t_plant + 0.30)):
+            lift = 0.055 * AC.bump(t, t0, 0.10, 0.0, 0.12)
+            if lift > 1e-4:
+                R = AC.world_rot(arm, f'{s_}Foot').copy()
+                foot = AC.joint(arm, f'{s_}Foot') + Vector((0, 0, lift))
+                pole = AC.joint(arm, f'{s_}Leg') + f * 0.6
+                AC.ik2(arm, f'{s_}UpLeg', f'{s_}Leg', f'{s_}Foot', foot, pole)
+                AC.set_world_rot(arm, f'{s_}Foot', R)
+
     perf_p = PF.Performer(pico, base_p, tuple(PICO_MARK), PICO_FACE, gaze=gaze_p, gestures=[g_watch, g_ok, g_give],
-                          accents=acc_p, life=life_p, lock_from=t_plant - 0.05, heading_keys=heading_p,
-                          lock_capture=0.0, lock_ramp=0.12,
+                          accents=acc_p, life=life_p, lock_from=t_plant + 0.55, heading_keys=heading_p,
+                          lock_capture=0.0, lock_ramp=0.08, extra=pico_extra,
                           gaze_weight=[(0.0, 0.0), (t_stop - 0.3, 0.0), (t_stop + 0.3, 1.0), (T_END, 1.0)],
                           torso_share=0.45)
     face_p = face4.FaceTrack(E, 'pico', perf_p, base=[

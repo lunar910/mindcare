@@ -35,8 +35,8 @@ LINES = [(lid, WHO[lid], ph[0][1], ph[-1][2] - ph[0][1], ' '.join(p[0] for p in 
 
 SHOTS = [
     (0.00, 2.40, 'establish'),     # wide: the loft at night, Nox small on the left at his bench in the lamp's pool
-    (2.40, 3.60, 'door'),          # the door bangs open, Pico bursts in running
-    (3.60, 5.02, 'nox_work'),      # Nox from the window side, soldering, unmoved; Pico arrives behind him, "Nox !"
+    (2.40, 3.12, 'door'),          # the door bangs open, Pico bursts in running
+    (3.12, 5.02, 'nox_work'),      # Nox from the window side, soldering, unmoved; Pico arrives behind him, "Nox !"
     (5.02, 8.30, 'pico_ms'),       # Pico medium: the question, wrist raised
     (8.30, 9.72, 'insert_watch'),  # the underside of the watch: green lights pulsing
     (9.72, 13.30, 'nox_cu_work'),  # Nox close, eyes on his board: "Bonsoir à toi aussi, Pico. Entre..."

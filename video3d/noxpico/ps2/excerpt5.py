@@ -93,6 +93,14 @@ def assemble(W):
             W['anchors'] = dict(board=B.parts['board'].matrix_world.translation.copy(),
                                 stand=B.parts['iron_rest'].matrix_world.translation.copy())
             W['iron_parked'] = B.parts['iron_rest'].matrix_world.copy()
+            I = S.get('iron')
+            if I is not None:                     # the iron's cable: laid on the bench from the station, its end hooked
+                I.root.matrix_world = W['iron_parked']          # to the iron (computed with the iron in its stand)
+                bpy.context.view_layer.update()
+                C = _try(lambda: ws.build_iron_cable(ws.iron_cable_points(B, I), follow=I.parts['cable_end']), 'cable')
+                if C is not None:
+                    kit5.place(C, (-3.15, 3.55, 0.0), 0.0)
+                    S['cable'] = C
     lv = _try(lambda: __import__('set5.living', fromlist=['build_sofa']), 'living')
     if lv:
         def put(name, fn, loc, hd, *a):
@@ -147,7 +155,7 @@ SHOT_LIGHT = {
     'establish':    None,
     'door':         ((2.6, 0.6, 2.2), (3.6, 1.3, 1.3), 40, None, None, 0),
     'nox_work':     ((-2.4, 3.6, 1.5), (-3.1, 2.9, 1.15), 25, (-3.6, 2.0, 1.9), (-3.1, 2.8, 1.2), 30),
-    'pico_ms':      ((-2.4, 2.7, 2.0), (-1.55, 1.75, 1.45), 45, (-0.6, 1.2, 2.2), (-1.55, 1.75, 1.5), 40),
+    'pico_ms':      ((-2.5, 2.9, 1.9), (-1.55, 1.75, 1.45), 110, (-0.6, 1.2, 2.2), (-1.55, 1.75, 1.5), 45),
     'insert_watch': None,
     'nox_cu_work':  ((-2.5, 3.6, 1.45), (-3.1, 2.9, 1.15), 20, (-3.7, 2.1, 1.8), (-3.1, 2.8, 1.2), 30),
     'pico_react':   ((-2.4, 1.0, 2.0), (-1.6, 1.8, 1.5), 40, (-0.9, 2.6, 2.0), (-1.55, 1.75, 1.55), 40),
@@ -200,17 +208,18 @@ def camera_setup(W, cam, name, t=None):
         look5.aim(cam, p, w, 60)
         look5.dof(cam, (w - p).length, 2.4)
     elif name == 'nox_cu_work':
-        p, tg = (-2.80, 3.80, 1.28), M['nox_face_work'] + Vector((0.0, 0.0, -0.02))
-        look5.aim(cam, p, tg, 42)
+        p, tg = (-3.45, 3.78, 1.24), Vector((-3.10, 3.10, 1.12))
+        look5.aim(cam, p, tg, 45)
+        tg = M['nox_face_work']
         look5.dof(cam, (tg - Vector(p)).length, 2.8)
     elif name == 'pico_react':
         hp = W['headings']['pico_face']
         f = Vector((math.sin(hp), -math.cos(hp), 0))
         a = math.radians(-38)
         d = Vector((f.x * math.cos(a) - f.y * math.sin(a), f.x * math.sin(a) + f.y * math.cos(a), 0))
-        tg = M['pico_face'] - Vector((0, 0, 0.05))
-        p = tg + d * 1.30 + Vector((0, 0, 0.0))
-        look5.aim(cam, p, tg, 42)
+        tg = M['pico_face'] - Vector((0, 0, 0.12))
+        p = tg + d * 1.25 + Vector((0, 0, 0.02))
+        look5.aim(cam, p, tg, 60)
         look5.dof(cam, (tg - p).length, 2.8)
     elif name == 'swivel':
         look5.aim(cam, (-0.55, 1.62, 1.62), (-3.10, 2.80, 0.95), 30)
@@ -218,14 +227,14 @@ def camera_setup(W, cam, name, t=None):
         h = W['headings']['nox_to_pico']
         f = Vector((math.sin(h), -math.cos(h), 0))
         face = M['nox_face_up']
-        dist = 1.05                                 # the slow push-in on the punchline is done in finish() (PUSH)
-        p = face + f * dist + Vector((0, 0, 0.16)) + Vector((-f.y, f.x, 0)) * 0.12
-        look5.aim(cam, p, face, 45)
+        dist = 0.85                                 # the slow push-in on the punchline is done in finish() (PUSH)
+        p = face + f * dist + Vector((0, 0, 0.13)) + Vector((-f.y, f.x, 0)) * 0.10
+        look5.aim(cam, p, face - Vector((0, 0, 0.06)), 50)
         look5.dof(cam, (face - p).length, 2.8)
     elif name == 'pico_cu':
-        tg = M['pico_face']
-        p = M['nox_face_up'] + (tg - M['nox_face_up']).normalized() * 0.55 + Vector((0.08, 0.10, 0.02))
-        look5.aim(cam, p, tg, 50)
+        tg = M['pico_face'] - Vector((0, 0, 0.07))
+        p = M['nox_face_up'] + (tg - M['nox_face_up']).normalized() * 0.75 + Vector((0.08, 0.10, 0.10))
+        look5.aim(cam, p, tg, 66)
         look5.dof(cam, (tg - p).length, 2.8)
     elif name == 'two':
         look5.aim(cam, (-3.60, 0.60, 1.30), (-2.20, 2.25, 1.10), 30)
@@ -385,6 +394,9 @@ def dynamic_objects(W):
     st = W['set'].get('stool')
     if st is not None and 'pivot' in st.parts:
         out += [o for o in st.parts['pivot'].children_recursive if o.type in ('MESH', 'CURVE')]
+    cb = W['set'].get('cable')
+    if cb is not None:
+        out += [o for o in cb.col.objects if o.type in ('MESH', 'CURVE')]
     return out
 
 
@@ -484,8 +496,13 @@ def merge(raw, plate, box):
     m = np.asarray(mi).astype(np.float32) / 255
     # fade to the plate at the border edges so that the rectangle never shows
     hh, ww = m.shape
-    ey = np.minimum(np.arange(hh), np.arange(hh)[::-1]) / 6.0
-    ex = np.minimum(np.arange(ww), np.arange(ww)[::-1]) / 6.0
+    big = 1e9                                            # no fade on a side that is the edge of the picture itself
+    top = np.arange(hh) / 6.0 if y0 > 0 else np.full(hh, big)
+    bot = np.arange(hh)[::-1] / 6.0 if y1 < H else np.full(hh, big)
+    lef = np.arange(ww) / 6.0 if x0 > 0 else np.full(ww, big)
+    rig = np.arange(ww)[::-1] / 6.0 if x1 < Wd else np.full(ww, big)
+    ey = np.minimum(top, bot)
+    ex = np.minimum(lef, rig)
     m *= np.clip(np.minimum(ey[:, None], ex[None, :]), 0, 1)
     out[y0:y1, x0:x1] = p * (1 - m[..., None]) + f * m[..., None]
     return out
