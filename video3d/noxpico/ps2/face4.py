@@ -42,26 +42,32 @@ def line_segments(E, lid, min_close=0.10, min_vis=0.067):
     """[(t0, t1, viseme)] for a line, phrase by phrase; closures (PP, commas, full stops) last at least min_close,
     nothing is shorter than min_vis (2 frames)."""
     import speech_fr as SP
-    import script4
+    phrases = getattr(E, 'PHRASES', None)
+    if phrases is None:
+        import script4
+        phrases = script4.PHRASES
     out = []
-    for text, p0, p1 in script4.PHRASES[lid]:
+    for text, p0, p1 in phrases[lid]:
         seq = list(SP.french_visemes(text))
         while seq and seq[-1][0] == 'sil':                   # the phrase ends when its last sound ends
             seq.pop()
         segs = [[v, d] for v, d in seq]
         tot = sum(d for _, d in segs)
         k = (p1 - p0) / tot
+        VOW = ('aa', 'E', 'I', 'O', 'U')
         for sg in segs:
             sg[1] *= k
-            need = min_close if sg[0] in ('PP', 'sil') else min_vis
+            need = min_close if sg[0] in ('PP', 'sil') else (min_vis if sg[0] in VOW else 0.033)
             if sg[1] < need:
                 sg[1] = need
         extra = sum(d for _, d in segs) - (p1 - p0)
-        if extra > 0:
-            flex = [sg for sg in segs if sg[0] in ('aa', 'E', 'I', 'O', 'U')]
-            tf = sum(sg[1] for sg in flex)
+        if extra > 0:                                       # take the overflow from the non-labial consonants (v4-face F6)
+            flex = [sg for sg in segs if sg[0] not in VOW + ('PP', 'FF', 'sil') and sg[1] > 0.034]
+            if not flex:
+                flex = [sg for sg in segs if sg[0] in VOW]
+            tf = sum(sg[1] - 0.033 for sg in flex) or 1.0
             for sg in flex:
-                sg[1] -= extra * sg[1] / tf
+                sg[1] -= min(sg[1] - 0.033, extra * (sg[1] - 0.033) / tf) if sg[0] not in VOW else extra * sg[1] / tf
         t = p0
         for v, d in segs:
             out.append((t, t + d, v))
@@ -71,12 +77,14 @@ def line_segments(E, lid, min_close=0.10, min_vis=0.067):
 
 def stressed_vowels(E, lid, words):
     """Times of the loudest vowel of each word given (the head nods and brow raises land on them)."""
-    import chore4
+    chore = getattr(E, 'CHORE', None)
+    if chore is None:
+        import chore4 as chore
     segs = line_segments(E, lid)
     out = []
     for w in words:
-        ws = chore4.word(E, lid, w)
-        we = next(e for ww, s, e in chore4.word_times(E, lid) if abs(s - ws) < 1e-6)
+        ws = chore.word(E, lid, w)
+        we = next(e for ww, s, e in chore.word_times(E, lid) if abs(s - ws) < 1e-6)
         best = None
         for t0, t1, v in segs:
             if t1 > ws and t0 < we and v in VIS and VIS[v].get('jawOpen', 0) >= 0.5:
@@ -123,7 +131,12 @@ class FaceTrack:
                     tgt[i0:i1, j] = min(x, 1.0)
                 talk[i0:i1] = 1.0
         # 10-90 % in about 70 ms: a critically damped follower with a 15 ms half-life
-        self.mouth = AC.Baked(AC.spring_follow(tgt, RATE, 0.0145).clip(0, 1), RATE)
+        m = AC.spring_follow(tgt, RATE, 0.0145)
+        slow = AC.spring_follow(tgt, RATE, 0.035)                       # mouth width changes less often (v4-face F11)
+        for j, key in enumerate(MOUTH_KEYS):
+            if key in ('mouthWide', 'mouthNarrow'):
+                m[:, j] = slow[:, j]
+        self.mouth = AC.Baked(m.clip(0, 1), RATE)
         self.talk = AC.Baked(AC.spring_follow(talk[:, None], RATE, 0.08)[:, 0], RATE)
 
     # ---- blinks

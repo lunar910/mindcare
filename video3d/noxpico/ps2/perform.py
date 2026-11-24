@@ -176,7 +176,11 @@ class Gaze:
         0.17 s), like the reference; bigger turns grow more slowly (the body helps)."""
         if deg <= 30.0:
             return max(0.20, 0.27 + 0.022 * (deg - 15.0))
-        return min(1.1, 0.60 + 0.006 * (deg - 30.0))
+        if deg < 40.0:
+            return 0.60 + 0.006 * (deg - 30.0)
+        return min(1.4, 0.70 + 0.008 * (deg - 30.0))      # big turns: minimum-jerk, peak ~ reference speed (v4-face F1)
+
+    BIG = 40.0
 
     @staticmethod
     def eye_duration(deg):
@@ -185,6 +189,7 @@ class Gaze:
     def _build(self, kind):
         """Segments [(t_start, dur, p_from, key_index)] for 'eyes', 'head' or 'chest'."""
         segs = []
+        big = set()
 
         def at(t):
             if not segs:
@@ -192,7 +197,7 @@ class Gaze:
             for (t0, d, pf, k) in reversed(segs):
                 if t >= t0:
                     pt = self._goal(kind, k, t)
-                    ease = AC.minjerk if kind == 'eyes' else AC.snappy
+                    ease = AC.minjerk if (kind == 'eyes' or t0 in big) else AC.snappy
                     return pt if t >= t0 + d else self._interp(pf, pt, ease((t - t0) / d), t)
             return segs[0][2]
         for k, key in enumerate(self.keys):
@@ -215,7 +220,11 @@ class Gaze:
                 d = self.head_duration(deg) * self.speed
             else:
                 d = self.head_duration(deg) * self.speed * 1.4
+            if kind != 'eyes' and deg >= self.BIG:
+                big.add(t0)
             segs.append((t0, max(d, 1.0 / 60), pf, k))
+        if kind == 'head':
+            self.head_big = big
         return segs, at
 
     def _interp(self, pf, pt, w, t):
@@ -253,12 +262,16 @@ class Gaze:
         self.eyes_b, self.head_b, self.chest_b = out['eyes'], out['head'], out['chest']
 
     def turns(self, min_deg=15.0):
-        """[(t_peak_speed, degrees, duration)] of the head turns of at least min_deg (blinks go there)."""
+        """[(t_peak_speed, degrees, duration)] of the head turns of at least min_deg (blinks go there).  The peak of a
+        'snappy' turn is early (~22 % of it), of a big minimum-jerk turn in the middle.  Glances (share < 1) excluded."""
         out = []
+        big = getattr(self, 'head_big', set())
         for (t0, d, pf, k) in self.head_segs[1:]:
+            if self._share(k) < 1.0:
+                continue
             deg = self.angle(pf, self._goal('head', k, t0), t0)
             if deg >= min_deg:
-                out.append((t0 + d / 2, deg, d))
+                out.append((t0 + (0.5 if t0 in big else 0.22) * d, deg, d))
         return out
 
     def eye_target(self, t):
@@ -280,8 +293,9 @@ class Gesture:
     weight goes 0 -> 1 over the first key interval (from the base pose) and 1 -> 0 over the last one.
     elbow = (right, forward, up) pole direction for the elbow (default: out and back)."""
 
-    def __init__(self, side, keys, elbow=None, ease_in=None, ease_out=None):
+    def __init__(self, side, keys, elbow=None, ease_in=None, ease_out=None, profile='snappy', thumb=None):
         self.side, self.keys = side, keys
+        self.profile, self.thumb = profile, thumb
         sx = 1.0 if side == 'Right' else -1.0
         self.elbow = elbow or (0.7 * sx, -0.55, -0.45)
         self.t0, self.t1 = keys[0][0], keys[-1][0]
@@ -292,7 +306,8 @@ class Gesture:
         if t <= self.t0 or t >= self.t1:
             return 0.0
         if t < self.t0 + self.ease_in:
-            return AC.snappy((t - self.t0) / self.ease_in)
+            e = AC.minjerk if self.profile == 'minjerk' else AC.snappy
+            return e((t - self.t0) / self.ease_in)
         if t > self.t1 - self.ease_out:
             return 1.0 - AC.minjerk((t - (self.t1 - self.ease_out)) / self.ease_out)
         return 1.0
@@ -318,7 +333,8 @@ class Gesture:
 # ------------------------------------------------------------------ the performer
 class Performer:
     def __init__(self, actor, base, mark, heading, gaze=None, gestures=(), accents=(), life=None, lock_from=0.0,
-                 heading_keys=None, extra=None, relax_curl=0.32, gaze_weight=None, hips_yaw=None, spine_yaw=None):
+                 heading_keys=None, extra=None, relax_curl=0.32, gaze_weight=None, hips_yaw=None, spine_yaw=None,
+                 torso_share=0.3, lock_capture=0.5, lock_ramp=0.4):
         self.a, self.base, self.mark, self.heading = actor, base, mark, heading
         self.gaze, self.gestures, self.accents = gaze, list(gestures), list(accents)
         self.life = life or Life()
@@ -328,6 +344,8 @@ class Performer:
         self.relax_curl = relax_curl
         self.gaze_weight = gaze_weight          # [(t, w)] or None (= 1)
         self.hips_yaw, self.spine_yaw = hips_yaw, spine_yaw      # [(t, degrees)]: turning the body towards someone, feet planted
+        self.torso_share = torso_share          # how much of a nod / pitch hold the chest carries (v4-body F4)
+        self.lock_capture, self.lock_ramp = lock_capture, lock_ramp   # feet captured lock_capture s after lock_from
         self.lock = footlock.FootLock(actor)
         self.locked = False
         arm = actor.arm
@@ -370,7 +388,7 @@ class Performer:
             self.gaze.prepare(t_end)
         self.base.calibrate(self.mark)
         # plant the feet once, from the calmest moment after lock_from
-        self.pose_body(self.lock_from + 0.5, lock=False)
+        self.pose_body(self.lock_from + self.lock_capture, lock=False)
         self.lock.capture(floor=None)
         floor = min(self.lock.pos['Left'].z, self.lock.pos['Right'].z)
         for s in ('Left', 'Right'):
@@ -395,7 +413,7 @@ class Performer:
         if self.hips_yaw:
             PP.rotate_bone_world(arm, 'Hips', Quaternion(u, math.radians(AC.curve(self.hips_yaw, t))))
         if lock and self.locked and t >= self.lock_from:
-            w = 1.0 if self.lock_from <= 0.0 else AC.minjerk((t - self.lock_from) / 0.4)
+            w = 1.0 if self.lock_from <= 0.0 else AC.minjerk((t - self.lock_from) / self.lock_ramp)
             self.lock.apply(w)
         # breathing: chest rises, shoulders lift a hair
         b, deg = L.breath(t)
@@ -427,9 +445,24 @@ class Performer:
                     else:
                         w = 1.0 - AC.minjerk((t - t0_ - rise - hold) / fall)
                     lean_t += deg * max(w, 0.0)
+        pitch_t = 0.0                              # held pitches (chin up / head down) also move the chest a little
+        for acc in self.accents:
+            if acc[1] == 'pitch':
+                t0_, _, deg, rise, hold, fall = acc
+                if t >= t0_:
+                    if t < t0_ + rise:
+                        w = AC.snappy((t - t0_) / rise)
+                    elif t < t0_ + rise + hold:
+                        w = 1.0
+                    else:
+                        w = 1.0 - AC.minjerk((t - t0_ - rise - hold) / fall)
+                    pitch_t += deg * max(w, 0.0)
         left_axis = Vector((math.cos(a.heading), math.sin(a.heading), 0.0))
-        if nod_t or lean_t:                        # head and chest start together; the chest moves about a third as much
-            PP.rotate_bone_world(arm, 'Spine', Quaternion(left_axis, math.radians(0.3 * nod_t + 0.5 * lean_t)))
+        ts = self.torso_share
+        if nod_t or lean_t or pitch_t:             # head and chest start together; the chest carries torso_share of it
+            PP.rotate_bone_world(arm, 'Spine', Quaternion(left_axis, math.radians(ts * 0.45 * (nod_t + pitch_t) + 0.5 * lean_t)))
+            if ts:
+                PP.rotate_bone_world(arm, 'Spine01', Quaternion(left_axis, math.radians(ts * 0.55 * (nod_t + pitch_t))))
             if lean_t:
                 PP.rotate_bone_world(arm, 'Spine01', Quaternion(left_axis, math.radians(0.5 * lean_t)))
         if self.spine_yaw:
@@ -483,6 +516,7 @@ class Performer:
                     tilt += deg * max(w, 0.0)
         drift_y = L.head * AC.noise(t, L.seed + 11, 0.23, 3)
         drift_p = L.head * 0.7 * AC.noise(t, L.seed + 23, 0.19, 3)
+        tilt += 0.5 * L.head * AC.noise(t, L.seed + 31, 0.17, 3)        # a living head is never perfectly still
         f, r, u = AC.body_frame(a)
         hf = (AC.joint(arm, 'headfront') - AC.joint(arm, 'Head')).normalized()
         side = hf.cross(u).normalized()
@@ -499,6 +533,7 @@ class Performer:
         if self.extra:
             self.extra(self, t, 'arms')
         curls = {'Left': self.relax_curl, 'Right': self.relax_curl}
+        thumbs = {'Left': None, 'Right': None}
         for g in self.gestures:
             w = g.weight(t)
             if w <= 0:
@@ -511,8 +546,11 @@ class Performer:
             if palm is not None and fing is not None:
                 self.orient_hand(s, self.to_world(palm), self.to_world(fing), w)
             curls[s] = curls[s] * (1 - w) + curl * w
+            if g.thumb is not None:
+                thumbs[s] = (0.25 + 0.3 * curls[s]) * (1 - w) + g.thumb * w
+        self.curls, self.thumbs = curls, thumbs
         for s, S in (('Left', 'L'), ('Right', 'R')):
-            rigext.hand_pose(arm, S, curl=curls[s], thumb=0.25 + 0.3 * curls[s])
+            rigext.hand_pose(arm, S, curl=curls[s], thumb=thumbs[s] if thumbs[s] is not None else 0.25 + 0.3 * curls[s])
 
     def orient_hand(self, side, palm_w, fing_w, w=1.0):
         """Turn the hand so that its fingers point along fing_w and its palm faces palm_w (world directions)."""

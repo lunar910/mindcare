@@ -111,3 +111,35 @@ Nouveau moteur de jeu, par couches :
 ./run_v4.sh out_v4b              # les 648 images (décors des plans repris de la v3)
 python post2.py video out_v4b Nox-et-Pico-ep01-extrait-3D-v4.mp4
 ```
+
+## Version 5 — la DA de la référence : rendu réaliste, grand loft, plans courts (`ps2/excerpt5.py`)
+
+Retours : « les personnages ne ressemblent pas à la DA de la vidéo », « Nox est courbé à l'établi », « mains de VR »,
+« personnages trop grands pour le décor : agrandir, plus de plans, cinématique PS2 ».
+
+- **Rendu** (`look5.py`, `cast5.py`) : Cycles en vrai tracé de chemins (lumière physique, ombres douces, rebonds),
+  étalonnage AgX « Punchy », débruitage OIDN, sortie douce sans tramage (agrandissement Lanczos + grain léger).
+  Les personnages gardent toutes les textures Meshy (couleur 4K, relief, brillance) ; le relief est atténué sur le
+  visage (bosses), avec un peu de diffusion sous la peau.
+- **Décor** (`set5/`, plan dans `set5/SPEC.md`) : loft industriel de 9 × 8 m à l'échelle réelle — baie vitrée
+  d'acier sur une ville de nuit (`set5/city.py` : pentes, toits en zinc, colline, basilique, feux d'aviation),
+  poutres, gaine, suspensions (`set5/arch.py`), établi complet de Nox avec lampe d'architecte, oscilloscope, fer à
+  souder, tabouret pivotant (`set5/workstation.py`), canapé, étagères garnies, coin cuisine, plantes
+  (`set5/living.py`), ballon, skate, sac, Bip (`set5/extras.py`). Matières procédurales réalistes (`mat5.py`),
+  kit de modélisation biseauté (`kit5.py`).
+- **Nox assis** (`seat5.py`) : bassin posé sur l'assise, jambes en IK, pieds à plat, buste penché depuis les hanches ;
+  le tabouret pivote avec lui.
+- **Mains** (`hands5.py`) : 5 doigts × 3 phalanges détectés sur le maillage, mains réduites à 90 %, poses (relâchée,
+  prise de stylo pour le fer, paume ouverte, poing souple…), vie légère par doigt, retard naturel du poignet.
+- **Découpage** (`script5.py`, `chore5.py`) : 11 plans de 0,8 à 4 s — ouverture sur Nox seul à gauche, porte qui
+  claque, Nox qui soude sans se retourner pendant que Pico arrive, question, insert sur la lumière verte qui pulse
+  sous la montre, réplique sans lever la tête, réaction vexée de Pico, pivotement du tabouret, gros plan (léger
+  zoom), réponse boudeuse, plan à deux.
+- **Rendu rapide et stable** : chaque plan a une caméra fixe ; son décor est calculé une fois en haute qualité, puis
+  chaque image ne recalcule que la zone des personnages (peu d'échantillons) et la fusionne là où elle diffère : pas de
+  scintillement du fond, ~15 s par image.
+
+```
+./run_v5.sh out_v5               # fonds des plans puis les 738 images (2 processus)
+./finish_v5.sh out_v5 v5         # vidéo finale avec sous-titres, musique et bruitages
+```

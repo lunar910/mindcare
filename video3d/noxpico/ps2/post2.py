@@ -23,9 +23,17 @@ FPS = 30
 LUFS = -17.0
 
 
+SCRIPT = os.environ.get('NP_SCRIPT', 'script4')      # script5 for version 5
+
+
+def script():
+    import importlib
+    return importlib.import_module(SCRIPT)
+
+
 def lines():
-    import script4
-    return script4.LINES, script4.T_END
+    sc = script()
+    return sc.LINES, sc.T_END
 
 
 # ---------------------------------------------------------------- captions
@@ -63,10 +71,10 @@ def timed_chunks():
     series = chunks_from_series()
     out = []
     k = 0
-    import script4
+    sc = script()
     for lid, who, t0, dur, text in L:
         words = text.split()
-        starts = [st for _, st, _ in script4.word_times(lid)]
+        starts = [st for _, st, _ in sc.word_times(lid)]
         used = 0
         target = [norm(w) for w in words if norm(w)]
         while used < len(target) and k < len(series):
@@ -147,11 +155,14 @@ def cmd_captions(out, times):
 
 def mix_audio(path, t_end):
     A = K + '/assets'
+    sc = script()
+    door_ms = int(round(getattr(sc, 'DOOR_SFX', 0.30) * 1000))          # when the door sample starts
+    steps_ms = int(round(getattr(sc, 'STEPS_SFX', 0.62) * 1000))
     # music bed (as in the series, a bit more present since there are no voices), the door flung open, running steps
     fc = ('[0:a]atrim=0.9:{m1},asetpts=PTS-STARTPTS,volume=1.0,afade=t=in:st=0:d=0.4,afade=t=out:st={fo}:d=1.2[m];'
-          '[1:a]atrim=4.30:5.60,asetpts=PTS-STARTPTS,afade=t=out:st=1.0:d=0.3,adelay=300|300,volume=0.30[d];'
-          '[2:a]atrim=2.45:3.85,asetpts=PTS-STARTPTS,afade=t=out:st=1.05:d=0.35,adelay=620|620,volume=0.34[f];'
-          '[m][d][f]amix=inputs=3:normalize=0,atrim=0:{te}[a]').format(m1=0.9 + t_end, fo=t_end - 1.2, te=t_end)
+          '[1:a]atrim=4.30:5.60,asetpts=PTS-STARTPTS,afade=t=out:st=1.0:d=0.3,adelay={dm}|{dm},volume=0.30[d];'
+          '[2:a]atrim=2.45:3.85,asetpts=PTS-STARTPTS,afade=t=out:st=1.05:d=0.35,adelay={sm}|{sm},volume=0.34[f];'
+          '[m][d][f]amix=inputs=3:normalize=0,atrim=0:{te}[a]').format(m1=0.9 + t_end, fo=t_end - 1.2, te=t_end, dm=door_ms, sm=steps_ms)
     subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', A + '/music/cute.mp3', '-i', A + '/sfx8/door.mp3', '-i', A + '/sfx8/footsteps.mp3',
                     '-filter_complex', fc, '-map', '[a]', '-ar', '48000', '-ac', '2', '-c:a', 'pcm_s16le', path], check=True)
     # two-pass loudness: measure, then one fixed gain; a limiter only catches the few peaks above -1 dBFS

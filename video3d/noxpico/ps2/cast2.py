@@ -14,6 +14,7 @@ RIG = S + '/meshy/models/rig'
 ANIM = S + '/meshy/models/anim'
 VAR = S + '/np3d_prod/out_face/var'
 FIX = S + '/ps2/out_fix'
+MATTE = True          # v2-v4: flat PS2 materials; v5 keeps Meshy's full PBR maps (normal, roughness)
 
 
 def matte(ob):
@@ -51,7 +52,8 @@ class Actor:
             b.rotation_quaternion = (1, 0, 0, 0)
         bpy.context.view_layer.update()
         rigext.add_fingers(self.arm, self.mesh)
-        matte(self.mesh)
+        if MATTE:
+            matte(self.mesh)
         # real facial expressions (shape keys) when the face has been located on this model (see faceprep.py)
         self.face = None
         import facemorph
