@@ -63,3 +63,22 @@ Les modèles Meshy n'ont pas de squelette de visage. Les expressions sont donc f
 `anim2.retarget` rejoue une animation Meshy sur un autre squelette Meshy (écart moyen ~3°) : pas besoin de racheter les clips.
 
 Aperçus : `apercus/v2_expressions.jpg` ; essais de personnages réalistes (style de la vidéo de référence) : `apercus/v3_concepts_realistes.jpg`.
+
+## Version 3 — personnages réalistes, éclairage de nuit, décor enrichi (`ps2/excerpt3.py`)
+
+Après la vidéo de référence fournie (cinématique façon PS2 avec personnages réalistes, visages expressifs, décor riche) :
+- **Personnages** : Nox et Pico refaits dans un style réaliste (proportions adultes, visage peint, cheveux anguleux).
+  Dessins de départ par `ps2/meshy_t2i.py` / `ps2/meshy_i2i.py` (textes dans `ps2/prompts/`), puis `ps2/meshy_char3d.py`
+  (image → 3D texturé en T-pose → allègement à 80 000 triangles → squelette). Identifiants dans `meshy_taches.md`.
+- **Animations** : celles des premiers modèles, rejouées sur les nouveaux squelettes (`anim2.retarget`), sans rachat.
+- **Expressions** : `faceprep.py` + `facemorph.py` sur les nouveaux modèles ; piste `FACE` dans `excerpt3.py`.
+- **Lumière** : pièce sombre et froide, une lumière principale chaude qui projette de vraies ombres (carte d'ombres :
+  `ps2render.shadow_setup` / `render_shadow`, `ps2shade.shadow`), personnages plus éclairés que le décor.
+- **Décor** (`decor3.py`) : suspension au premier plan, meuble sous la fenêtre (radio, livres, cactus), caisse à outils,
+  étagère au-dessus de la porte, couloir habillé (tableau, applique, porte-manteau avec veste et casquette).
+
+```
+./run_v3.sh                      # décors des plans puis les 648 images (3 processus)
+python post2.py video out_v3 Nox-et-Pico-ep01-extrait-3D-v3.mp4
+```
+Aperçus : `apercus/v3_images_cles.jpg`, `apercus/v3_expressions.jpg`.

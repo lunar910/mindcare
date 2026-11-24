@@ -23,6 +23,7 @@ OUT = HERE + '/out_face2'
 OVAL = [10, 338, 297, 332, 284, 251, 389, 356, 454, 323, 361, 288, 397, 365, 379, 378, 400, 377, 152, 148, 176, 149, 150, 136, 172, 58, 132,
         93, 234, 127, 162, 21, 54, 103, 67, 109]
 BROW = {'R': [70, 63, 105, 66, 107], 'L': [300, 293, 334, 296, 336]}          # outer -> inner
+BROW_LOW = {'R': [46, 53, 52, 65, 55], 'L': [276, 283, 282, 295, 285]}        # lower edge of the eyebrows
 EYE_UP = {'R': [160, 159, 158], 'L': [385, 386, 387]}
 EYE_LO = {'R': [144, 145, 153], 'L': [373, 374, 380]}
 EYE_CORN = {'R': [33, 133], 'L': [263, 362]}                                    # outer, inner
@@ -272,10 +273,13 @@ def build(mesh, arm, name, refine=2, glasses=False):
     up, right = np.array([0, 0, 1.0]), np.array([1.0, 0, 0])
     for s, sx in (('R', -1.0), ('L', 1.0)):
         b = L[BROW[s]]
-        add(f'browUp_{s}', _field(A, [(b[0], up * 0.10 * io, 0.20), (b[2], up * 0.17 * io, 0.20), (b[4], up * 0.16 * io, 0.20)], io))
-        add(f'browDown_{s}', _field(A, [(b[0], up * 0.02 * io, 0.18), (b[2], -up * 0.07 * io, 0.18),
-                                        (b[4], -up * 0.13 * io - right * sx * 0.05 * io, 0.18)], io))
-        add(f'browSad_{s}', _field(A, [(b[0], -up * 0.05 * io, 0.18), (b[2], up * 0.04 * io, 0.18), (b[4], up * 0.15 * io, 0.18)], io))
+        # with glasses the frame sits right under the eyebrows: the brow moves, what is under its lower edge does not
+        low = float(L[BROW_LOW[s]][:, 2].mean())
+        att = (_smooth(A[:, 2], low - 0.10 * io, low + 0.01 * io) if glasses else np.ones(len(A)))[:, None]
+        add(f'browUp_{s}', att * _field(A, [(b[0], up * 0.10 * io, 0.20), (b[2], up * 0.17 * io, 0.20), (b[4], up * 0.16 * io, 0.20)], io))
+        add(f'browDown_{s}', att * _field(A, [(b[0], up * 0.02 * io, 0.18), (b[2], -up * (0.045 if glasses else 0.07) * io, 0.18),
+                                              (b[4], -up * (0.09 if glasses else 0.13) * io - right * sx * 0.05 * io, 0.18)], io))
+        add(f'browSad_{s}', att * _field(A, [(b[0], -up * 0.05 * io, 0.18), (b[2], up * 0.04 * io, 0.18), (b[4], up * 0.15 * io, 0.18)], io))
         eu, el, ec = L[EYE_UP[s]], L[EYE_LO[s]], L[EYE_CORN[s]]
         ce = (ec[0] + ec[1]) / 2
         eh = max(float(np.linalg.norm(eu[1] - el[1])), 0.12 * io)             # eye opening
@@ -285,7 +289,7 @@ def build(mesh, arm, name, refine=2, glasses=False):
         if glasses:
             # behind glasses the eye is painted on the lens: stretch or squeeze it inside the lens, never move the frame
             w = 1.0 - _smooth(r2, 0.45, 1.05)
-            for key, k in ((f'eyeWide_{s}', 0.30), (f'eyeSquint_{s}', -0.40)):
+            for key, k in ((f'eyeWide_{s}', 0.20), (f'eyeSquint_{s}', -0.40)):
                 D = np.zeros_like(A)
                 D[:, 2] = (A[:, 2] - line_z) * k * w
                 add(key, D)
@@ -328,12 +332,20 @@ def build(mesh, arm, name, refine=2, glasses=False):
     smax = np.full(n, -1e9)
     np.minimum.at(smin, lvert[keep], psd[lpoly[keep]])
     np.maximum.at(smax, lvert[keep], psd[lpoly[keep]])
-    below = _smooth(-sdist, -0.004, 0.004)                                  # far from the cut: a smooth ramp across the line
-    cutzone = (np.abs(A[:, 0] - face.xm) < face.mouth_w * 0.5 * 1.12) & (np.abs(sdist) < 0.28 * io)
-    below[cutzone & (smax <= 1e-5)] = 1.0                                   # all its faces are under the line: lower lip
-    below[cutzone & (smin >= -1e-5)] = 0.0                                  # all above: upper lip
-    below[info['lower']] = 1.0
-    below[info['upper']] = 0.0
+    # Beyond the corners of the mouth nothing is cut: there the cheek has to stretch between the fixed upper face and
+    # the moving jaw, so the change-over across the mouth line gets wider and wider (a narrow one makes a crease).
+    hw = face.mouth_w * 0.5
+    latd = np.maximum(0.0, np.abs(A[:, 0] - face.xm) - 0.85 * hw)
+    wd = 0.004 + 1.1 * latd
+    ramp = _smooth(-sdist, -wd, wd)
+    hard = ramp.copy()
+    cutzone = (np.abs(A[:, 0] - face.xm) < hw * 1.12) & (np.abs(sdist) < 0.28 * io)
+    hard[cutzone & (smax <= 1e-5)] = 1.0                                    # all its faces are under the line: lower lip
+    hard[cutzone & (smin >= -1e-5)] = 0.0                                   # all above: upper lip
+    hard[info['lower']] = 1.0
+    hard[info['upper']] = 0.0
+    u = _smooth(np.abs(A[:, 0] - face.xm), 0.78 * hw, 1.10 * hw)            # 0 between the lips, 1 past the corners
+    below = (1 - u) * hard + u * ramp
     for vi, (ai, kind) in info['anchors'].items():
         below[vi] = 1.0 if kind in ('bag_l', 'teeth_l') else 0.0
     xj = max(abs(L[172][0] - face.xm), abs(L[397][0] - face.xm))

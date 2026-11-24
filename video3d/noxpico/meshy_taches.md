@@ -28,3 +28,16 @@ Les modèles se retéléchargent depuis le compte Meshy avec ces identifiants (`
 - Animation pico_talk : `01a20972-d281-73e2-b424-4037a3705df1`
 
 Nox (version corrigée) : modèle 3D, allègement, squelette et animations produits par `scripts/meshy_nox_pipeline.py` (voir son journal).
+
+## Version 3 — personnages réalistes
+
+| Personnage | Étape | Identifiant de tâche Meshy |
+|---|---|---|
+| picoR | 3d | `01a20aab-5c8f-75bd-9af6-607718e96a64` |
+| picoR | remesh | `01a20aad-5377-77cb-9e1d-f74f5eba273b` |
+| picoR | rig | `01a20aaf-8e41-753d-ba70-dcab80c80449` |
+| noxR | 3d | `01a20aab-5d1f-77e8-a458-bec6c6f734ff` |
+| noxR | remesh | `01a20aad-021c-7092-9177-0e35ff600134` |
+| noxR | rig | `01a20aaf-3b2b-777e-81e9-ab8c0a385c5d` |
+
+Dessins de départ : `ps2/prompts/*.txt` (nano-banana-pro). Animation ajoutée pour Pico : « Talk with Left Hand Raised » (action 310).

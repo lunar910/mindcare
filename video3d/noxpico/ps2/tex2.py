@@ -177,10 +177,10 @@ def rug(px=256):
 
 
 # ------------------------------------------------------------------ the corridor seen through the open door
-def corridor_wall(picture=True, px_per_m=64, width=1.9, height=2.9):
+def corridor_wall(picture=True, px_per_m=64, width=1.9, height=2.9, paint=(214, 150, 112)):
     """Hallway wall: salmon paint above a wooden wainscot, a small framed picture (drawn front-on, real size)."""
     W, H = int(width * px_per_m), int(height * px_per_m)
-    im = Image.new('RGBA', (W, H), (214, 150, 112, 255))
+    im = Image.new('RGBA', (W, H), tuple(paint) + (255,))
     d = ImageDraw.Draw(im)
     wy = H - int(0.95 * px_per_m)                                          # wainscot: the lowest 95 cm
     d.rectangle([0, wy, W, H], fill=(124, 82, 56, 255))

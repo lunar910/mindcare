@@ -129,3 +129,38 @@ def cam_info(cam):
     m = cam.matrix_world
     return dict(pos=tuple(m.translation), fwd=tuple(-m.col[2].xyz), up=tuple(m.col[1].xyz), right=tuple(m.col[0].xyz),
                 vfov=cam.data.angle)
+
+# ------------------------------------------------------------------ shadow map of the key light
+def shadow_setup(pos, target, fov_deg=112.0, size=1024):
+    """A second camera at the key light: what it sees is lit, what is hidden from it is in shadow (ps2shade.shadow)."""
+    cd = bpy.data.cameras.new('shadowcam')
+    cd.sensor_fit = 'VERTICAL'
+    cd.clip_start, cd.clip_end = 0.05, 100
+    cam = bpy.data.objects.new('shadowcam', cd)
+    bpy.context.scene.collection.objects.link(cam)
+    cam.location = Vector(pos)
+    cam.rotation_euler = (Vector(target) - Vector(pos)).to_track_quat('-Z', 'Y').to_euler()
+    cd.angle = math.radians(fov_deg)
+    bpy.context.view_layer.update()
+    m = cam.matrix_world
+    _STATE['shadow'] = dict(cam=cam, size=size)
+    return dict(pos=tuple(m.translation), right=tuple(m.col[0].xyz), up=tuple(m.col[1].xyz), fwd=tuple(-m.col[2].xyz),
+                tan=math.tan(math.radians(fov_deg) / 2), size=size)
+
+
+def render_shadow(path, which):
+    """Positions seen from the light, for the static set or for the moving objects."""
+    sc = bpy.context.scene
+    keep = (sc.camera, sc.render.resolution_x, sc.render.resolution_y)
+    sh = _STATE['shadow']
+    sc.camera = sh['cam']
+    sc.render.resolution_x = sc.render.resolution_y = sh['size']
+    _show(which)
+    if which == 'static':
+        for o in _STATE['static']:
+            if o.get('no_shadow'):                              # e.g. the lamp itself
+                o.hide_render = True
+    sc.render.filepath = path
+    bpy.ops.render.render(write_still=True)
+    sc.camera, sc.render.resolution_x, sc.render.resolution_y = keep
+    _show('dynamic')

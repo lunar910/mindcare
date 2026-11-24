@@ -93,6 +93,8 @@ def shade(G, lights, cam=None, ao_strength=1.0, ao_floor=0.0):
                 att = att * (P[..., 1] > L['ymin'])
             if 'ymax' in L:
                 att = att * (P[..., 1] < L['ymax'])
+            if 'factor' in L:                                      # e.g. the cast shadow of this light
+                att = att * L['factor']
             E += (nl * att)[..., None] * col
         elif t == 'rim' and cam is not None:
             V = _v(cam['pos']) - P
@@ -182,3 +184,40 @@ def finish(rgb, ss=2, exposure=1.0, glow=0.30, glow_thresh=1.05, glow_sigma=5.0,
         k = max(2, int(np.ceil(4 * out_size[0] / im.size[0] / 2)))          # nearest up, then area down: firm but not harsh pixels
         im = im.resize((im.size[0] * k, im.size[1] * k), Image.NEAREST).resize(tuple(out_size), Image.BOX if (im.size[0] * k) % out_size[0] == 0 else Image.BILINEAR)
     return im
+
+# ------------------------------------------------------------------ cast shadows of the key light (shadow map)
+def shadow_map(path, info):
+    """Distance from the light to the first surface, for every direction seen by the light's camera."""
+    P = read_exr(path)
+    pos = chan(P, 'Position')
+    comb = chan(P, 'Combined', 4)
+    d = np.linalg.norm(pos - _v(info['pos']), axis=-1)
+    return np.where(comb[..., 3] > 0.5, d, 1e9).astype(np.float32)
+
+
+def shadow(G, dist_map, info, bias=0.03, soft=1.2, taps=2.0):
+    """0..1 for every pixel of G: 1 = the key light reaches it.
+
+    The depth test is averaged over a 3x3 neighbourhood of the map (taps = spacing in map pixels) and the result is
+    blurred a little, which gives a soft, clean edge instead of the staircase of the map's pixels."""
+    P = G['pos']
+    v = P - _v(info['pos'])
+    z = v @ _v(info['fwd'])
+    x = (v @ _v(info['right'])) / np.maximum(z, 1e-4) / info['tan']
+    y = (v @ _v(info['up'])) / np.maximum(z, 1e-4) / info['tan']
+    n = info['size']
+    fx = (x * 0.5 + 0.5) * n
+    fy = (0.5 - y * 0.5) * n
+    inside = (z > 0.05) & (np.abs(x) < 1) & (np.abs(y) < 1)
+    d = np.linalg.norm(v, axis=-1) - bias
+    f = np.zeros(P.shape[:2], dtype=np.float32)
+    for oy in (-taps, 0.0, taps):
+        for ox in (-taps, 0.0, taps):
+            px = np.clip((fx + ox).astype(np.int32), 0, n - 1)
+            py = np.clip((fy + oy).astype(np.int32), 0, n - 1)
+            f += (d <= dist_map[py, px])
+    f = np.where(inside, f / 9.0, 1.0).astype(np.float32)
+    if soft > 0:
+        from scipy.ndimage import gaussian_filter
+        f = gaussian_filter(f, soft)
+    return f
