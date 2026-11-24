@@ -24,10 +24,8 @@ LUFS = -17.0
 
 
 def lines():
-    src = open(HERE + '/excerpt2.py').read()
-    ns = {}
-    exec(re.search(r'LINES = \[.*?\n\]', src, re.S).group(0), ns)
-    return ns['LINES'], float(re.search(r'T_END = ([0-9.]+)', src).group(1))
+    import script4
+    return script4.LINES, script4.T_END
 
 
 # ---------------------------------------------------------------- captions
@@ -65,16 +63,10 @@ def timed_chunks():
     series = chunks_from_series()
     out = []
     k = 0
+    import script4
     for lid, who, t0, dur, text in L:
         words = text.split()
-        est = []
-        for w in words:
-            d = 0.05 + 0.058 * len(re.sub(r'[^\w]', '', w))
-            if re.search(r'[.,!?…]$', w):
-                d += 0.18
-            est.append(d)
-        scale = dur / sum(est)
-        starts = np.cumsum([0] + est[:-1]) * scale + t0
+        starts = [st for _, st, _ in script4.word_times(lid)]
         used = 0
         target = [norm(w) for w in words if norm(w)]
         while used < len(target) and k < len(series):

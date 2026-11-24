@@ -82,3 +82,32 @@ Après la vidéo de référence fournie (cinématique façon PS2 avec personnage
 python post2.py video out_v3 Nox-et-Pico-ep01-extrait-3D-v3.mp4
 ```
 Aperçus : `apercus/v3_images_cles.jpg`, `apercus/v3_expressions.jpg`.
+
+## Version 4 — un jeu plus humain (`ps2/excerpt4.py`, `ps2/chore4.py`)
+
+La vidéo de référence a été mesurée image par image (repères du visage et du corps, flux optique) et comparée à la v3.
+Ce qui la rend humaine : les personnages **tiennent** des poses naturelles ; la tête reste immobile 85 à 97 % du temps
+quand on parle ; un seul accent par réplique, rapide puis tenu ; les yeux partent avant la tête, la tête avant le buste ;
+un clignement pendant les grands tournements de tête ; les hochements tombent sur la voyelle accentuée.
+La v3 faisait l'inverse : un balancement permanent sous chaque animation.
+
+Nouveau moteur de jeu, par couches :
+- `script4.py` : répliques découpées en phrases avec de vrais silences, minutage des mots, plans coupés 0,25-0,3 s avant
+  la première syllabe.
+- `perform.py` : `BaseTrack` (posture tenue, enchaînements de clips), `Life` (respiration, soupirs, haussements
+  d'épaules, presque aucun balancement), `Gaze` (yeux → tête → buste, profils mesurés sur la référence : départ rapide,
+  arrivée longue), `Gesture` (un geste d'une main, atteint vite puis tenu), accents ponctuels ou tenus (hochement,
+  menton levé, tête penchée), tête stabilisée dans la pièce comme un vrai réflexe.
+- `face4.py` : bouche synchronisée sur les phrases (fermetures sur m/b/p et les virgules, attaque en avance),
+  expressions qui basculent vite et se tiennent, clignements calés sur les mouvements de tête.
+- `footlock.py` : pieds plantés au sol (glissement < 2 cm au lieu de 50 à 85 cm).
+- `acting.py` : courbes à jerk minimal, ressorts amortis, IK à deux os ; `procpose.py` corrigé (dérive d'échelle des os).
+- `chore4.py` : la mise en scène, moment par moment (Pico montre sa montre sur « montre », relève le menton sur
+  « run ? », détourne le regard sur « J'ai jamais… » ; Nox soude sans lever la tête, puis s'arrête, relève les yeux,
+  hausse un sourcil, et tend la main à la fin).
+- `motionlab.py` + `t_v4lab.py` : banc de mesure sans rendu (vitesses, immobilité, bonshommes-bâtons vus des caméras).
+
+```
+./run_v4.sh out_v4b              # les 648 images (décors des plans repris de la v3)
+python post2.py video out_v4b Nox-et-Pico-ep01-extrait-3D-v4.mp4
+```
