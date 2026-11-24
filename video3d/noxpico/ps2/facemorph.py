@@ -174,11 +174,11 @@ def _cut_mouth(bm, Mw, face, head_group):
     f_tu, f_tl = [], []
     xs = [(Mw @ v.co).x for v in up]
     sel = [i for i, x in enumerate(xs) if abs(x - face.xm) < 0.80 * hw]
-    th = 0.055 * face.io                                                   # how far the teeth show under / over the lip line
+    th = 0.028 * face.io                                                   # how far the upper teeth show under the lip line
     tu_top = [new_vert((Mw @ up[i].co) + back * 0.05 * face.io + n * 0.06 * face.io, up[i], 'teeth_u') for i in sel]
     tu_bot = [new_vert((Mw @ up[i].co) + back * 0.05 * face.io - n * th, up[i], 'teeth_u') for i in sel]
-    tl_top = [new_vert((Mw @ lo[i].co) + back * 0.07 * face.io - n * 0.012 * face.io, lo[i], 'teeth_l') for i in sel]
-    tl_bot = [new_vert((Mw @ lo[i].co) + back * 0.07 * face.io - n * 0.09 * face.io, lo[i], 'teeth_l') for i in sel]
+    tl_top = [new_vert((Mw @ lo[i].co) + back * 0.09 * face.io - n * 0.03 * face.io, lo[i], 'teeth_l') for i in sel]   # lower teeth stay behind the lip
+    tl_bot = [new_vert((Mw @ lo[i].co) + back * 0.09 * face.io - n * 0.10 * face.io, lo[i], 'teeth_l') for i in sel]
     for i in range(len(sel) - 1):
         f_tu.append(bm.faces.new((tu_top[i], tu_top[i + 1], tu_bot[i + 1], tu_bot[i])))
         f_tl.append(bm.faces.new((tl_top[i], tl_top[i + 1], tl_bot[i + 1], tl_bot[i])))
