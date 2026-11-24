@@ -100,6 +100,11 @@ def assemble(W):
                 C = _try(lambda: ws.build_iron_cable(ws.iron_cable_points(B, I), follow=I.parts['cable_end']), 'cable')
                 if C is not None:
                     kit5.place(C, (-3.15, 3.55, 0.0), 0.0)
+                    bpy.context.view_layer.update()
+                    for ob in C.col.objects:          # the hooks were set up with the cable at the origin: re-bind them
+                        for md in ob.modifiers:
+                            if md.type == 'HOOK' and md.object is not None:
+                                md.matrix_inverse = md.object.matrix_world.inverted() @ ob.matrix_world
                     S['cable'] = C
     lv = _try(lambda: __import__('set5.living', fromlist=['build_sofa']), 'living')
     if lv:

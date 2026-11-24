@@ -143,3 +143,4 @@ Retours : « les personnages ne ressemblent pas à la DA de la vidéo », « Nox
 ./run_v5.sh out_v5               # fonds des plans puis les 738 images (2 processus)
 ./finish_v5.sh out_v5 v5         # vidéo finale avec sous-titres, musique et bruitages
 ```
+Aperçu : `apercus/v5_images_cles.jpg`.
