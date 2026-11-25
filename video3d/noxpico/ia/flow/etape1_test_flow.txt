@@ -1,0 +1,79 @@
+NOX & PICO — ESSAI DANS GOOGLE FLOW (étape 1 : 2 clips, environ 48 crédits)
+
+But : vérifier dans Flow le rendu, le français, les voix et les lèvres avant de lancer les 11 plans.
+On utilise le modèle Omni Flash (1.2) en mode « Ingrédients », le seul mode de Flow qui garde
+la même voix d'un clip à l'autre.
+
+──────────────────────────────────────────────
+A. PRÉPARATION (une seule fois)
+──────────────────────────────────────────────
+1. Ouvre Flow (labs.google/flow) et crée un projet « Nox et Pico ep01 ».
+2. Importe les deux images (ce sont les « ingrédients ») :
+   - ingredient_nox.png
+   - ingredient_pico.png
+3. Choisis le modèle Omni Flash (1.2) puis crée deux voix :
+   sous la zone de texte : Add (Ajouter) → Voices (Voix) → Create New Voice (Créer une voix).
+   Choisis une voix de base de la bonne catégorie (homme jeune / femme jeune), donne le nom,
+   colle la description, écoute l'aperçu avec la phrase test, puis enregistre.
+
+   VOIX 1 — nom : Nox — voix de base : jeune homme
+   Description :
+   Young man, 22, from Paris. Native French speaker with a natural Parisian accent. Clear, warm,
+   slightly low voice with a dry, teasing, ironic edge. Lively, quick and expressive: never slow,
+   never monotone, never robotic. He sounds like a witty friend who loves explaining science.
+   Phrase test : Bonsoir à toi aussi, Pico. Entre, fais comme chez toi.
+
+   VOIX 2 — nom : Pico — voix de base : jeune femme
+   Description :
+   Young woman, 20, from Paris. Native French speaker with a natural Parisian accent. Bright,
+   energetic, sporty voice; spontaneous and cheeky, quick delivery full of expression, sometimes a
+   little out of breath after running. Not childish, not squeaky, not shouting.
+   Phrase test : Attends… quoi ?! Elle me scanne ?!
+
+   Si une voix sonne mal à l'aperçu (accent étranger, trop lente, trop aiguë), change la voix de
+   base et réécoute avant de continuer.
+
+──────────────────────────────────────────────
+B. RÉGLAGES POUR CHAQUE CLIP
+──────────────────────────────────────────────
+- Mode : Vidéo → Ingredients (Ingrédients)  [pas « Frames » : les voix n'y marchent pas]
+- Modèle : Omni Flash 1.2
+- Format : 16:9 (paysage) — je recadre en 4:3 au montage
+- Qualité : 720p
+- Durée : 8 s
+- Nombre de vidéos par demande : 1
+- Coût annoncé : environ 24 crédits par clip (Flow l'affiche dans les réglages avant de lancer)
+
+Dans le texte, là où c'est écrit [VOIX NOX] ou [VOIX PICO], efface ce repère, tape @ et choisis
+la voix correspondante (ou ajoute-la avec Add → Voices si le @ ne la propose pas).
+
+──────────────────────────────────────────────
+C. CLIP TEST 1 — Nox
+──────────────────────────────────────────────
+Ingrédient : ingredient_nox.png      Voix : Nox
+
+A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.
+The young man from the reference image (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) sits behind his cluttered electronics workbench in his workshop at night, as in the reference: bookshelves, a string of green bulbs, old monitors, a window on the city lights.
+Medium close-up, chest up. He faces the camera and stays in the centre of the frame. Locked camera: no zoom, no pan, no cut.
+He looks at the camera, amused and teasing, then says in French, with the voice [VOIX NOX]: "Tu portes cette montre depuis deux ans… et tu découvres qu'elle s'allume ?" He makes a short pause at the dots and raises one eyebrow, then finishes quickly with a mocking smile in his voice. Then he keeps a faint smirk, mouth closed, until the end.
+Only him on screen; nobody else speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room.
+
+──────────────────────────────────────────────
+D. CLIP TEST 2 — Pico
+──────────────────────────────────────────────
+Ingrédient : ingredient_pico.png     Voix : Pico
+
+A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.
+The young woman from the reference image (bright red hair in a high ponytail with a green elastic, long strands framing her face, brown eyes, mustard-yellow sweatshirt, black headphones round her neck, a black smartwatch on her left wrist) has just burst into the open doorway of a workshop at night, out of breath after a run, as in the reference.
+Medium shot, waist up. She faces the camera and stays in the centre of the frame. Locked camera: no zoom, no pan, no cut.
+She raises her left wrist with the watch toward the camera and says in French, with the voice [VOIX PICO], urgent and a little breathless but clearly articulated: "Nox ! Pourquoi ma montre fait des lumières vertes à la fin de mon run ?" On "ma montre" she shakes the wrist once. Then she keeps the wrist up and stares at the camera, mouth closed, waiting for an answer, until the end.
+Only her on screen; nobody else speaks. No subtitles, no on-screen text, no music: only her voice in a quiet room.
+
+──────────────────────────────────────────────
+E. ENSUITE
+──────────────────────────────────────────────
+Télécharge les deux vidéos (MP4) et envoie-les-moi ici dans la conversation, avec :
+- le nombre de crédits que Flow a vraiment pris ;
+- ton avis à l'oreille : accent, voix, est-ce que c'est drôle.
+Je vérifie l'image, les lèvres et le son, puis je t'envoie les consignes des 11 plans.
+Si une option de ce document n'existe pas dans ton Flow, dis-moi ce que tu vois et j'adapte.

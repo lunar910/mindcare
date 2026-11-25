@@ -1,56 +1,144 @@
 {
  "title": "Nox & Pico — « Elle t’éclaire. Nuance. » (sketch IA, début de l’épisode 1)",
+ "version": 2,
  "end_line_id": "l04b",
- "est_total_s": 31.8,
+ "est_total_s": 32.6,
  "format": "4:3",
+ "style_master": "nox_ref",
+ "decisions": [
+  "Teaser, accepted as such: the hook asks why the watch makes green lights and the film ends on \"Nuance.\" (l04b), before the answer, which starts at l05. The comedy closes, the question does not: the sketch is a part 1. The follow-up is announced outside the 4:3 picture (post text or pinned comment), and l05 to l07 are the material of a second sketch. No line changes. Owner to confirm.",
+  "Style master: where the two approved images differ in rendering (nox_ref is grittier and more pixel-edged, pico_ref smoother), new stills follow nox_ref: only shot 1, in the hallway, then keeps the smoother look. Owner may overrule before the stills are made (STYLE_MASTER in the build scripts).",
+  "Stills in dependency order: deux_etabli first (3 or 4 candidates, the owner picks one), together with nox_tgp; then the four others with the approved deux_etabli as an extra reference (same room, same props, same poses). Stills are generated at 1K.",
+  "Shot 7 is played on ots_nox, not on the soldering close-up: Pico's wrist and watch are in front of Nox in shots 3, 4 and 6 and would vanish on a frame without her. The other fix that was proposed (she snatches her wrist back during the silent shot 6) was not kept: it adds a large arm move to the only frame with two faces, and fails if shot 6 is dropped.",
+  "Shot 8: the start image is nox_ref tightened by a 1.2x crop, which takes the dismantled watch lying on the bench out of the frame; the line comes first, the glasses gesture after it.",
+  "Shot 9: the picture is generated silent and the sound always comes from take 9b (Nox on screen). Pico's double-take is played once: eyes round on the watch in shot 9, the look up to Nox on \"quoi ?!\" in shot 10.",
+  "Pico answers tit for tat (no held silence before \"J'ai jamais regardé dessous, ok ?\"); the only silence of the middle of the film is shot 6. Nox always speaks at full voice (no whisper, no hush).",
+  "Captions: one card per shot; two timed cards in shots 4, 9 and 11, so that the second half of the line is not readable before the pause that protects it.",
+  "Sound: clips are generated with the voice only; shots 6 and 9 with generate_audio off. Room tone, sound effects and music are laid in the edit."
+ ],
  "setups": [
   {
    "id": "pico_porte",
    "framing": "Medium single of Pico, frontal, eye level, waist up (approved image, used as is)",
-   "description": "The approved image pico_ref.png, unchanged, is the start image. Camera inside the workshop on Nox's side of the bench (his point of view), about 2.5 m from the door, at standing eye height. Pico has just stopped in the open doorway, centred, facing the lens; her left forearm is raised across her chest with the smartwatch toward the camera, brows frowned, mouth closed. Behind her: the dark brick hallway, a metal shelf with books and a small green LED string, a pendant lamp top right; the grey door leaf stands open at screen-left; dark workshop wall in the left foreground. Used for shot 1 only, and for the first voice test.",
-   "start_image": "pico_ref"
+   "description": "The approved image pico_ref.png is the start image, used as is. Start file stills/pico_porte.png: the same picture saved without transparency and trimmed by a few pixels to an exact 4:3 (1192x894), made by prep_refs.py; nothing is generated. Camera inside the workshop on Nox's side of the bench (his point of view), about 2.5 m from the door, at standing eye height. Pico has just stopped in the open doorway, centred, facing the lens; her left forearm is raised across her chest with the smartwatch toward the camera, brows frowned, mouth closed. Behind her: the dark brick hallway, a metal shelf with books and a small green LED string, a pendant lamp top right; the grey door leaf stands open at screen-left; dark workshop wall in the left foreground. Used for shot 1 only, and for the voice tests.",
+   "start_image": "pico_ref",
+   "start_file": "stills/pico_porte.png",
+   "references": [],
+   "make_order": 0
   },
   {
    "id": "nox_soudure",
-   "framing": "Close-up of Nox soldering, low angle from bench level, three-quarter front",
-   "description": "Camera resting on the workbench top on Nox's right-hand side (the soldering-station side), about 40 cm from his hands, tilted up about 25 degrees at his face, which is bowed over his work; his body is turned three-quarters toward screen-right. Bottom of the frame: his right hand holding the soldering iron (blue handle), its tip on a small circuit board, a thin wisp of smoke. His face fills the upper two-thirds: eyes lowered behind the green-tinted glasses, mouth closed, rebel lock of hair. Because the camera is low, the bowed face is seen almost frontally: the mouth must be fully visible and above the bottom fifth of the frame (caption zone). Behind and above him: dark bookshelves, the string of round green bulbs, the glow of one CRT monitor, a slice of the night window at the right edge. Nobody else in frame. If the soldering stand is visible it must be EMPTY (the iron is in his hand; nox_ref shows it in its stand, and two irons must not appear). Reference: nox_ref for the character and the set. Used for shots 2 and 7. Common to every new still: same flat-shaded, clean-outline cutscene rendering, palette and night lighting as the two approved images; 4:3; no text, letters or numbers anywhere (screens and pinned notes show abstract shapes); Pico: red high ponytail with GREEN elastic, long strands round the face, yellow sweatshirt, black headphones round her neck, black smartwatch on her LEFT wrist; Nox: blue-black spiky hair with a rebel lock, thin green-tinted glasses, black turtleneck, anthracite bomber with green zip trim, earbud in his LEFT ear; screen direction for the whole film: Nox on the left looking right, Pico on the right looking left (the camera never crosses to the window side of the Nox-door axis: it stays on that axis or on Nox's right-hand side). Ask for it as a NEW camera angle with the approved images as image_references, never as a copy of them.",
-   "start_image": "new"
+   "framing": "Close-up of Nox at his soldering, low angle from bench level, three-quarter front",
+   "description": "Camera resting on the workbench top on Nox's right-hand side (the soldering-station side), about 40 cm from his hands, tilted up about 25 degrees at his face, which is bowed over his work; his body is turned three-quarters toward screen-right. Bottom of the frame: his right hand holds the soldering iron (blue handle) still, its tip resting on a small green circuit board, a thin wisp of smoke: a held pose, not an action, because fine hand work is what video models do worst. His face fills the upper two-thirds: eyes lowered and clearly visible behind pale transparent lenses, mouth closed, rebel lock of hair. Because the camera is low, the bowed face is seen almost frontally: the mouth must be fully visible and above the bottom fifth of the frame (caption zone). Behind and above him: dark bookshelves, the string of round green bulbs, the plain glow of one CRT monitor, a slice of the night window at the right edge. Nobody else in frame; no watch on the bench; the soldering stand is out of frame (the iron is in his hand; nox_ref shows it in its stand, and two irons must not appear). His earbud is in the far ear and is not visible. References: nox_ref for the character, then the approved deux_etabli for the room, the bench props and his pose. Used for shot 2 and for the safety takes 2b and 7b. Spare still if the hand or the iron deforms in the clips: nox_soudure_sans_main. Common to every new still: the rendering of the style master (nox_ref by default: its outline weight, flat shading and slightly pixelled edges), with the palette and night lighting of the approved images; 4:3, generated at 1K (the approved images are 1200x896 and the clips 720p: a 2K still would have finer lines than shots 1 and 8); no text, letters or numbers anywhere (monitor screens show a plain pale-blue glow with blank rectangles, pinned notes are blank paper); Pico: red high ponytail with GREEN elastic, long strands round the face, yellow sweatshirt, black headphones round her neck, black smartwatch on her LEFT wrist, the only watch of the film; Nox: blue-black spiky hair with a rebel lock, thin glasses with pale transparent green-tinted lenses (both eyes always visible through them, no glare), black turtleneck, anthracite bomber with green zip trim, earbud in his LEFT ear (hidden whenever his left side is turned away); screen direction for the whole film: Nox on the left looking right, Pico on the right looking left (the camera never crosses to the window side of the Nox-door axis: it stays on that axis or on Nox's right-hand side). Ask for it as a NEW camera angle with the approved images as image_references, never as a copy of them.",
+   "start_image": "new",
+   "start_file": "stills/nox_soudure.png",
+   "references": [
+    "nox_ref",
+    "deux_etabli"
+   ],
+   "make_order": 2
   },
   {
    "id": "deux_etabli",
    "framing": "Side-on two-shot across the workbench, waist up, at the eye level of the seated Nox",
-   "description": "The only frame with both faces. Camera perpendicular to the Nox-door axis, on Nox's right-hand side of the room (opposite the window), about 2.5 m from the bench, lens at the eye height of the seated Nox (about 1.15 m), normal lens, everything in focus. Screen-left: Nox seated behind his bench, right profile facing screen-right, still bent over his circuit board with the soldering iron in his right hand, eyes on his work, mouth closed. Screen-right: Pico on the visitor side, bent forward over the bench, right forearm planted flat on the bench top among his components, left elbow propped on the bench and left forearm reaching across so that the watch sits about 15 cm in front of his glasses, between his face and the board. She stares at him, one eyebrow raised, lips firmly closed (left profile). Background between them: the tall night window with city lights, the string of green bulbs along the top, bookshelves and a CRT monitor behind Nox; at the far right edge, a slice of the grey door frame and dark brick. The bench top crosses the lower third (grey mug on the far side, empty soldering stand in the foreground). Both faces and the watch stay above the bottom fifth of the frame (caption zone). References: nox_ref and pico_ref. Used for shots 3 and 6. Common to every new still: same flat-shaded, clean-outline cutscene rendering, palette and night lighting as the two approved images; 4:3; no text, letters or numbers anywhere (screens and pinned notes show abstract shapes); Pico: red high ponytail with GREEN elastic, long strands round the face, yellow sweatshirt, black headphones round her neck, black smartwatch on her LEFT wrist; Nox: blue-black spiky hair with a rebel lock, thin green-tinted glasses, black turtleneck, anthracite bomber with green zip trim, earbud in his LEFT ear; screen direction for the whole film: Nox on the left looking right, Pico on the right looking left (the camera never crosses to the window side of the Nox-door axis: it stays on that axis or on Nox's right-hand side). Ask for it as a NEW camera angle with the approved images as image_references, never as a copy of them.",
-   "start_image": "new"
+   "description": "The only frame with both faces, and the FIRST still to make: once approved it becomes a reference for the other new stills (same room, same props, same poses). Camera perpendicular to the Nox-door axis, on Nox's right-hand side of the room, about 2.5 m from the bench, lens at the eye height of the seated Nox (about 1.15 m), normal lens, everything in focus. Screen-left: Nox seated behind his bench, right profile facing screen-right, bowed over a small green circuit board; his right hand holds the soldering iron still, its tip resting on the board; eyes on his work, mouth closed; his earbud is in the far ear and is not visible. Screen-right: Pico on the visitor side, bent forward over the bench, right forearm planted flat on the bench top among his components, left elbow propped on the bench and left forearm reaching across so that her LEFT wrist, wearing the watch, sits about 15 cm in front of his glasses, between his face and the board; the watch screen is turned toward him and is seen edge-on. It is the only watch in the frame (no watch on the bench). She stares at him, one eyebrow raised, lips firmly closed (left profile). Background between them: the tall night window of the side wall with city lights (the workshop has a corner window: one window on the back wall as in nox_ref, an identical one on the side wall at Nox's left), the string of green bulbs along the top, bookshelves and a CRT monitor behind Nox; at the far right edge, the dark navy door wall with the grey door frame seen edge-on. The bench top crosses the lower third (grey mug on the far side, empty soldering stand in the foreground). Both faces and the watch stay above the bottom fifth of the frame (caption zone). References: nox_ref (image 1, also the style master) and pico_ref (image 2). Used for shots 3 and 6. Common to every new still: the rendering of the style master (nox_ref by default: its outline weight, flat shading and slightly pixelled edges), with the palette and night lighting of the approved images; 4:3, generated at 1K (the approved images are 1200x896 and the clips 720p: a 2K still would have finer lines than shots 1 and 8); no text, letters or numbers anywhere (monitor screens show a plain pale-blue glow with blank rectangles, pinned notes are blank paper); Pico: red high ponytail with GREEN elastic, long strands round the face, yellow sweatshirt, black headphones round her neck, black smartwatch on her LEFT wrist, the only watch of the film; Nox: blue-black spiky hair with a rebel lock, thin glasses with pale transparent green-tinted lenses (both eyes always visible through them, no glare), black turtleneck, anthracite bomber with green zip trim, earbud in his LEFT ear (hidden whenever his left side is turned away); screen direction for the whole film: Nox on the left looking right, Pico on the right looking left (the camera never crosses to the window side of the Nox-door axis: it stays on that axis or on Nox's right-hand side). Ask for it as a NEW camera angle with the approved images as image_references, never as a copy of them.",
+   "start_image": "new",
+   "start_file": "stills/deux_etabli.png",
+   "references": [
+    "nox_ref",
+    "pico_ref"
+   ],
+   "make_order": 1
   },
   {
    "id": "ots_nox",
    "framing": "Over-the-shoulder: over Pico (from behind) onto Nox, chest up",
-   "description": "Camera just behind Pico's left shoulder, about 1.3 m high, looking slightly down at the seated Nox across the bench. Right edge of the frame: a soft dark foreground shape made of her left shoulder (yellow sweatshirt), the headphones on her neck and a few red strands; no part of her face is visible. Her left forearm comes in from the lower right and holds the watch in the lower-right third, below Nox's chin so that it never covers his mouth. Nox is centre-left, chest up, three-quarter face turned toward screen-right, eyes lowered onto the watch, mouth closed, faint smirk; his hands are out of frame. Behind him the wall of nox_ref: bookshelves, green bulbs, CRT glow, the night window at the right behind Pico's shoulder. Soldering stand out of frame. If the foreground hand or watch comes out badly, make the still without the forearm (he then looks down at her wrist below the frame). References: nox_ref and pico_ref. Used for shot 4 and for the safety take of shot 9's line. Common to every new still: same flat-shaded, clean-outline cutscene rendering, palette and night lighting as the two approved images; 4:3; no text, letters or numbers anywhere (screens and pinned notes show abstract shapes); Pico: red high ponytail with GREEN elastic, long strands round the face, yellow sweatshirt, black headphones round her neck, black smartwatch on her LEFT wrist; Nox: blue-black spiky hair with a rebel lock, thin green-tinted glasses, black turtleneck, anthracite bomber with green zip trim, earbud in his LEFT ear; screen direction for the whole film: Nox on the left looking right, Pico on the right looking left (the camera never crosses to the window side of the Nox-door axis: it stays on that axis or on Nox's right-hand side). Ask for it as a NEW camera angle with the approved images as image_references, never as a copy of them.",
-   "start_image": "new"
+   "description": "Camera just behind Pico's left shoulder, about 1.3 m high, looking slightly down at the seated Nox across the bench. Right edge of the frame: a soft dark foreground shape made of her left shoulder (yellow sweatshirt), the headphones on her neck and a few red strands; no part of her face is visible. Her LEFT wrist, wearing the watch, is raised into the lower-right third, below Nox's chin so that it never covers his mouth; the watch screen is turned toward him, the camera sees only the strap and the edge of the case (a watch \"held out\" in her fingers would invite a detached watch or a hand-over). Nox is centre-left, chest up, three-quarter face turned toward screen-right, head slightly bowed, eyes lowered onto the watch, mouth closed, faint smirk; his hands are out of frame; his earbud is in the far ear and is not visible. Behind him the wall of nox_ref: bookshelves, green bulbs, CRT glow, the night window at the right behind Pico's shoulder. Bench top and soldering station below the frame. If the foreground wrist or watch comes out badly, use the spare still ots_nox_sans_bras (her arms below the frame; he then looks down at her wrist below the frame). References: nox_ref, pico_ref, then the approved deux_etabli. Used for shots 4 and 7 and for take 9b (the voice of shot 9). Common to every new still: the rendering of the style master (nox_ref by default: its outline weight, flat shading and slightly pixelled edges), with the palette and night lighting of the approved images; 4:3, generated at 1K (the approved images are 1200x896 and the clips 720p: a 2K still would have finer lines than shots 1 and 8); no text, letters or numbers anywhere (monitor screens show a plain pale-blue glow with blank rectangles, pinned notes are blank paper); Pico: red high ponytail with GREEN elastic, long strands round the face, yellow sweatshirt, black headphones round her neck, black smartwatch on her LEFT wrist, the only watch of the film; Nox: blue-black spiky hair with a rebel lock, thin glasses with pale transparent green-tinted lenses (both eyes always visible through them, no glare), black turtleneck, anthracite bomber with green zip trim, earbud in his LEFT ear (hidden whenever his left side is turned away); screen direction for the whole film: Nox on the left looking right, Pico on the right looking left (the camera never crosses to the window side of the Nox-door axis: it stays on that axis or on Nox's right-hand side). Ask for it as a NEW camera angle with the approved images as image_references, never as a copy of them.",
+   "start_image": "new",
+   "start_file": "stills/ots_nox.png",
+   "references": [
+    "nox_ref",
+    "pico_ref",
+    "deux_etabli"
+   ],
+   "make_order": 2
   },
   {
    "id": "pico_gp",
-   "framing": "Close-up of Pico, head and shoulders, three-quarter front, at her eye level",
-   "description": "Camera on Nox's side of the bench, slightly to his right, at Pico's eye height. She is at the bench, framed from just above the green elastic of the ponytail to the collarbones; headphones and yellow collar at the bottom edge; no arm, hand or watch in frame. She looks slightly screen-left and slightly down, toward the seated Nox off-screen. Neutral, a little taken aback, mouth closed: the same still must serve a sulky line and a panicked one. Behind her, kept dark and simple: the dark brick wall, the metal shelf with its small green LED string, the edge of the grey door frame. Chin above the bottom fifth of the frame (caption zone). Reference: pico_ref (a new three-quarter angle, not a crop of it). Used for shots 5 and 10. Common to every new still: same flat-shaded, clean-outline cutscene rendering, palette and night lighting as the two approved images; 4:3; no text, letters or numbers anywhere (screens and pinned notes show abstract shapes); Pico: red high ponytail with GREEN elastic, long strands round the face, yellow sweatshirt, black headphones round her neck, black smartwatch on her LEFT wrist; Nox: blue-black spiky hair with a rebel lock, thin green-tinted glasses, black turtleneck, anthracite bomber with green zip trim, earbud in his LEFT ear; screen direction for the whole film: Nox on the left looking right, Pico on the right looking left (the camera never crosses to the window side of the Nox-door axis: it stays on that axis or on Nox's right-hand side). Ask for it as a NEW camera angle with the approved images as image_references, never as a copy of them.",
-   "start_image": "new"
+   "framing": "Close-up of Pico leaning on the bench, head and shoulders, three-quarter front, at the eye level of the seated Nox",
+   "description": "Camera on Nox's side of the bench, slightly to his right, at the eye height of the seated Nox. Pico is leaning forward over the bench exactly as in the two-shot (shoulders hunched toward the camera, her head level with his), so that she does not seem to jump back to the door between shots 3, 5 and 6. Framed from just above the green elastic of the ponytail to the collarbones; headphones and yellow collar at the bottom edge; arms, hands and watch below the frame. She looks level toward the left edge of the frame, at the seated Nox off-screen. Neutral, a little taken aback, mouth closed: the same still must serve a sulky line and a panicked one. Behind her, kept dark and simple: mostly the plain dark navy wall; the open doorway small and far behind her in the right third (never the door frame round her, which would read as the doorway of shot 1). Chin above the bottom fifth of the frame (caption zone). References: pico_ref (a new three-quarter angle, not a crop of it), then the approved deux_etabli for her pose. Used for shots 5 and 10. Common to every new still: the rendering of the style master (nox_ref by default: its outline weight, flat shading and slightly pixelled edges), with the palette and night lighting of the approved images; 4:3, generated at 1K (the approved images are 1200x896 and the clips 720p: a 2K still would have finer lines than shots 1 and 8); no text, letters or numbers anywhere (monitor screens show a plain pale-blue glow with blank rectangles, pinned notes are blank paper); Pico: red high ponytail with GREEN elastic, long strands round the face, yellow sweatshirt, black headphones round her neck, black smartwatch on her LEFT wrist, the only watch of the film; Nox: blue-black spiky hair with a rebel lock, thin glasses with pale transparent green-tinted lenses (both eyes always visible through them, no glare), black turtleneck, anthracite bomber with green zip trim, earbud in his LEFT ear (hidden whenever his left side is turned away); screen direction for the whole film: Nox on the left looking right, Pico on the right looking left (the camera never crosses to the window side of the Nox-door axis: it stays on that axis or on Nox's right-hand side). Ask for it as a NEW camera angle with the approved images as image_references, never as a copy of them.",
+   "start_image": "new",
+   "start_file": "stills/pico_gp.png",
+   "references": [
+    "pico_ref",
+    "deux_etabli"
+   ],
+   "make_order": 2
   },
   {
    "id": "nox_face",
-   "framing": "Medium single of Nox, frontal, eye level, chest up behind the workbench (approved image, used as is)",
-   "description": "The approved image nox_ref.png, unchanged, is the start image. Camera in front of the bench at Pico's place (her point of view), at the eye height of the seated Nox. Nox faces the lens, mouth closed, hands below the frame. On the bench: soldering iron in its stand (screen-left), opened watch and chips (centre), grey mug of black coffee (screen-right). Behind him: bookshelves, the string of green bulbs, two CRT monitors, pinned notes; night window with city lights at screen-right. Used once, for shot 8 (his glasses gesture), because the interface-like detail on the two screens may shimmer in video; also the start image of the first voice test (the tease l02b, kept as a spare take of shot 4).",
-   "start_image": "nox_ref"
+   "framing": "Medium single of Nox, frontal, eye level, chest up (approved image, tightened by a 1.2x crop)",
+   "description": "The approved image nox_ref.png is the start image, tightened: start file stills/nox_face.png is the top-centre 1000x750 crop of nox_ref (a 1.2x punch-in anchored at the top), made by prep_refs.py; nothing is generated. The crop takes the bench top out of the frame: nox_ref shows an opened watch lying in the middle of the bench, which the viewer would read as Pico's watch, taken off and dismantled, at the very moment Nox says the line of shot 8. Camera in front of the bench at Pico's place (her point of view), at the eye height of the seated Nox. Nox faces the lens, mouth closed, hands below the frame. At the bottom edge only: the top of the soldering iron in its stand (screen-left) and the rim of the grey mug (screen-right). Behind him: bookshelves, the string of green bulbs, two CRT monitors, pinned notes; night window with city lights at screen-right. Used once in the film, for shot 8 (his glasses gesture), because the interface-like detail on the two screens may shimmer in video; also the start image of the voice tests (the tease l02b, kept as spare take 4b of shot 4) and of take 8b.",
+   "start_image": "nox_ref",
+   "start_file": "stills/nox_face.png",
+   "references": [],
+   "make_order": 0
   },
   {
    "id": "pico_yeux_montre",
    "framing": "Extreme close-up at bench height: Pico's eyes just above her watch, frontal",
-   "description": "The only frame that shows the green light. Camera resting on the bench top on Nox's side, about 30 cm from the watch, lens a few centimetres above the bench surface, horizontal. Pico has bent right down to look: her left forearm lies flat on the bench across the middle of the frame (it comes in from screen-right, fist loosely closed toward screen-left), the watch in the centre, bright green light spilling from UNDER the watch case onto her skin and onto the bench. Just above the forearm, only her eyes, eyebrows, forehead and red fringe are visible, about 10 cm behind the watch and lit green from below; her nose and mouth are hidden behind the forearm. Eyes narrowed in a sceptical squint, fixed on the watch. Background dark and simple (brick, a hint of the door frame). The bench surface fills the bottom fifth of the frame (caption zone). Reference: pico_ref. Used for shot 9. Common to every new still: same flat-shaded, clean-outline cutscene rendering, palette and night lighting as the two approved images; 4:3; no text, letters or numbers anywhere (screens and pinned notes show abstract shapes); Pico: red high ponytail with GREEN elastic, long strands round the face, yellow sweatshirt, black headphones round her neck, black smartwatch on her LEFT wrist; Nox: blue-black spiky hair with a rebel lock, thin green-tinted glasses, black turtleneck, anthracite bomber with green zip trim, earbud in his LEFT ear; screen direction for the whole film: Nox on the left looking right, Pico on the right looking left (the camera never crosses to the window side of the Nox-door axis: it stays on that axis or on Nox's right-hand side). Ask for it as a NEW camera angle with the approved images as image_references, never as a copy of them.",
-   "start_image": "new"
+   "description": "The only frame that shows the green light, and the hardest still. Camera resting on the bench top on Nox's side, about 30 cm from the watch, lens a few centimetres above the bench surface, horizontal. Pico crouches at the bench so that her chin is level with the bench top and peeks over her own forearm: her left forearm lies flat on the bench across the middle of the frame (it comes in from screen-right, fist loosely closed toward screen-left), the watch in the centre, seen edge-on: its screen faces the ceiling and is not visible (no screen, so no digits); bright green light leaks from between the watch case and her skin, onto her wrist and onto the bench. Just above the forearm, only her eyes, eyebrows, forehead and red fringe are visible, about 10 cm behind the watch and lit green from below; her nose, mouth and chin are hidden behind the forearm. Eyes narrowed in a sceptical squint, fixed on the watch. Background dark and simple (plain navy wall, a hint of the door frame). The bench surface fills the bottom fifth of the frame (caption zone). References: pico_ref, then the approved deux_etabli. Used for shot 9. If it keeps failing (full face above the arm, digits on the watch, extra fingers): spare still montre_lueur, an insert of her forearm and watch on the bench with the green glow and no face, which keeps the green light in the film. Common to every new still: the rendering of the style master (nox_ref by default: its outline weight, flat shading and slightly pixelled edges), with the palette and night lighting of the approved images; 4:3, generated at 1K (the approved images are 1200x896 and the clips 720p: a 2K still would have finer lines than shots 1 and 8); no text, letters or numbers anywhere (monitor screens show a plain pale-blue glow with blank rectangles, pinned notes are blank paper); Pico: red high ponytail with GREEN elastic, long strands round the face, yellow sweatshirt, black headphones round her neck, black smartwatch on her LEFT wrist, the only watch of the film; Nox: blue-black spiky hair with a rebel lock, thin glasses with pale transparent green-tinted lenses (both eyes always visible through them, no glare), black turtleneck, anthracite bomber with green zip trim, earbud in his LEFT ear (hidden whenever his left side is turned away); screen direction for the whole film: Nox on the left looking right, Pico on the right looking left (the camera never crosses to the window side of the Nox-door axis: it stays on that axis or on Nox's right-hand side). Ask for it as a NEW camera angle with the approved images as image_references, never as a copy of them.",
+   "start_image": "new",
+   "start_file": "stills/pico_yeux_montre.png",
+   "references": [
+    "pico_ref",
+    "deux_etabli"
+   ],
+   "make_order": 2
   },
   {
    "id": "nox_tgp",
    "framing": "Extreme close-up of Nox, frontal, hairline to chin",
-   "description": "Camera at the eye height of the seated Nox, frontal, on the axis of nox_ref but much closer (asked as a new, closer camera position, not as a crop). His face fills the frame: the green-tinted glasses span about two-thirds of the width, the rebel lock is cut by the top edge, the turtleneck collar sits at the bottom edge. Flat deadpan, mouth closed, eyes on Pico just to the right of the lens. Behind him: dark bookshelves and a few green bulbs, kept simple. The mouth sits above the bottom fifth of the frame, with enough air round the face that a 12-15% push-in still holds glasses and mouth. Reference: nox_ref. Reserved for shot 11, the punchline. Common to every new still: same flat-shaded, clean-outline cutscene rendering, palette and night lighting as the two approved images; 4:3; no text, letters or numbers anywhere (screens and pinned notes show abstract shapes); Pico: red high ponytail with GREEN elastic, long strands round the face, yellow sweatshirt, black headphones round her neck, black smartwatch on her LEFT wrist; Nox: blue-black spiky hair with a rebel lock, thin green-tinted glasses, black turtleneck, anthracite bomber with green zip trim, earbud in his LEFT ear; screen direction for the whole film: Nox on the left looking right, Pico on the right looking left (the camera never crosses to the window side of the Nox-door axis: it stays on that axis or on Nox's right-hand side). Ask for it as a NEW camera angle with the approved images as image_references, never as a copy of them.",
-   "start_image": "new"
+   "description": "Camera at the eye height of the seated Nox, frontal, on the axis of nox_ref but much closer (asked as a new, closer camera position, not as a crop). His face fills the frame: the glasses span about two-thirds of the width, the rebel lock is cut by the top edge, the turtleneck collar sits at the bottom edge. Pale transparent lenses, both eyes clearly visible, no glare. Flat deadpan, mouth closed, eyes on Pico just to the right of the lens. Behind him: dark bookshelves and three green bulbs, nothing else. The mouth sits above the bottom fifth of the frame, with enough air round the face that a 12-15% push-in still holds glasses and mouth. Reference: nox_ref only (it does not depend on the two-shot, so it is made in the first batch). Reserved for shot 11, the punchline. Common to every new still: the rendering of the style master (nox_ref by default: its outline weight, flat shading and slightly pixelled edges), with the palette and night lighting of the approved images; 4:3, generated at 1K (the approved images are 1200x896 and the clips 720p: a 2K still would have finer lines than shots 1 and 8); no text, letters or numbers anywhere (monitor screens show a plain pale-blue glow with blank rectangles, pinned notes are blank paper); Pico: red high ponytail with GREEN elastic, long strands round the face, yellow sweatshirt, black headphones round her neck, black smartwatch on her LEFT wrist, the only watch of the film; Nox: blue-black spiky hair with a rebel lock, thin glasses with pale transparent green-tinted lenses (both eyes always visible through them, no glare), black turtleneck, anthracite bomber with green zip trim, earbud in his LEFT ear (hidden whenever his left side is turned away); screen direction for the whole film: Nox on the left looking right, Pico on the right looking left (the camera never crosses to the window side of the Nox-door axis: it stays on that axis or on Nox's right-hand side). Ask for it as a NEW camera angle with the approved images as image_references, never as a copy of them.",
+   "start_image": "new",
+   "start_file": "stills/nox_tgp.png",
+   "references": [
+    "nox_ref"
+   ],
+   "make_order": 1
+  }
+ ],
+ "spare_stills": [
+  {
+   "id": "montre_lueur",
+   "replaces": "pico_yeux_montre",
+   "references": [
+    "pico_ref",
+    "deux_etabli"
+   ],
+   "when": "pico_yeux_montre fails three times (full face above the arm, digits on the watch, deformed hand). Easy picture that keeps the green light in the film; the eyes are lost, so the reaction is carried by shot 10 alone.",
+   "description": "Insert: her left forearm in the yellow sleeve lying flat on the cream bench top, the black smartwatch in the centre with bright green light leaking from under the case onto her skin and the bench; no face in the frame."
+  },
+  {
+   "id": "nox_soudure_sans_main",
+   "replaces": "nox_soudure",
+   "references": [
+    "nox_ref",
+    "deux_etabli"
+   ],
+   "when": "The hand or the iron deforms in the clips of shot 2 (iron bending or changing length, fingers merging with the board, smoke turning to fog).",
+   "description": "The nox_soudure frame with his hands and the bench below the frame; one thin wisp of smoke rises from the bottom edge."
+  },
+  {
+   "id": "ots_nox_sans_bras",
+   "replaces": "ots_nox",
+   "references": [
+    "nox_ref",
+    "pico_ref",
+    "deux_etabli"
+   ],
+   "when": "The foreground wrist or watch of ots_nox comes out badly in the still or deforms in the clips.",
+   "description": "The ots_nox frame without her wrist: her arms are below the frame; Nox looks down at her wrist below the frame."
   }
  ],
  "shots": [
@@ -60,15 +148,19 @@
    "speaker": "pico",
    "line_id": "l01",
    "text": "Nox ! Pourquoi ma montre fait des lumières vertes à la fin de mon run ?",
-   "caption": "Nox ! Pourquoi ma montre fait des lumières vertes à la fin de mon run ?",
+   "caption": [
+    "Nox ! Pourquoi ma montre fait des lumières vertes à la fin de mon run ?"
+   ],
    "est_s": 3.8,
    "request_s": 6,
    "pre_beat_s": 0.15,
-   "acting": "Breathless, she has just skidded to a stop; no hello. \"Nox !\" sharp, then the question in one breath, fast and pressing, very intrigued. One beat: she shakes her raised watch wrist toward him once on \"ma montre\", eyes locked on him (the lens). After the last word she holds the wrist out and the stare, mouth closed.",
+   "generate_audio": true,
+   "audio_from": "",
+   "acting": "She has just skidded to a stop, out of breath; no hello. \"Nox !\" sharp, then the question, urgent and pressing, quick but clearly articulated, very intrigued (the breathlessness is heard before the first word, not inside the sentence). One beat: she shakes her raised watch wrist toward him once on \"ma montre\", eyes locked on him (the lens). After the last word she holds the wrist up and the stare, mouth closed.",
    "listener": "Nox is off-screen (the camera is his point of view).",
    "camera": "Locked. The clip opens on the posed still, door already open.",
    "sfx": "Door bang on the first frame; a short sneaker squeak under it (optional).",
-   "notes": "The caption of the question is on screen from 0.1 s: it is the hook. Longest line (15 words): frontal, medium size, one mouth. \"run\" is the English word as French runners say it. A faint green flicker under the watch case is welcome but must not be forced. First voice test: this clip needs no new still."
+   "notes": "The caption of the question is on screen from 0.1 s: it is the hook (two lines: \"Nox ! Pourquoi ma montre fait\" / \"des lumières vertes à la fin de mon run ?\"). Longest line (14 words): frontal, medium size, one mouth. \"run\" is the English word as French runners say it. A faint green flicker under the watch case is welcome but must not be forced. This clip is also the Pico clip of the voice tests: it needs no new still."
   },
   {
    "n": 2,
@@ -76,15 +168,19 @@
    "speaker": "nox",
    "line_id": "l02",
    "text": "Bonsoir à toi aussi, Pico.",
-   "caption": "Bonsoir à toi aussi, Pico.",
+   "caption": [
+    "Bonsoir à toi aussi, Pico."
+   ],
    "est_s": 2.9,
    "request_s": 5,
    "pre_beat_s": 1.0,
-   "acting": "First sentence of l02. He does not flinch: he keeps soldering through one silent second, eyes down. Then he says it to his circuit board without looking up: dry, sing-song, mock-offended, a smile in the voice, brisk (alive, never slow). One beat: a single eyebrow lifts on \"aussi\"; his eyes never leave the solder joint.",
+   "generate_audio": true,
+   "audio_from": "",
+   "acting": "First sentence of l02. He does not react: bowed over his work, motionless, the iron tip resting on the board, through one silent second. Then he says it to his circuit board without looking up: brisk, wry, exaggeratedly polite, mock-offended, a smile in the voice. No gesture and no change of face: his non-reaction is the joke.",
    "listener": "Pico is off-screen; her sneaker steps cross the room under the silent second (added in the edit).",
    "camera": "Locked, low angle.",
-   "sfx": "Faint soldering sizzle; Pico's quick steps approaching during the silent second.",
-   "notes": "The silent second before the deadpan answer is the first laugh (as reference 2, shot 11). If the model starts speaking at once, hold the opening frames in the edit. Safety take on this same still: the whole of l02 in one clip (about 4.2 s), which replaces shots 2 and 3 if the two-shot fails."
+   "sfx": "Faint soldering sizzle; Pico's quick steps approaching under the silent second and the line, cut dead by the clatter on the cut into shot 3.",
+   "notes": "The silent second before the deadpan answer is the first laugh (as reference 2, shot 11). If the model starts speaking at once, hold the first frame in the edit. Safety take 2b on this same still: the whole of l02 in one clip (about 4.2 s), which replaces shots 2 and 3 if the two-shot fails. Shots 2 and 3 are the two halves of one line: played back to back they must sound like one utterance (same pitch, level and energy)."
   },
   {
    "n": 3,
@@ -92,14 +188,19 @@
    "speaker": "nox",
    "line_id": "l02",
    "text": "Entre, fais comme chez toi.",
-   "caption": "Entre, fais comme chez toi.",
-   "est_s": 2.3,
+   "caption": [
+    "Entre, fais comme chez toi."
+   ],
+   "est_s": 2.7,
    "request_s": 5,
-   "pre_beat_s": 0.5,
-   "acting": "Second sentence of l02. The hard cut reveals that she is already sprawled on his bench with the watch under his nose: the laugh is on the cut. He stays bent over his work; one beat: he lifts his head a few centimetres, just enough to look at her over the watch. Warm, amused sarcasm, an old habit between them, quick.",
+   "pre_beat_s": 0.9,
+   "generate_audio": true,
+   "audio_from": "",
+   "acting": "Second sentence of l02. The hard cut reveals that she is already sprawled on his bench with the watch under his nose: the laugh is on the cut, and the tableau is held for almost a second before the line. He stays bowed over his work; one beat: he lifts his head a few centimetres, just enough to look at her over the watch. Warm, amused sarcasm, an old habit between them, brisk.",
    "listener": "Pico frozen, wrist held 15 cm from his glasses, staring at him, eyebrow raised, lips closed. Her stillness is the joke.",
-   "camera": "Locked. Half a second on the tableau before the line, so that the reveal reads.",
-   "notes": "The only speaking shot with two visible faces: the prompt names the speaker (the young man on the left) and says the girl on the right keeps her lips closed and does not move. Short line (6 syllables), in profile. If her lips move anyway: remake the still with her head turned further from the camera. If the still itself fails: use the safety take of shot 2 and drop shots 3 and 6."
+   "camera": "Locked. Almost one second on the tableau before the line, so that the reveal reads (reference 1 gives its wide gag frames more than 3 s).",
+   "sfx": "A short clatter of components exactly on the cut (her elbows landing on the bench); the footsteps stop on it.",
+   "notes": "The only speaking shot with two visible faces: the prompt names the speaker (the young man on the left) and says the young woman on the right keeps her lips closed and does not move. Short line (6 syllables), in profile. If her lips move anyway: remake the still with her head turned further from the camera. If the still itself fails: use safety takes 2b and 7b and drop shots 3 and 6."
   },
   {
    "n": 4,
@@ -107,14 +208,20 @@
    "speaker": "nox",
    "line_id": "l02b",
    "text": "Tu portes cette montre depuis deux ans… et tu découvres qu'elle s'allume ?",
-   "caption": "Tu portes cette montre depuis deux ans… et tu découvres qu’elle s’allume ?",
+   "caption": [
+    "Tu portes cette montre depuis deux ans…",
+    "et tu découvres qu’elle s’allume ?"
+   ],
    "est_s": 4.4,
    "request_s": 6,
    "pre_beat_s": 0.25,
-   "acting": "Kept whole so that the pause plays in real time. Teasing, deadpan-playful, quick, a smile in the voice. His eyes are on the watch for \"Tu portes cette montre depuis deux ans…\"; one beat: on the \"…\" he looks up at her face with one raised eyebrow and a corner smile, then finishes the question lightly, enjoying it.",
-   "listener": "Pico's shoulder and forearm in the foreground do not move.",
+   "generate_audio": true,
+   "audio_from": "",
+   "acting": "Kept whole so that the pause plays in real time. Teasing, deadpan-playful, brisk, a smile in the voice. His eyes are on the watch for \"Tu portes cette montre depuis deux ans…\"; one beat: on the \"…\" he looks up at her over the top of his glasses with a corner smile (only his eyes move, his head stays bowed), then finishes the question lightly, enjoying it.",
+   "listener": "Pico's shoulder and raised wrist in the foreground do not move.",
    "camera": "Locked. The one shot above 4 s.",
-   "notes": "13 words on a three-quarter face of medium size, never on a close-up, so that a lip-sync slip shows least. The \"…\" is a short held pause, not a slowdown. Spare take: the same line on nox_face (made anyway as part of the first voice test)."
+   "sfx": "",
+   "notes": "12 words on a three-quarter face of medium size, never on a close-up, so that a lip-sync slip shows least. The \"…\" is a short held pause, not a slowdown. Two caption cards: the second half appears only after the pause. No raised eyebrow for Nox: that is Pico's signature. Spare take 4b: the same line on nox_face (made anyway as part of the voice tests)."
   },
   {
    "n": 5,
@@ -122,14 +229,19 @@
    "speaker": "pico",
    "line_id": "l02c",
    "text": "J'ai jamais regardé dessous, ok ?",
-   "caption": "J’ai jamais regardé dessous, ok ?",
-   "est_s": 2.5,
+   "caption": [
+    "J’ai jamais regardé dessous, ok ?"
+   ],
+   "est_s": 2.3,
    "request_s": 5,
-   "pre_beat_s": 0.4,
-   "acting": "Caught out: a blank, frozen stare for the short silence, then the line fast, stung and defensive, a bit sulky. One beat: on \"ok ?\" she lifts her chin, pouts and looks away to screen-right; she holds the pout.",
+   "pre_beat_s": 0.15,
+   "generate_audio": true,
+   "audio_from": "",
+   "acting": "Stung, she snaps back at once, tit for tat: fast, defensive, a bit sulky. One beat: on \"ok ?\" she lifts her chin and pouts, glaring straight back at him (toward the left edge of the frame); she holds the sulky glare.",
    "listener": "Nox is off-screen.",
    "camera": "Locked.",
-   "notes": "First use of the Pico close-up. Listen for the word \"ok\"."
+   "sfx": "",
+   "notes": "First use of the Pico close-up. No silence before her line: the held silence is Nox's device, not hers. Her sulky glare at him is the look she still has in shot 6. Listen for the word \"ok\" (two syllables, as okay)."
   },
   {
    "n": 6,
@@ -137,30 +249,37 @@
    "speaker": "none",
    "line_id": "",
    "text": "",
-   "caption": "",
+   "caption": [],
    "est_s": 1.3,
    "request_s": 5,
    "pre_beat_s": 0,
-   "acting": "Silent stand-off, nobody speaks. Exactly the tableau of shot 3: he has already gone back to his soldering and does not look at her; she is still planted on his bench, wrist under his nose, glaring at him. Only the wisp of smoke moves.",
+   "generate_audio": false,
+   "audio_from": "",
+   "acting": "Silent stand-off. Exactly the tableau of shot 3: he is already back at his circuit board and does not look at her; she is still planted on his bench, wrist under his nose, glaring at him (the sulky glare that ends shot 5). Nothing moves except the wisp of smoke.",
    "listener": "Both hold perfectly still, lips closed.",
    "camera": "Locked. Same still as shot 3 (reference 1 also reuses its wide before and after the gag).",
-   "sfx": "Soldering sizzle and room tone only; the clip's own sound is muted.",
-   "notes": "The silent beat before his answer, played with both characters in frame. Cheapest way: one silent clip from the same still (nobody speaks, nobody moves, only the smoke), or failing that the still itself held for 1.3 s. Removable without any other change: shot 5 then cuts straight to shot 7."
+   "sfx": "Soldering sizzle and room tone only (the clip is generated without sound). Optional: one short amused breath through the nose from Nox on the last frames, leading into his \"Bon.\".",
+   "notes": "The only silence of this passage, played with both characters in frame. Generated with generate_audio off, from the same still as shot 3; failing that, the still itself held for 1.3 s. If the shot is dropped in the edit, shot 7 is replaced by take 7b (the soldering close-up), so that the over-the-shoulder frame does not come twice in a row for Nox."
   },
   {
    "n": 7,
-   "setup": "nox_soudure",
+   "setup": "ots_nox",
    "speaker": "nox",
    "line_id": "l02d",
    "text": "Bon. Laisse-moi t'expliquer.",
-   "caption": "Bon. Laisse-moi t’expliquer.",
+   "caption": [
+    "Bon. Laisse-moi t’expliquer."
+   ],
    "est_s": 2.5,
    "request_s": 5,
-   "pre_beat_s": 0.3,
-   "acting": "Still soldering, eyes down: a short amused breath out through the nose, then \"Bon.\" to his board. One beat: he lifts his head from his work toward her (screen-right) while his iron hand sinks out of the bottom of the frame, for a brisk, warm, eager \"Laisse-moi t'expliquer.\" (he loves explaining; alive, never slow).",
-   "listener": "Pico is off-screen.",
-   "camera": "Locked, low angle. Same still as shot 2.",
-   "notes": "The sigh is a breath, not a word: reject any take with an added word. The iron leaves the frame here because it is back in its stand in shot 8."
+   "pre_beat_s": 0.25,
+   "generate_audio": true,
+   "audio_from": "",
+   "acting": "\"Bon.\" short and falling, amused and resigned (he gives in), eyes still down on the watch. One beat: he lifts his head toward her (toward the right edge of the frame) and the rest brightens, eager and brisk: \"Laisse-moi t'expliquer.\" (he loves explaining).",
+   "listener": "Pico's shoulder and raised wrist in the foreground do not move.",
+   "camera": "Locked. Same still as shot 4.",
+   "sfx": "",
+   "notes": "Played over Pico's shoulder, not on the soldering close-up: her wrist and watch are in front of his face in shots 3, 4 and 6 and would vanish on a hard cut to a frame without her. Same still as shot 4, two shots apart, with a different beat (shot 4: only his eyes come up; shot 7: his whole head). The amused sigh is no longer asked of the model (it could come out as a word): it is a sound added at the end of shot 6. Safety take 7b: the same line on nox_soudure, for the cut without the two-shot."
   },
   {
    "n": 8,
@@ -168,15 +287,19 @@
    "speaker": "nox",
    "line_id": "l03",
    "text": "Regarde de plus près.",
-   "caption": "Regarde de plus près.",
-   "est_s": 2.0,
+   "caption": [
+    "Regarde de plus près."
+   ],
+   "est_s": 2.6,
    "request_s": 5,
-   "pre_beat_s": 0.5,
-   "acting": "First sentence of l03, his catchphrase. One beat: he pushes his glasses up with one index finger and a green glint slides across the lenses; then the line, low, playful, conspiratorial, an invitation (alive, not slow). The hand drops back out of frame.",
+   "pre_beat_s": 0.25,
+   "generate_audio": true,
+   "audio_from": "",
+   "acting": "First sentence of l03, his catchphrase: playful and inviting, a grin in it, at full voice, brisk. One beat, AFTER the line: he pushes his glasses up with one index finger, a small green glint on the rim of one lens; the cut to shot 9 lands on that glint.",
    "listener": "Pico is off-screen (the camera is her point of view).",
    "camera": "Locked.",
-   "sfx": "A tiny glint sound on the glasses (optional).",
-   "notes": "His signature before every revelation. It is the only shot where a hand enters the frame, next to thin glasses: also make a take without the hand (he leans a little toward the lens, green glint only) and choose in the edit. Ask for a perfectly still background with frozen screens. Five syllables in a 5 s clip: check that no word is added."
+   "sfx": "A tiny glint sound on the glasses.",
+   "notes": "His signature before every revelation (the revelation is shot 9). The gesture comes after the line: the hand is never near the mouth while he speaks, and if the gesture comes out badly the shot is cut right after the last word. His eyes stay visible through the lenses the whole time. Take 8b: no hand and no glint (he leans a little toward the lens); the glint is then a sound only. Ask for a perfectly still background with frozen screens. Five syllables in a 5 s clip: check that no word is added and that the delivery is not stretched. Shots 8 and 9 are the two halves of one line: same voice, same energy."
   },
   {
    "n": 9,
@@ -184,15 +307,20 @@
    "speaker": "nox",
    "line_id": "l03",
    "text": "Ta montre envoie de la lumière verte… dans ta peau.",
-   "caption": "Ta montre envoie de la lumière verte… dans ta peau.",
+   "caption": [
+    "Ta montre envoie de la lumière verte…",
+    "dans ta peau."
+   ],
    "est_s": 3.7,
    "request_s": 6,
    "pre_beat_s": 0.4,
-   "acting": "Second sentence of l03, spoken OFF-SCREEN by Nox. Lively storyteller relish, close and captivating; a short suspense pause after \"verte…\", then \"dans ta peau.\" in a mock-mysterious near-whisper. Never slow.",
-   "listener": "Pico is on screen and has taken \"look closer\" literally: eyes 10 cm from the watch, squinting, green light pulsing on her skin. One beat: on \"dans ta peau\" her eyes go wide and flick up to him. Her mouth stays hidden behind her forearm, which does not move.",
+   "generate_audio": false,
+   "audio_from": "9b",
+   "acting": "Second sentence of l03, spoken OFF-SCREEN by Nox. The sound is that of take 9b (Nox on screen, over her shoulder), laid over this picture in the edit. Lively storyteller relish, at full voice; a short suspense pause after \"verte…\", then \"dans ta peau.\" a little lower and closer, fully voiced and clearly articulated, with mock mystery.",
+   "listener": "Pico is on screen and has taken \"look closer\" literally: crouched, eyes 10 cm from the watch, squinting, green light pulsing on her skin. One beat: on \"dans ta peau\" her squint drops and her eyes go round, still fixed on the watch; she freezes. She does not look up at him: that look is kept for \"quoi ?!\" in shot 10. Her mouth stays hidden behind her forearm, which does not move.",
    "camera": "Locked, at bench height.",
    "sfx": "A soft, low electronic pulse in time with the green light (optional).",
-   "notes": "The image of the sketch: the green light on her skin, the subject of the episode, shown rather than told. Off-screen line, as in reference 1, shot 2: the model may give the voice to the girl, change the voice or stay silent. Safety take: the same sentence on ots_nox with Nox on screen (eyes on the watch, then up to her on \"dans ta peau\"); its sound can be laid over this picture, where no mouth is visible, or the take can replace the shot."
+   "notes": "The image of the sketch: the green light on her skin, the subject of the episode, shown rather than told. The picture is generated without sound (generate_audio off): an off-screen voice could come out in the wrong voice, in the young woman's mouth, or not at all. In the edit the sound of take 9b is placed so that \"dans ta peau\" falls on her eyes going round. Two caption cards: \"dans ta peau.\" appears only after the pause. If the still fails: the spare insert montre_lueur (forearm, watch, green glow, no face); as a last resort, take 9b as picture and sound."
   },
   {
    "n": 10,
@@ -200,14 +328,19 @@
    "speaker": "pico",
    "line_id": "l04",
    "text": "Attends… quoi ?! Elle me scanne ?!",
-   "caption": "Attends… quoi ?! Elle me scanne ?!",
+   "caption": [
+    "Attends… quoi ?! Elle me scanne ?!"
+   ],
    "est_s": 2.8,
    "request_s": 5,
    "pre_beat_s": 0.3,
-   "acting": "Her signature double-take. \"Attends…\" low and frozen, eyes dropping toward her wrist (below the frame); one beat: her head jerks back and her eyes snap up to Nox, wide, on \"quoi ?!\", then \"Elle me scanne ?!\" loud, rising, a touch of panic. She holds the shocked face after the last word.",
+   "generate_audio": true,
+   "audio_from": "",
+   "acting": "Her signature double-take, played once. The shot opens as her eyes are already dropping toward her wrist (below the frame), carrying on from shot 9: \"Attends…\" low and stunned, eyes down; one beat: on \"quoi ?!\" her head jerks up and her wide eyes snap to Nox (toward the left edge of the frame); then \"Elle me scanne ?!\" loud, rising, a touch of panic. She holds the shocked face after the last word.",
    "listener": "Nox is off-screen.",
    "camera": "Locked.",
-   "notes": "The line stays whole in one clip: split in two it would give two clips of 3 syllables that the model pads with invented words, and two voices for one outcry. Same still as shot 5, but her previous appearance is the eyes-over-watch shot, so the framing is not repeated twice in a row. Listen for the word \"scanne\"."
+   "sfx": "",
+   "notes": "The line stays whole in one clip: split in two it would give two clips of 3 syllables that the model pads with invented words, and two voices for one outcry. Same still as shot 5, but her previous appearance is the eyes-over-watch shot, so the framing is not repeated twice in a row. In the edit the shot starts when her eyes are already down. Listen for the word \"scanne\"."
   },
   {
    "n": 11,
@@ -215,27 +348,96 @@
    "speaker": "nox",
    "line_id": "l04b",
    "text": "Elle t'éclaire. Nuance.",
-   "caption": "Elle t’éclaire. Nuance.",
+   "caption": [
+    "Elle t’éclaire.",
+    "Nuance."
+   ],
    "est_s": 3.6,
    "request_s": 6,
    "pre_beat_s": 1.2,
-   "acting": "A silent deadpan stare for 1.2 s, with one slow blink. Then dry, precise, quick and amused: \"Elle t'éclaire.\", a micro-pause, \"Nuance.\" tossed off. One beat: the corner of his mouth lifts after \"Nuance.\"; he holds the smirk 0.7 s to the final cut. Deadpan in the face, alive in the voice.",
+   "generate_audio": true,
+   "audio_from": "",
+   "acting": "A silent deadpan stare for 1.2 s, with one slow blink. Then, precise and amused, at an easy conversational pace: \"Elle t'éclaire.\", a tiny pause, and \"Nuance.\" placed crisply, with a falling tone, like a full stop. One beat: the corner of his mouth lifts after \"Nuance.\"; he holds the smirk 0.7 s to the final cut. Deadpan in the face, alive in the voice.",
    "listener": "Pico is off-screen.",
-   "camera": "Slow push-in of about 12-15% over the whole shot, the only camera move of the film. Generate the clip locked and do the push-in in the edit; plan B is to ask the model for a very slow push-in.",
+   "camera": "Slow push-in of about 12-15% over the whole shot, the only camera move of the film. Generate the clip locked and do the push-in in the edit; plan B (take 11b) is to ask the model for a very slow push-in.",
    "sfx": "None: the music bed stops on the cut into this shot, so that the stare and the line play over silence.",
-   "notes": "Punchline and end of the film (as the last shot of reference 1: silent stare, line, faint smirk). The approved direction says \"très posé\": that is played in the face and in the pause, not in a slow voice, which makes him robotic."
+   "notes": "Punchline and end of the film (as the last shot of reference 1: silent stare, line, faint smirk). \"Nuance.\" is the punchline word: neither swallowed nor rising like a question. Two caption cards: \"Nuance.\" appears only when he says it. The approved direction says \"très posé\": that is played in the face and in the pause, not in a slow voice, which makes him robotic."
+  }
+ ],
+ "safety_takes": [
+  {
+   "id": "2b",
+   "setup": "nox_soudure",
+   "speaker": "nox",
+   "line_id": "l02",
+   "text": "Bonsoir à toi aussi, Pico. Entre, fais comme chez toi.",
+   "request_s": 6,
+   "required": false,
+   "purpose": "Whole line l02 in one clip on the soldering close-up. With take 7b it replaces shots 2, 3 and 7 (and shot 6 is dropped) if the two-shot still or its lip-sync fails."
+  },
+  {
+   "id": "4b",
+   "setup": "nox_face",
+   "speaker": "nox",
+   "line_id": "l02b",
+   "text": "Tu portes cette montre depuis deux ans… et tu découvres qu'elle s'allume ?",
+   "request_s": 6,
+   "required": false,
+   "purpose": "The tease l02b on the approved frontal image of Nox. Spare take of shot 4, and the Nox clip of the voice tests (V1)."
+  },
+  {
+   "id": "7b",
+   "setup": "nox_soudure",
+   "speaker": "nox",
+   "line_id": "l02d",
+   "text": "Bon. Laisse-moi t'expliquer.",
+   "request_s": 5,
+   "required": false,
+   "purpose": "Shot 7's line on the soldering close-up. Used when shot 6 is dropped or in the cut without the two-shot (2b, no shots 3 and 6): in both cases ots_nox would otherwise come twice in a row for Nox. Also used if ots_nox fails."
+  },
+  {
+   "id": "8b",
+   "setup": "nox_face",
+   "speaker": "nox",
+   "line_id": "l03",
+   "text": "Regarde de plus près.",
+   "request_s": 5,
+   "required": false,
+   "purpose": "Shot 8 without the hand and without any glint (a finger next to thin glasses is the riskiest gesture of the film): he leans in very slightly. The glint is then only a sound in the edit. Make it anyway and choose in the edit."
+  },
+  {
+   "id": "9b",
+   "setup": "ots_nox",
+   "speaker": "nox",
+   "line_id": "l03",
+   "text": "Ta montre envoie de la lumière verte… dans ta peau.",
+   "request_s": 6,
+   "required": true,
+   "purpose": "REQUIRED: the sound of shot 9. Shot 9's sentence with Nox on screen; its sound is laid over the silent picture of shot 9, where no mouth is visible. Last resort only: the take replaces the shot, picture and sound."
+  },
+  {
+   "id": "11b",
+   "setup": "nox_tgp",
+   "speaker": "nox",
+   "line_id": "l04b",
+   "text": "Elle t'éclaire. Nuance.",
+   "request_s": 6,
+   "required": false,
+   "purpose": "Plan B for the punchline, only if the push-in made in the edit looks too soft at 720p: the same shot with the push-in made by the model."
   }
  ],
  "music": "A discreet, slow lo-fi loop (soft bass, no lead melody, no vocals), mixed about 16 dB under the voices, entering just after the door bang and cut dead on the cut into shot 11 so that the stare and the punchline play over silence.",
+ "sound_bed": "The clips are generated with the voice only (no room tone asked of the model: eleven generated ambiences would change at every cut and would spoil a later voice-change pass). One continuous, very quiet room tone is laid under the whole film in the edit, with the sound effects listed shot by shot.",
  "open_questions": [
-  "Voice: does an audio reference make the character speak in that exact voice, and how good is the French? First batch of 8 jobs before anything else, using only the two approved images: l01 on pico_porte and l02b on nox_face, each on seedance_2_0 and on seedance_2_5 (mode omni_reference), with and without the character's voice sample. Judge timbre, French, lip-sync, and the words \"Nox\", \"run\" and \"deux ans\".",
-  "Voice samples: are there clean 8-15 s recordings, without music, of the two validated voices (Nox: Umbriel, Pico: Laomedeia)? seedance_2_0 only takes audio references of 2-15 s.",
-  "If the voices still drift from clip to clip, is a voice-change pass after generation acceptable (same timing, so the lips still match)?",
-  "Shot 9 has an off-screen voice: will the model produce Nox's voice when no mouth is in frame? If not, the edit lays the sound of the safety take (same sentence on ots_nox) over the picture.",
-  "montage.py only trims clips. Holding the opening frames (silent beats of shots 2 and 11), the push-in of shot 11, muting shot 6 and laying another take's sound over shot 9 need small ffmpeg pre-steps or new options.",
-  "Is a seventh new image allowed? It would buy an alternative shot 10: the side two-shot again, with Pico recoiled, arm outstretched, and Nox sipping his coffee, the mug hiding his mouth (from the comedy-first proposal).",
-  "Length: 31.8 s estimated from syllable counts (expect 30-35 s with generated speech). If the cut lands under 30 s, lengthen the silent beats of shots 2, 6 and 11 rather than add a shot?",
+  "Voice: does an audio reference make the character speak in that exact voice, clip after clip, and how good is the French? Tested before anything else with the two approved images only: batch A (8 clips: l01 on pico_porte and l02b on nox_face, on seedance_2_0 and seedance_2_5, with and without the voice sample), batch A2 (8 clips: the two other ways of attaching the sample), then batch B on the winner (9 clips: repeat, another line, a control, the line itself as audio, and 4 s against 6 s). Details in prompts.json (voice_test) and runbook.md.",
+  "Voice samples: are there clean recordings of 11-13 s, without music, of the two validated voices (Nox: Umbriel, Pico: Laomedeia)? seedance_2_0 only takes audio references of 2-15 s. Texts and rules: prompts.json (tts_samples).",
+  "If the voices still drift from clip to clip, is a voice-change pass after generation acceptable (same timing, so the lips still match)? Its cost and its availability during the trial must be read first: the trial gives no credits and the balance is 10.",
+  "Style master: nox_ref by default (see decisions). Confirm, or choose pico_ref.",
+  "Teaser: the film ends before the answer to its own hook (see decisions). Confirm, and say where the follow-up is announced.",
+  "An alternative shot 10 would need one more still: the side two-shot again, with Pico recoiled, arm outstretched, and Nox sipping his coffee, the mug hiding his mouth (from the comedy-first proposal). Wanted?",
+  "Length: 32.6 s estimated from syllable counts (expect 30-36 s with generated speech). If the cut lands under 30 s, lengthen the silent beats of shots 2, 6 and 11 rather than add a shot?",
   "The room will not match perfectly from one angle to the next (it does not in reference 2 either): acceptable as long as the characters, the props and the screen direction hold?",
-  "Captions: white with a dark outline, the whole line at the bottom (reference 1, and what montage.py does now), with \"ok\" kept in lower case as in the approved text?"
+  "Captions: white with a dark outline at the bottom (reference 1), one card per shot and two timed cards in shots 4, 9 and 11, with \"ok\" kept in lower case as in the approved text?",
+  "Trial: it needs a card and renews automatically at 75 EUR unless the renewal is cancelled within the three days. Starting it and cancelling the renewal are the owner's decisions; nothing was started."
  ]
 }

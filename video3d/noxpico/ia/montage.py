@@ -83,7 +83,8 @@ def envelope(path, voice_band=True):
 
 
 def speech_span(env):
-    """(début, fin, niveau moyen parlé) de la parole, ou None si le plan est muet."""
+    """(début, fin, niveau moyen parlé, pauses) de la parole, ou None si le plan est muet.
+    pauses = silences d'au moins 0,15 s à l'intérieur de la réplique, [(début, fin), ...]."""
     if env is None or env.size == 0:
         return None
     peak = float(np.percentile(env, 99))
@@ -91,23 +92,49 @@ def speech_span(env):
     if peak < -50 or peak - floor < 10:
         return None
     thr = max(floor + 10.0, peak - 28.0)
-    on = env > thr
-    # bouche les trous de moins de 0,35 s, enlève les éclats de moins de 0,08 s
+    raw = env > thr
+
     def runs(mask):
         idx = np.flatnonzero(np.diff(np.concatenate(([0], mask.astype(np.int8), [0]))))
         return list(zip(idx[::2], idx[1::2]))
+    # enlève les éclats de moins de 0,08 s, puis bouche les trous de moins de 0,35 s
+    for a, b in runs(raw):
+        if (b - a) * FRAME < 0.08:
+            raw[a:b] = False
+    on = raw.copy()
     for a, b in runs(~on):
         if a > 0 and b < on.size and (b - a) * FRAME < 0.35:
             on[a:b] = True
-    for a, b in runs(on):
-        if (b - a) * FRAME < 0.08:
-            on[a:b] = False
     r = runs(on)
     if not r or sum(b - a for a, b in r) * FRAME < 0.15:
         return None
-    voiced = env[on]
+    i0, i1 = r[0][0], r[-1][1]
+    pauses = [(a * FRAME, b * FRAME) for a, b in runs(~raw[i0:i1]) if (b - a) * FRAME >= 0.15]
+    pauses = [(a + i0 * FRAME, b + i0 * FRAME) for a, b in pauses]
+    voiced = env[raw]
     level = 10 * np.log10(np.mean(10 ** (voiced / 10)))
-    return r[0][0] * FRAME, r[-1][1] * FRAME, float(level)
+    return i0 * FRAME, i1 * FRAME, float(level), pauses
+
+
+def caption_windows(parts, span, offset, t0, t1):
+    """Fenêtres d'affichage d'un sous-titre en plusieurs temps. Chaque partie apparaît un peu avant
+    d'être dite : on change de partie dans les plus longues pauses de la réplique, sinon au prorata
+    du nombre de lettres. offset = temps du film qui correspond au temps 0 du son."""
+    if not span:
+        step = (t1 - t0) / len(parts)
+        return [(t0 + i * step, t0 + (i + 1) * step) for i in range(len(parts))]
+    s0, s1 = span[0], span[1]
+    cuts = []
+    if len(parts) > 1:
+        gaps = sorted(span[3], key=lambda g: g[0] - g[1])[: len(parts) - 1]
+        if len(gaps) == len(parts) - 1:
+            cuts = sorted(g[1] - 0.10 for g in gaps)          # juste avant la reprise de la parole
+        else:
+            n = [len(p) for p in parts]
+            acc = np.cumsum(n)[:-1] / sum(n)
+            cuts = [s0 + float(x) * (s1 - s0) for x in acc]
+    edges = [s0 - 0.10] + cuts + [s1 + 0.25]
+    return [(max(t0, offset + edges[i]), min(t1, offset + edges[i + 1])) for i in range(len(parts))]
 
 
 def load_font(size):
@@ -117,20 +144,34 @@ def load_font(size):
     raise SystemExit("aucune police trouvée")
 
 
+WEAK_END = {"le", "la", "les", "l'", "un", "une", "des", "du", "de", "d'", "à", "au", "aux", "et", "ou", "mais", "que", "qu'",
+            "qui", "ma", "mon", "mes", "ta", "ton", "tes", "sa", "son", "ses", "ce", "cette", "ces", "en", "dans", "sur",
+            "pour", "par", "avec", "sans", "deux", "trois", "très", "plus", "ne", "n'", "je", "tu", "il", "elle", "on", "y"}
+
+
 def wrap_caption(text, font, max_w, draw):
-    """Une ligne si elle tient, sinon deux lignes équilibrées. Garde « mot ? » ensemble."""
+    """Une ligne si elle tient, sinon deux lignes : coupure de préférence après une ponctuation,
+    jamais après un petit mot (« des », « deux »…). Garde « mot ? » ensemble."""
     t = " ".join(text.split())
     for mark in "?!:;»":
-        t = t.replace(" " + mark, " " + mark)
-    t = t.replace("« ", "« ")
+        t = t.replace(" " + mark, "\u00a0" + mark)
+    t = t.replace("« ", "«\u00a0")
     words = t.split(" ")
-    width = lambda s: draw.textlength(s, font=font)
+    width = lambda x: draw.textlength(x, font=font)
     if width(t) <= max_w or len(words) == 1:
         return [t]
     best = None
     for i in range(1, len(words)):
         a, b = " ".join(words[:i]), " ".join(words[i:])
-        cost = max(width(a), width(b))
+        wa, wb = width(a), width(b)
+        cost = max(wa, wb) / max_w
+        last = words[i - 1].lower()
+        if last[-1] in ",;:…!?.»" or last.endswith(("\u00a0?", "\u00a0!")):
+            cost -= 0.30                      # belle coupure : après une ponctuation
+        elif last in WEAK_END:
+            cost += 0.25                      # mauvaise coupure : après un petit mot
+        if max(wa, wb) > max_w:
+            cost += 2.0
         if best is None or cost < best[0]:
             best = (cost, [a, b])
     return best[1]
@@ -245,16 +286,15 @@ def build(edit_path):
             run(["ffmpeg", "-v", "error", "-y", "-i", vseg, "-i", aseg, "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy",
                  "-c:a", "pcm_s16le", "-t", f"{total_d:.3f}", seg])
             segs.append(seg)
-            cap = (sh.get("caption") or "").strip()
-            if cap:
-                if span:
-                    c0 = max(t, t + hold + (span[0] - aa) - 0.10)
-                    c1 = min(t + total_d, t + hold + (span[1] - aa) + 0.25)
-                else:
-                    c0, c1 = t, t + total_d
-                png = os.path.join(tmp, f"cap{k:03d}.png")
-                caption_png(cap, (W, H), png)
-                caps.append((png, c0, c1))
+            cap = sh.get("caption") or ""
+            parts = [c.strip() for c in ([cap] if isinstance(cap, str) else cap) if c and c.strip()]
+            if parts:
+                wins = caption_windows(parts, span, t + hold - aa, t, t + total_d)
+                for j, (part, (c0, c1)) in enumerate(zip(parts, wins)):
+                    png = os.path.join(tmp, f"cap{k:03d}_{j}.png")
+                    caption_png(part, (W, H), png)
+                    caps.append((png, c0, c1))
+            cap = " / ".join(parts)
             report.append({"n": n, "source": still or sh["clip"], "in": round(a, 3), "start": round(t, 3), "dur": round(total_d, 3),
                            "hold_start": hold, "speech": [round(span[0], 2), round(span[1], 2)] if span else None,
                            "sound": "autre prise" if sh.get("audio_from") else ("clip" if asrc else "muet"),
@@ -339,6 +379,8 @@ def qc(clip, sheet=None):
     print(f"{os.path.basename(clip)} : {info['width']}x{info['height']}, {info['fps']:.2f} i/s, {info['duration']:.2f} s, son : {'oui' if info['audio'] else 'non'}")
     if span:
         print(f"  parole de {span[0]:.2f} à {span[1]:.2f} s (niveau {span[2]:.1f} dB) ; silence avant {span[0]:.2f} s, après {info['duration'] - span[1]:.2f} s")
+        if span[3]:
+            print("  pauses dans la réplique : " + ", ".join(f"{a:.2f}–{b:.2f}" for a, b in span[3]))
     else:
         print("  pas de parole détectée")
     sheet = sheet or os.path.splitext(clip)[0] + "_planche.jpg"

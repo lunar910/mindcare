@@ -39,3 +39,23 @@ python3 montage.py build edit.json               # coupes calées sur la parole,
 
 `build` écrit le film en 4:3, une version verticale 1080×1920 et un rapport des coupes.
 Le format de `edit.json` est décrit en tête de `montage.py`.
+
+## Découpage final (11 plans, environ 32 s)
+
+`shotlist.md` (en français) et `shotlist.json` : du début de l'épisode 1 jusqu'à « Elle t'éclaire. Nuance. ».
+Choisi par un panel de trois découpages (référence, comédie, sécurité IA) puis relu deux fois
+(français et comédie, pièges techniques). Le texte validé est gardé mot pour mot.
+
+## Outil de génération : Google Flow (depuis le 25 novembre)
+
+Higgsfield refusant la vidéo sans abonnement, la génération passe par Google Flow (offre Google AI
+étudiant : 1 000 crédits par mois). Flow n'a pas d'accès automatique : les clips sont générés à la main
+avec les consignes de `flow/`, puis renvoyés pour le montage.
+
+- Modèle : Omni Flash 1.2 en mode « Ingrédients » (les deux images validées comme références),
+  seul mode où une voix créée dans Flow (« Nox », « Pico ») reste la même d'un clip à l'autre.
+- Format 16:9, recadré au centre en 4:3 au montage. Environ 3 crédits par seconde en 720p.
+- `flow/etape1_test_flow.txt` : création des deux voix et deux clips test.
+
+Le dossier `seedance/` garde la version des consignes écrite pour Higgsfield (Seedance), avec son
+mode d'emploi : elle sert si l'on revient à cet outil.

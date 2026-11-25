@@ -1,0 +1,191 @@
+{
+ "size": [
+  960,
+  720
+ ],
+ "fps": 24,
+ "out": "sortie/sketch_v1.mp4",
+ "vertical": true,
+ "shots": [
+  {
+   "n": 1,
+   "clip": "clips/s01.mp4",
+   "caption": [
+    "Nox ! Pourquoi ma montre fait des lumières vertes à la fin de mon run ?"
+   ],
+   "lead": 0.15,
+   "tail": 0.45
+  },
+  {
+   "n": 2,
+   "clip": "clips/s02.mp4",
+   "caption": [
+    "Bonsoir à toi aussi, Pico."
+   ],
+   "lead": 1.0,
+   "tail": 0.45
+  },
+  {
+   "n": 3,
+   "clip": "clips/s03.mp4",
+   "caption": [
+    "Entre, fais comme chez toi."
+   ],
+   "lead": 0.9,
+   "tail": 0.45
+  },
+  {
+   "n": 4,
+   "clip": "clips/s04.mp4",
+   "caption": [
+    "Tu portes cette montre depuis deux ans…",
+    "et tu découvres qu’elle s’allume ?"
+   ],
+   "lead": 0.25,
+   "tail": 0.45
+  },
+  {
+   "n": 5,
+   "clip": "clips/s05.mp4",
+   "caption": [
+    "J’ai jamais regardé dessous, ok ?"
+   ],
+   "lead": 0.15,
+   "tail": 0.45
+  },
+  {
+   "n": 6,
+   "clip": "clips/s06.mp4",
+   "silent_s": 1.3,
+   "mute": true
+  },
+  {
+   "n": 7,
+   "clip": "clips/s07.mp4",
+   "caption": [
+    "Bon. Laisse-moi t’expliquer."
+   ],
+   "lead": 0.25,
+   "tail": 0.45
+  },
+  {
+   "n": 8,
+   "clip": "clips/s08.mp4",
+   "caption": [
+    "Regarde de plus près."
+   ],
+   "lead": 0.25,
+   "tail": 1.1
+  },
+  {
+   "n": 9,
+   "clip": "clips/s09.mp4",
+   "caption": [
+    "Ta montre envoie de la lumière verte…",
+    "dans ta peau."
+   ],
+   "lead": 0.4,
+   "tail": 0.45,
+   "audio_from": "clips/s09b.mp4",
+   "in": 0.3
+  },
+  {
+   "n": 10,
+   "clip": "clips/s10.mp4",
+   "caption": [
+    "Attends… quoi ?! Elle me scanne ?!"
+   ],
+   "lead": 0.3,
+   "tail": 0.45
+  },
+  {
+   "n": 11,
+   "clip": "clips/s11.mp4",
+   "caption": [
+    "Elle t’éclaire.",
+    "Nuance."
+   ],
+   "lead": 1.2,
+   "tail": 0.9,
+   "push_in": 0.13
+  }
+ ],
+ "sfx": [
+  {
+   "file": "<scratchpad>/ep01_tpl/assets/sfx8/door.mp3",
+   "shot": 1,
+   "offset": 0.0,
+   "gain_db": -8
+  },
+  {
+   "file": "<scratchpad>/ep01_tpl/assets/sfx8/solder.mp3",
+   "shot": 2,
+   "offset": 0.0,
+   "gain_db": -16
+  },
+  {
+   "file": "<scratchpad>/ep01_tpl/assets/sfx8/footsteps.mp3",
+   "shot": 2,
+   "offset": 0.1,
+   "gain_db": -10
+  },
+  {
+   "file": "<scratchpad>/ep01_tpl/assets/sfx8/solder.mp3",
+   "shot": 6,
+   "offset": 0.0,
+   "gain_db": -16
+  },
+  {
+   "file": "<scratchpad>/ep01_tpl/assets/sfx/sparkle.mp3",
+   "shot": 8,
+   "offset": 1.6,
+   "gain_db": -12
+  }
+ ],
+ "_a_completer": {
+  "music": {
+   "file": "son/musique.mp3",
+   "under_voice_db": -16,
+   "enter_s": 0.6,
+   "stop_at_shot": 11,
+   "note": "Rename this key to \"music\" (at the top level) once the file exists. A discreet, slow lo-fi loop (soft bass, no lead melody, no vocals), mixed about 16 dB under the voices, entering just after the door bang and cut dead on the cut into shot 11 so that the stare and the punchline play over silence."
+  },
+  "sfx": [
+   {
+    "file": "son/ambiance.mp3",
+    "at": 0.0,
+    "gain_db": -30,
+    "note": "One continuous, very quiet room tone, at least as long as the film."
+   },
+   {
+    "file": "son/fracas.mp3",
+    "shot": 3,
+    "offset": 0.0,
+    "gain_db": -8,
+    "note": "Short clatter of components exactly on the cut; trim the footsteps so that they stop on it."
+   },
+   {
+    "file": "son/souffle.mp3",
+    "shot": 6,
+    "offset": 0.8,
+    "gain_db": -12,
+    "note": "Optional: Nox's short amused breath through the nose, leading into his line of shot 7."
+   },
+   {
+    "file": "son/pulsation.mp3",
+    "shot": 9,
+    "offset": 0.0,
+    "gain_db": -18,
+    "note": "Optional: soft low electronic pulse with the green light."
+   }
+  ],
+  "notes": [
+   "Shot 6 alternative: replace \"clip\" by \"still\": \"stills/deux_etabli.png\" (the still held 1.3 s).",
+   "Shots 2, 3 and 11: \"lead\" keeps real footage before the first word; if the clip speaks earlier than that, add \"hold_start\" for the missing time (it freezes the first frame).",
+   "Shot 8: if the glasses gesture is bad, set \"tail\" to 0.45 (the shot is cut right after the line) or use take 8b; move the sparkle sound with \"offset\".",
+   "Shot 9: \"in\" is the time in the silent picture where the shot starts; move it until her eyes go round on the last three words.",
+   "Shot 10: if the shot opens before her eyes are down, set \"in\" by hand.",
+   "A caption written as a list is shown card after card; montage.py changes card in the longest pause of the line."
+  ]
+ }
+}
