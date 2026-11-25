@@ -7,13 +7,20 @@
 edit.json (chemins relatifs au dossier du fichier) :
 {
   "size": [960, 720], "fps": 24, "out": "sortie/extrait.mp4", "vertical": true,
-  "music": {"file": "musique.mp3", "under_voice_db": -16, "start": 0.0},
+  "music": {"file": "musique.mp3", "under_voice_db": -16, "start": 0.0,
+            "enter_s": 0.6,            # la musique entre après ce délai
+            "stop_at_shot": 11},       # et se coupe net à l'entrée de ce plan
   "shots": [
     {"n": 1, "clip": "clips/s01.mp4", "caption": "Texte affiché",
      "in": null, "out": null,          # secondes dans le clip ; null = calé sur la parole
      "lead": 0.25, "tail": 0.45,       # marge avant le premier mot / après le dernier
      "silent_s": 1.6,                  # durée gardée si le plan n'a pas de parole
-     "gain_db": 0.0}
+     "hold_start": 0.0,                # fige la première image pendant ce temps (silence avant la réplique)
+     "push_in": 0.0,                   # zoom avant lent sur tout le plan (0.14 = +14 %)
+     "mute": false,                    # coupe le son du clip
+     "audio_from": "clips/autre.mp4",  # son pris sur une autre prise (voix hors champ)
+     "gain_db": 0.0},
+    {"n": 6, "still": "images/deux_etabli.png", "silent_s": 1.3}   # image fixe à la place d'un clip
   ],
   "sfx": [{"file": "sfx/door.mp3", "shot": 1, "offset": 0.0, "gain_db": -6}]
 }
@@ -169,55 +176,90 @@ def build(edit_path):
     report, segs, caps, t = [], [], [], 0.0
     try:
         for k, sh in enumerate(ed["shots"]):
-            clip = rel(sh["clip"])
-            if not os.path.exists(clip):
-                raise SystemExit(f"plan {sh.get('n', k + 1)} : fichier absent ({sh['clip']})")
-            info = probe(clip)
-            dur = info["duration"]
-            span = speech_span(envelope(clip)) if info["audio"] else None
+            n = sh.get("n", k + 1)
+            still = sh.get("still")
+            src = rel(still or sh["clip"])
+            if not os.path.exists(src):
+                raise SystemExit(f"plan {n} : fichier absent ({still or sh['clip']})")
+            info = None if still else probe(src)
+            vdur = 1e9 if still else info["duration"]
+            # d'où vient le son : du clip lui-même, d'une autre prise, ou de nulle part
+            asrc = None
+            if sh.get("audio_from"):
+                asrc = rel(sh["audio_from"])
+                if not os.path.exists(asrc):
+                    raise SystemExit(f"plan {n} : son absent ({sh['audio_from']})")
+            elif not still and info["audio"] and not sh.get("mute"):
+                asrc = src
+            span = speech_span(envelope(asrc)) if asrc else None
             lead, tail = sh.get("lead", 0.25), sh.get("tail", 0.45)
-            if span:
-                a = max(0.0, span[0] - lead)
-                b = min(dur, span[1] + tail)
+            hold = max(0.0, sh.get("hold_start", 0.0))
+            if sh.get("audio_from"):
+                adur = probe(asrc)["duration"]
+                aa = max(0.0, span[0] - lead) if span else 0.0
+                ab = min(adur, span[1] + tail) if span else min(adur, sh.get("silent_s", 1.6))
+                a = sh["in"] if sh.get("in") is not None else 0.0
+                d = ab - aa
             else:
-                a = 0.0
-                b = min(dur, sh.get("silent_s", 1.6))
-            a = sh["in"] if sh.get("in") is not None else a
-            b = sh["out"] if sh.get("out") is not None else b
-            a = max(0.0, min(a, dur - 0.2))
-            b = max(a + 0.2, min(b, dur))
+                if span:
+                    a, b = max(0.0, span[0] - lead), min(vdur, span[1] + tail)
+                else:
+                    a, b = 0.0, min(vdur, sh.get("silent_s", 1.6))
+                a = sh["in"] if sh.get("in") is not None else a
+                b = sh["out"] if sh.get("out") is not None else b
+                a = max(0.0, min(a, vdur - 0.2))
+                b = max(a + 0.2, min(b, vdur))
+                aa, d = a, b - a
             # durée arrondie à un nombre entier d'images, pour que l'image et le son restent calés
-            frames = max(1, round((b - a) * fps))
-            d = frames / fps
+            frames = max(1, round((hold + d) * fps))
+            total_d = frames / fps
             gain = sh.get("gain_db", 0.0)
             if span:
                 gain += float(np.clip(VOICE_TARGET_DB - span[2], -12, 12))
-            seg = os.path.join(tmp, f"seg{k:03d}.mkv")
-            vf = f"fps={fps},scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},setsar=1,format=yuv420p"
-            af = (f"aresample=48000,aformat=channel_layouts=stereo,volume={gain:.2f}dB,"
-                  f"afade=t=in:d=0.015,afade=t=out:st={max(0.0, d - 0.04):.3f}:d=0.04,apad")
-            cmd = ["ffmpeg", "-v", "error", "-y", "-i", clip]
-            if not info["audio"]:
-                cmd += ["-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo"]
-            cmd += ["-ss", f"{a:.3f}", "-t", f"{d:.3f}", "-map", "0:v:0", "-map", "0:a:0" if info["audio"] else "1:a:0",
-                    "-vf", vf, "-af", af, "-frames:v", str(frames), "-c:v", "libx264", "-crf", "12", "-preset", "fast",
-                    "-c:a", "pcm_s16le", "-shortest", seg]
+
+            # image
+            vf = [f"fps={fps}", f"scale={W}:{H}:force_original_aspect_ratio=increase", f"crop={W}:{H}", "setsar=1"]
+            vf.append(f"tpad=start_mode=clone:start_duration={hold:.3f}:stop_mode=clone:stop_duration=30")
+            push = sh.get("push_in", 0.0)
+            if push:
+                vf += [f"scale={3 * W}:{3 * H}:flags=lanczos",
+                       f"zoompan=z='1+{push:.4f}*on/{max(1, frames - 1)}':x='(iw-iw/zoom)/2':y='(ih-ih/zoom)/2':d=1:s={W}x{H}:fps={fps}"]
+            vf.append("format=yuv420p")
+            vseg = os.path.join(tmp, f"v{k:03d}.mkv")
+            cmd = ["ffmpeg", "-v", "error", "-y"]
+            cmd += ["-loop", "1", "-framerate", str(fps), "-i", src] if still else ["-i", src, "-ss", f"{a:.3f}"]
+            cmd += ["-an", "-vf", ",".join(vf), "-frames:v", str(frames), "-c:v", "libx264", "-crf", "12", "-preset", "fast", vseg]
             run(cmd)
+            # son
+            aseg = os.path.join(tmp, f"a{k:03d}.wav")
+            if asrc:
+                ms = int(round(hold * 1000))
+                af = (f"aresample=48000,aformat=channel_layouts=stereo,volume={gain:.2f}dB,afade=t=in:d=0.015,"
+                      f"afade=t=out:st={max(0.0, d - 0.04):.3f}:d=0.04," + (f"adelay={ms}:all=1," if ms else "") + "apad")
+                run(["ffmpeg", "-v", "error", "-y", "-i", asrc, "-ss", f"{aa:.3f}", "-t", f"{d:.3f}", "-vn", "-af", af,
+                     "-t", f"{total_d:.3f}", "-c:a", "pcm_s16le", aseg])
+            else:
+                run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo", "-t", f"{total_d:.3f}",
+                     "-c:a", "pcm_s16le", aseg])
+            seg = os.path.join(tmp, f"seg{k:03d}.mkv")
+            run(["ffmpeg", "-v", "error", "-y", "-i", vseg, "-i", aseg, "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy",
+                 "-c:a", "pcm_s16le", "-t", f"{total_d:.3f}", seg])
             segs.append(seg)
             cap = (sh.get("caption") or "").strip()
             if cap:
                 if span:
-                    c0 = max(t, t + (span[0] - a) - 0.10)
-                    c1 = min(t + d, t + (span[1] - a) + 0.25)
+                    c0 = max(t, t + hold + (span[0] - aa) - 0.10)
+                    c1 = min(t + total_d, t + hold + (span[1] - aa) + 0.25)
                 else:
-                    c0, c1 = t, t + d
+                    c0, c1 = t, t + total_d
                 png = os.path.join(tmp, f"cap{k:03d}.png")
                 caption_png(cap, (W, H), png)
                 caps.append((png, c0, c1))
-            report.append({"n": sh.get("n", k + 1), "clip": sh["clip"], "in": round(a, 3), "out": round(a + d, 3),
-                           "start": round(t, 3), "dur": round(d, 3), "speech": [round(span[0], 2), round(span[1], 2)] if span else None,
+            report.append({"n": n, "source": still or sh["clip"], "in": round(a, 3), "start": round(t, 3), "dur": round(total_d, 3),
+                           "hold_start": hold, "speech": [round(span[0], 2), round(span[1], 2)] if span else None,
+                           "sound": "autre prise" if sh.get("audio_from") else ("clip" if asrc else "muet"),
                            "gain_db": round(gain, 1), "caption": cap})
-            t += d
+            t += total_d
         total = t
         lst = os.path.join(tmp, "list.txt")
         with open(lst, "w") as f:
@@ -242,9 +284,17 @@ def build(edit_path):
             menv = envelope(mfile, voice_band=False)
             mlevel = 10 * np.log10(np.mean(10 ** (menv / 10))) if menv is not None else -20.0
             mgain = VOICE_TARGET_DB + mus.get("under_voice_db", -16.0) - mlevel
+            enter = max(0.0, mus.get("enter_s", 0.0))
+            stop = total
+            if mus.get("stop_at_shot") is not None:
+                stop = next(r["start"] for r in report if r["n"] == mus["stop_at_shot"])
+                fade = f"afade=t=out:st={max(0.0, stop - enter - 0.06):.3f}:d=0.06"
+            else:
+                fade = f"afade=t=out:st={max(0.0, stop - enter - 1.0):.3f}:d=1.0"
+            ms = int(round(enter * 1000))
             cmd += ["-stream_loop", "-1", "-ss", f"{mus.get('start', 0.0):.3f}", "-i", mfile]
-            mix.append(f"[{n_in}:a]aresample=48000,aformat=channel_layouts=stereo,atrim=0:{total:.3f},volume={mgain:.2f}dB,"
-                       f"afade=t=in:d=0.4,afade=t=out:st={max(0.0, total - 1.0):.3f}:d=1.0[mus]")
+            mix.append(f"[{n_in}:a]aresample=48000,aformat=channel_layouts=stereo,atrim=0:{max(0.1, stop - enter):.3f},"
+                       f"volume={mgain:.2f}dB,afade=t=in:d=0.4,{fade}" + (f",adelay={ms}:all=1" if ms else "") + "[mus]")
             labels.append("[mus]")
             n_in += 1
         for j, fx in enumerate(ed.get("sfx", [])):
@@ -254,7 +304,7 @@ def build(edit_path):
                 at = r["start"] + fx.get("offset", 0.0)
             cmd += ["-i", rel(fx["file"])]
             ms = int(max(0.0, at) * 1000)
-            mix.append(f"[{n_in}:a]aresample=48000,aformat=channel_layouts=stereo,volume={fx.get('gain_db', -6.0):.2f}dB,adelay={ms}|{ms}[fx{j}]")
+            mix.append(f"[{n_in}:a]aresample=48000,aformat=channel_layouts=stereo,volume={fx.get('gain_db', -6.0):.2f}dB,adelay={ms}:all=1[fx{j}]")
             labels.append(f"[fx{j}]")
             n_in += 1
         mix.append("".join(labels) + f"amix=inputs={len(labels)}:normalize=0:duration=first,"
@@ -275,8 +325,8 @@ def build(edit_path):
                   ensure_ascii=False, indent=1)
         print(f"durée totale : {total:.2f} s — {len(report)} plans")
         for r in report:
-            sp = f"parole {r['speech'][0]:.2f}–{r['speech'][1]:.2f}" if r["speech"] else "muet"
-            print(f"  plan {r['n']:>2}  {r['start']:6.2f} s  durée {r['dur']:.2f}  (clip {r['in']:.2f}–{r['out']:.2f}, {sp}, gain {r['gain_db']:+.1f} dB)  {r['caption']}")
+            sp = f"parole {r['speech'][0]:.2f}–{r['speech'][1]:.2f}" if r["speech"] else "sans parole"
+            print(f"  plan {r['n']:>2}  {r['start']:6.2f} s  durée {r['dur']:.2f}  (son : {r['sound']}, {sp}, gain {r['gain_db']:+.1f} dB)  {r['caption']}")
         for o in outs:
             print("écrit :", o)
     finally:
