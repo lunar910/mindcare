@@ -1,0 +1,11 @@
+Bonjour Claude. Je continue mon projet de sketch « Nox & Pico », commencé dans une autre conversation.
+Tout est dans le dossier : C:\Users\<ton nom>\Documents\Nox et Pico\NoxPico_suite   (corrige le chemin si besoin)
+
+1. Lis d'abord 00_A_LIRE_EN_PREMIER.md, puis flow/etape1_test_flow.txt, flow/etape2_tous_les_plans.txt et plan/shotlist.md. Le fichier flow/flow_kit.json contient tout le détail pour toi : les cartes, la découpe de chaque plan, les secours et le budget.
+2. Ouvre Google Flow (labs.google/flow) dans mon navigateur. Je me connecte moi-même à mon compte Google : ne me demande jamais mon mot de passe.
+3. Étape 1 : crée les voix « Nox » et « Pico », puis les deux clips test (G01 et G02). Montre-les-moi avant d'aller plus loin.
+4. Étape 2 : génère les clips dans l'ordre des cartes, G03 en premier. Suis les règles des cartes : 1 vidéo par demande, trois prises au plus, les fichiers de flow/prompts. Vérifie chaque prise et range-les toutes dans clips/ (G03.mp4, G03_prise2.mp4…).
+5. Fais le montage avec outils/montage.py et montage.json, en y mettant les meilleures prises. Ensuite, envoie-moi la vidéo verticale.
+
+Si tu ne peux pas ouvrir de navigateur, guide-moi carte par carte : je fais les clics et je t'envoie les clips.
+Préviens-moi avant de dépenser plus de crédits que prévu. Réponds-moi en français simple.

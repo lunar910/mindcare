@@ -1,0 +1,1659 @@
+{
+ "version": 2,
+ "date": "2026-11-25",
+ "title": "Nox & Pico — « Elle t'éclaire. Nuance. » — kit Google Flow (étape 2 : tous les plans)",
+ "tool": "Google Flow",
+ "model_default": "Omni Flash 1.2",
+ "mode_default": "Ingredients",
+ "aspect_ratio": "16:9",
+ "resolution": "720p",
+ "outputs_per_request": 1,
+ "crop_in_edit": "4:3 centre",
+ "crop_note": "montage.py scales the 1280x720 clip and keeps the central 960x720: one eighth of the width goes on each side, so every prompt keeps the characters and the action in the centre.",
+ "source_shotlist": "../shotlist.json (version 2, 11 shots); the French lines are the approved ones, word for word.",
+ "files": {
+  "instructions_fr": "etape2_tous_les_plans.txt",
+  "prompt_files": "prompts/Gnn.txt: one file per card, its prompt only, identical to generations[].prompt",
+  "take3_files": "prompts/prise3/Gnn_<key>.txt: identical to generations[].take3[].prompt",
+  "etape1": "etape1_test_flow.txt: step 1 as sent to the owner; never rewritten"
+ },
+ "voices": {
+  "Nox": {
+   "name": "Nox",
+   "base_voice": "jeune homme",
+   "description": "Young man, 22, from Paris. Native French speaker with a natural Parisian accent. Clear, warm, slightly low voice with a dry, teasing, ironic edge. Lively, quick and expressive: never slow, never monotone, never robotic. He sounds like a witty friend who loves explaining science.",
+   "test_phrase": "Bonsoir à toi aussi, Pico. Entre, fais comme chez toi.",
+   "series_voice_if_offered": "Umbriel"
+  },
+  "Pico": {
+   "name": "Pico",
+   "base_voice": "jeune femme",
+   "description": "Young woman, 20, from Paris. Native French speaker with a natural Parisian accent. Bright, energetic, sporty voice; spontaneous and cheeky, quick delivery full of expression, sometimes a little out of breath after running. Not childish, not squeaky, not shouting.",
+   "test_phrase": "Attends… quoi ?! Elle me scanne ?!",
+   "series_voice_if_offered": "Laomedeia"
+  },
+  "note": "Both voices were created in step 1 and are not re-created. Only if one must be re-created: same description; if Flow's list of base voices offers Umbriel and Laomedeia (the series' validated Gemini voices), Umbriel for Nox and Laomedeia for Pico."
+ },
+ "markers": {
+  "[IMAGE NOX]": "replaced in Flow by @ + the image ingredient_nox.png (binds the young man to his image)",
+  "[IMAGE PICO]": "replaced in Flow by @ + the image ingredient_pico.png",
+  "[VOIX NOX]": "replaced in Flow by @ + the custom voice Nox (not the image)",
+  "[VOIX PICO]": "replaced in Flow by @ + the custom voice Pico (not the image)"
+ },
+ "session_checks_fr": [
+  "Ouvre le projet de l'étape 1 (« Nox et Pico ep01 ») : les deux images et les deux voix y sont.",
+  "Vérifie les réglages : Vidéo → Ingredients (Ingrédients), modèle Omni Flash 1.2, format 16:9 (paysage), qualité 720p, 1 résultat par demande. Seule exception : la carte de secours G17. Jamais d'essai en 360p : une bonne prise en 360p ne se refait pas à l'identique en 720p.",
+  "Note ton solde de crédits (là où Flow les affiche, souvent dans le menu de ton compte) au début et à la fin de la séance.",
+  "Si tu peux, travaille sur un ordinateur ; sur téléphone, coupe la correction automatique du clavier avant de toucher à un prompt."
+ ],
+ "per_card_steps_fr": [
+  "a) Vide la zone de texte et enlève les images et la voix restées de la carte d'avant (la petite croix sur chacune).",
+  "b) Règle la durée de la carte (si Flow ne propose pas cette valeur, prends la plus proche au-dessus).",
+  "c) Copie le prompt : ouvre le fichier de la carte dans le dossier prompts (par exemple prompts/G03.txt) puis Tout sélectionner et Copier ; ou copie tout ce qui est entre les lignes ▼ et ▲ de la carte, sans ces deux lignes. Colle-le dans la zone de texte et vérifie qu'il se termine bien par « no dialogue box. » (sinon, recolle).",
+  "d) Remplace chaque repère entre crochets : efface-le, tape @ et choisis l'élément :",
+  "   [IMAGE NOX] → l'image ingredient_nox (le garçon à lunettes devant ses écrans) ;",
+  "   [IMAGE PICO] → l'image ingredient_pico (la rousse dans l'encadrement de la porte) ;",
+  "   [VOIX NOX] → la VOIX Nox (une voix : pas l'image ingredient_nox, qui peut apparaître dans la même liste) ;",
+  "   [VOIX PICO] → la VOIX Pico (pas l'image ingredient_pico).",
+  "   Si le @ ne propose pas une image, ajoute-la d'abord comme à l'étape 1, puis tape @ à nouveau. Si le @ ne propose pas une voix, ajoute-la avec Add → Voices et écris Nox (ou Pico) à la place du repère.",
+  "e) Vérifie : plus aucun crochet [ ] dans le texte ; seules les images de la carte sont jointes ; une seule voix (aucune pour G12, G17 et G18) ; aucun mot de la réplique en français n'a changé.",
+  "f) Vérifie le prix affiché : celui de la carte (12 crédits pour 4 s, 18 pour 6 s, 24 pour 8 s, 30 pour 10 s ; G17 : 10). Deux ou quatre fois plus : Flow va faire plusieurs vidéos, remets 1 résultat par demande. Trois fois moins (4, 6, 8 ou 10) : c'est la qualité 360p, remets 720p. Un autre prix : ne lance pas et dis-moi ce que tu vois.",
+  "g) Lance. Dès que le clip est prêt, avant la carte suivante : télécharge-le en MP4, taille d'origine (720p ; pas de GIF, pas d'agrandissement « upscale » ou 1080p) et renomme-le tout de suite (G03.mp4, puis G03_prise2.mp4, G03_prise3.mp4). Ne supprime aucune prise dans Flow."
+ ],
+ "retake_rule_fr": "Trois prises au plus par carte. Prise 1 : le prompt tel quel. Prise 2 : le même prompt (le hasard joue beaucoup). Prise 3 : la correction que la carte donne pour ce défaut (un fichier du dossier prompts/prise3, ou une durée changée, voir la section C), sinon le même prompt. Si la prise 3 rate aussi : fais ce que dit la ligne « Après trois prises ratées » de la carte, puis passe à la carte suivante et envoie-moi les trois prises. Jamais de prise 4 sans mon accord. Seule exception : G08 passe à G15 dès la deuxième prise où la main arrive pendant la phrase.",
+ "common_checks_fr": {
+  "relance_si": [
+   "un mot de la réplique est changé, ajouté ou manquant, ou la réplique est coupée avant la fin ;",
+   "la mauvaise personne parle, ou la bouche de l'autre personnage bouge ;",
+   "la voix n'est clairement pas la bonne (autre personne, accent étranger) : vérifie d'abord que c'est bien la VOIX, et pas l'image, qui a été choisie au @ ;",
+   "des lettres lisibles, des chiffres ou des sous-titres apparaissent (les petites fenêtres floues sur les écrans du fond, comme sur l'image de Nox, sont acceptées) ;",
+   "de la musique ;",
+   "des bandes noires en haut ou en bas, une interface de jeu ou une boîte de dialogue ;",
+   "un visage, une coiffure ou des vêtements qui ne sont pas les leurs, ou qui changent pendant le clip ;",
+   "une main ou une montre qui flotte ou se déforme, des doigts en trop ;",
+   "le cadre : je recadre en 4:3 au montage et un huitième de la largeur part de chaque côté. Mets la vidéo en plein écran, cache le bord gauche puis le bord droit avec un doigt à plat : si un visage, la montre ou une main qui joue disparaît sous ton doigt, relance."
+  ],
+  "je_verifierai": [
+   "le débit, la longueur des pauses et les gestes ;",
+   "le silence avant et après la réplique, et les lèvres pendant ces silences ;",
+   "la voix pareille d'un clip à l'autre ;",
+   "un léger bruit de fond ;",
+   "un regard tourné vers le mauvais bord (pour certains plans, je retourne l'image au montage)."
+  ],
+  "hesitation": "Tu hésites sur une prise ? Ne relance pas : garde-la, passe à la carte suivante et envoie-la-moi."
+ },
+ "style_sentence": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.",
+ "style_sentence_two_characters": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image of the young man: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.",
+ "style_sentence_frames": "A cutscene from an early-2000s video game, in exactly the same art style as the start image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.",
+ "characters": {
+  "Nox": {
+   "prompt_phrase": "The young man from the reference image (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip)",
+   "prompt_phrase_with_marker": "The young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip)",
+   "ingredient": "ingredient_nox.png",
+   "voice": "Nox",
+   "frontal_setting": "sits behind his cluttered electronics workbench in his workshop at night, as in the reference: bookshelves, a string of green bulbs, old monitors, a window on the city lights.",
+   "screen_side": "Always left of the centre of the frame, facing toward the right edge of the frame (except frontal shots 8 and 11; in shot 11 his eyes go just past the lens, toward the right edge of the frame)."
+  },
+  "Pico": {
+   "prompt_phrase": "The young woman from the reference image (bright red hair in a high ponytail with a green elastic, long strands framing her face, brown eyes, mustard-yellow sweatshirt, black headphones round her neck, a black smartwatch on her left wrist)",
+   "prompt_phrase_with_marker": "The young woman from the reference image [IMAGE PICO] (bright red hair in a high ponytail with a green elastic, long strands framing her face, brown eyes, mustard-yellow sweatshirt, black headphones round her neck, a black smartwatch on her left wrist)",
+   "ingredient": "ingredient_pico.png",
+   "voice": "Pico",
+   "screen_side": "Always right of the centre of the frame, facing toward the left edge of the frame (her close-ups look toward the left edge of the frame, at Nox off-screen); the watch is on her left wrist, her left forearm enters from the right edge of the frame in shot 9."
+  }
+ },
+ "house_sentences": {
+  "locked_camera": "Locked camera: no zoom, no pan, no cut.",
+  "new_angle_one_image": "New camera angle in the same room, not the composition of the reference image: ",
+  "new_angle_two_images": "New camera angle in the same room, not the composition of the reference images: ",
+  "monitor": "an old monitor whose screen is a plain pale-blue glow with no windows, icons or writing",
+  "frontal_background": "The background stays still: the monitor screens show only a plain, still pale-blue glow with no windows, icons or writing, and the pinned notes are blank.",
+  "full_frame": "The picture fills the whole frame: no black bars, no game interface, no dialogue box.",
+  "closing_him": "Only him on screen; nobody else speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box.",
+  "closing_her": "Only her on screen; nobody else speaks. No subtitles, no on-screen text, no music: only her voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box.",
+  "closing_two_shot": "Only he speaks: her mouth stays closed and still for the whole clip and she never says a word. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box.",
+  "closing_over_shoulder": "Only he speaks; she never moves and never speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box.",
+  "closing_silent": "Nobody speaks. No subtitles, no on-screen text, no music. The picture fills the whole frame: no black bars, no game interface, no dialogue box.",
+  "pronunciation_hints": {
+   "nox": "In her French line, the first word, a name, rhymes with the English word box.",
+   "run": "In her French line, the last word is the English word run, with a French r.",
+   "pico": "In his French line, the name is pronounced pee-ko.",
+   "ok": "In her French line, the last word is pronounced okay, in two syllables.",
+   "peau": "In his French line, the last word is one short syllable that rhymes with the English word toe.",
+   "scanne": "In her French line, the last verb is pronounced like the English word scan.",
+   "teclaire": "In his French line, the second word is pronounced tay-clair.",
+   "nuance": "In his French line, the last word is French, with a nasal vowel."
+  }
+ },
+ "screen_direction": "The camera always stays on Nox's right-hand side of the room: Nox left of the centre of the frame looking toward the right edge, Pico right of the centre looking toward the left edge. Directions in prompts are always given by frame edges.",
+ "order": {
+  "etape1_already_done": [
+   "G01",
+   "G02"
+  ],
+  "etape2_in_this_order": [
+   "G03",
+   "G05",
+   "G07",
+   "G08",
+   "G09",
+   "G10",
+   "G11",
+   "G12",
+   "G04",
+   "G06"
+  ],
+  "etape2_wait_for_claude_ok_on_G03": [
+   "G04",
+   "G06"
+  ],
+  "secours_if_card_says_or_asked": [
+   "G13",
+   "G14",
+   "G15",
+   "G16",
+   "G17",
+   "G18"
+  ]
+ },
+ "file_naming": "G03.mp4 pour la première prise, puis G03_prise2.mp4, G03_prise3.mp4. Les fichiers sont renvoyés dans la conversation, avec à côté du nom le fichier de prompt de 3e prise ou la durée changée, s'il y en a.",
+ "generations": [
+  {
+   "id": "G01",
+   "order": null,
+   "group": "etape1",
+   "status": "DÉJÀ FAIT (clip test 1 de l'étape 1) — à refaire seulement si je te le demande, ou si G05 rate trois fois et que ton G01 ne peut pas servir de plan 4",
+   "title": "G01 — ESSAI NOX (étape 1, clip test 1) — plan 4 de secours",
+   "what": "Nox de face, à son établi : « Tu portes cette montre depuis deux ans… et tu découvres qu'elle s'allume ? ». Clip étalon de la voix de Nox, et plan 4 de secours.",
+   "shots": [
+    4
+   ],
+   "mode": "Ingredients",
+   "model": "Omni Flash 1.2",
+   "ingredients": [
+    "ingredient_nox.png"
+   ],
+   "markers": [
+    "[IMAGE NOX]",
+    "[VOIX NOX]"
+   ],
+   "voice": "Nox",
+   "duration_s": 8,
+   "resolution": "720p",
+   "outputs": 1,
+   "est_credits": 24,
+   "line": "Tu portes cette montre depuis deux ans… et tu découvres qu'elle s'allume ?",
+   "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) sits behind his cluttered electronics workbench in his workshop at night, as in the reference: bookshelves, a string of green bulbs, old monitors, a window on the city lights.\nMedium close-up, chest up, at his eye height; the bench top stays below the frame. He faces the camera and stays in the centre of the frame. The background stays still: the monitor screens show only a plain, still pale-blue glow with no windows, icons or writing, and the pinned notes are blank. Locked camera: no zoom, no pan, no cut.\nAfter a short beat, mouth closed, his eyes drop to something held up just below the frame, and he says in French, with the voice [VOIX NOX], teasing and gently mocking, at full voice, brisk, with a smile in his voice: \"Tu portes cette montre depuis deux ans… et tu découvres qu'elle s'allume ?\" At the dots he makes a short held pause and looks back up into the camera over the top of his glasses, with a corner smile; then he finishes the question lightly, enjoying it. Then he keeps a faint smirk, mouth closed, until the end.\nOnly him on screen; nobody else speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box.",
+   "prompt_file": "prompts/G01.txt",
+   "prompt_sent_etape1": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nThe young man from the reference image (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) sits behind his cluttered electronics workbench in his workshop at night, as in the reference: bookshelves, a string of green bulbs, old monitors, a window on the city lights.\nMedium close-up, chest up. He faces the camera and stays in the centre of the frame. Locked camera: no zoom, no pan, no cut.\nHe looks at the camera, amused and teasing, then says in French, with the voice [VOIX NOX]: \"Tu portes cette montre depuis deux ans… et tu découvres qu'elle s'allume ?\" He makes a short pause at the dots and raises one eyebrow, then finishes quickly with a mocking smile in his voice. Then he keeps a faint smirk, mouth closed, until the end.\nOnly him on screen; nobody else speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room.",
+   "changes_from_etape1": [
+    {
+     "old": "The young man from the reference image (",
+     "new": "The young man from the reference image [IMAGE NOX] ("
+    },
+    {
+     "old": "Medium close-up, chest up. He faces the camera and stays in the centre of the frame.",
+     "new": "Medium close-up, chest up, at his eye height; the bench top stays below the frame. He faces the camera and stays in the centre of the frame. The background stays still: the monitor screens show only a plain, still pale-blue glow with no windows, icons or writing, and the pinned notes are blank."
+    },
+    {
+     "old": "He looks at the camera, amused and teasing, then says in French, with the voice [VOIX NOX]:",
+     "new": "After a short beat, mouth closed, his eyes drop to something held up just below the frame, and he says in French, with the voice [VOIX NOX], teasing and gently mocking, at full voice, brisk, with a smile in his voice:"
+    },
+    {
+     "old": "He makes a short pause at the dots and raises one eyebrow, then finishes quickly with a mocking smile in his voice.",
+     "new": "At the dots he makes a short held pause and looks back up into the camera over the top of his glasses, with a corner smile; then he finishes the question lightly, enjoying it."
+    },
+    {
+     "old": "Only him on screen; nobody else speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room.",
+     "new": "Only him on screen; nobody else speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box."
+    }
+   ],
+   "checklist_fr": {
+    "relance_si": [
+     "un mot changé, ou « deux ans » sans la liaison (« deu-zan ») ;",
+     "un sourcil levé (c'est le geste de Pico) ;",
+     "une montre visible à l'image (posée sur l'établi ou ailleurs) ;",
+     "des reflets blancs sur les lunettes qui cachent ses yeux."
+    ],
+    "je_verifierai": [
+     "la voix : un jeune Parisien vif, taquin, un sourire dans la voix ; jamais lent, monotone ou robotique ;",
+     "ses yeux qui descendent vers la montre (sous le cadre), puis remontent vers nous par-dessus les lunettes sur la pause."
+    ]
+   },
+   "take3": [
+    {
+     "key": "geste",
+     "when_fr": "lèvres décalées, visage qui se déforme ou geste raté",
+     "what_fr": "sans le regard par-dessus les lunettes ; la voix et les pauses ne changent pas",
+     "file": "prompts/prise3/G01_geste.txt",
+     "old": "At the dots he makes a short held pause and looks back up into the camera over the top of his glasses, with a corner smile; then",
+     "new": "At the dots he makes a short held pause; then",
+     "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) sits behind his cluttered electronics workbench in his workshop at night, as in the reference: bookshelves, a string of green bulbs, old monitors, a window on the city lights.\nMedium close-up, chest up, at his eye height; the bench top stays below the frame. He faces the camera and stays in the centre of the frame. The background stays still: the monitor screens show only a plain, still pale-blue glow with no windows, icons or writing, and the pinned notes are blank. Locked camera: no zoom, no pan, no cut.\nAfter a short beat, mouth closed, his eyes drop to something held up just below the frame, and he says in French, with the voice [VOIX NOX], teasing and gently mocking, at full voice, brisk, with a smile in his voice: \"Tu portes cette montre depuis deux ans… et tu découvres qu'elle s'allume ?\" At the dots he makes a short held pause; then he finishes the question lightly, enjoying it. Then he keeps a faint smirk, mouth closed, until the end.\nOnly him on screen; nobody else speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box."
+    }
+   ],
+   "after_three_fails_fr": "envoie-moi les prises.",
+   "notes": [
+    "Ce prompt n'est plus tout à fait celui de l'étape 1 : c'est la version à utiliser si on refait G01 pour le plan 4 (établi hors du cadre, pas de sourcil levé, le regard par-dessus les lunettes sur la pause).",
+    "Clip étalon de la voix de Nox : il sert à comparer à l'oreille ; rien à joindre dans Flow."
+   ],
+   "why": [
+    "Step 1 made G01 with a raised eyebrow (Pico's signature) and the bench 'as in the reference', where a dismantled watch lies: that take can serve as shot 4 only without the eyebrow and without a watch on the bench."
+   ]
+  },
+  {
+   "id": "G02",
+   "order": null,
+   "group": "etape1",
+   "status": "DÉJÀ FAIT (clip test 2 de l'étape 1) — c'est le plan 1, l'accroche : je vérifie ton G02 et je te dirai s'il faut le refaire avec ce prompt (trois prises au plus)",
+   "title": "G02 — ESSAI PICO (étape 1, clip test 2) — PLAN 1",
+   "what": "Pico dans l'encadrement de la porte : « Nox ! Pourquoi ma montre fait des lumières vertes à la fin de mon run ? ». Clip étalon de la voix de Pico, et plan 1 du film (l'accroche).",
+   "shots": [
+    1
+   ],
+   "mode": "Ingredients",
+   "model": "Omni Flash 1.2",
+   "ingredients": [
+    "ingredient_pico.png"
+   ],
+   "markers": [
+    "[IMAGE PICO]",
+    "[VOIX PICO]"
+   ],
+   "voice": "Pico",
+   "duration_s": 8,
+   "resolution": "720p",
+   "outputs": 1,
+   "est_credits": 24,
+   "line": "Nox ! Pourquoi ma montre fait des lumières vertes à la fin de mon run ?",
+   "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nThe young woman from the reference image [IMAGE PICO] (bright red hair in a high ponytail with a green elastic, long strands framing her face, brown eyes, mustard-yellow sweatshirt, black headphones round her neck, a black smartwatch on her left wrist) has just burst into the open doorway of a workshop at night, out of breath after a run, as in the reference.\nMedium shot, waist up. She faces the camera and stays in the centre of the frame. Locked camera: no zoom, no pan, no cut.\nShe raises her left wrist with the watch toward the camera and says in French, with the voice [VOIX PICO], urgent and pressing, fast but clearly articulated, out of breath only before the first word, never inside the sentence: \"Nox ! Pourquoi ma montre fait des lumières vertes à la fin de mon run ?\" Early in the question, she shakes the wrist once. Then she keeps the wrist up and stares at the camera, mouth closed and silent, until the end.\nOnly her on screen; nobody else speaks. No subtitles, no on-screen text, no music: only her voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box.",
+   "prompt_file": "prompts/G02.txt",
+   "prompt_sent_etape1": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nThe young woman from the reference image (bright red hair in a high ponytail with a green elastic, long strands framing her face, brown eyes, mustard-yellow sweatshirt, black headphones round her neck, a black smartwatch on her left wrist) has just burst into the open doorway of a workshop at night, out of breath after a run, as in the reference.\nMedium shot, waist up. She faces the camera and stays in the centre of the frame. Locked camera: no zoom, no pan, no cut.\nShe raises her left wrist with the watch toward the camera and says in French, with the voice [VOIX PICO], urgent and a little breathless but clearly articulated: \"Nox ! Pourquoi ma montre fait des lumières vertes à la fin de mon run ?\" On \"ma montre\" she shakes the wrist once. Then she keeps the wrist up and stares at the camera, mouth closed, waiting for an answer, until the end.\nOnly her on screen; nobody else speaks. No subtitles, no on-screen text, no music: only her voice in a quiet room.",
+   "changes_from_etape1": [
+    {
+     "old": "The young woman from the reference image (",
+     "new": "The young woman from the reference image [IMAGE PICO] ("
+    },
+    {
+     "old": "urgent and a little breathless but clearly articulated:",
+     "new": "urgent and pressing, fast but clearly articulated, out of breath only before the first word, never inside the sentence:"
+    },
+    {
+     "old": "On \"ma montre\" she shakes the wrist once.",
+     "new": "Early in the question, she shakes the wrist once."
+    },
+    {
+     "old": "mouth closed, waiting for an answer, until the end.",
+     "new": "mouth closed and silent, until the end."
+    },
+    {
+     "old": "Only her on screen; nobody else speaks. No subtitles, no on-screen text, no music: only her voice in a quiet room.",
+     "new": "Only her on screen; nobody else speaks. No subtitles, no on-screen text, no music: only her voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box."
+    }
+   ],
+   "checklist_fr": {
+    "relance_si": [
+     "un mot changé ; « Nox » avec le x prononcé ; « run » à la française ;",
+     "des chiffres ou du texte lisibles sur l'écran de la montre ;",
+     "plus d'un mouvement du poignet, ou la montre qui se détache du poignet gauche."
+    ],
+    "je_verifierai": [
+     "la voix : une jeune Parisienne rapide et pleine d'énergie, essoufflée avant la phrase mais pas dedans ; ni enfantine, ni criée ;",
+     "les lèvres suivent les mots ; une inspiration bouche entrouverte juste avant « Nox ! » est normale ; fermées après le dernier mot ;",
+     "une petite lueur verte sous la montre est bienvenue."
+    ]
+   },
+   "take3": [
+    {
+     "key": "aide_nox",
+     "when_fr": "« Nox » mal dit (le x doit s'entendre)",
+     "what_fr": "phrase d'aide en anglais ajoutée au début du paragraphe de la réplique : In her French line, the first word, a name, rhymes with the English word box.",
+     "file": "prompts/prise3/G02_aide_nox.txt",
+     "hint": "In her French line, the first word, a name, rhymes with the English word box.",
+     "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nThe young woman from the reference image [IMAGE PICO] (bright red hair in a high ponytail with a green elastic, long strands framing her face, brown eyes, mustard-yellow sweatshirt, black headphones round her neck, a black smartwatch on her left wrist) has just burst into the open doorway of a workshop at night, out of breath after a run, as in the reference.\nMedium shot, waist up. She faces the camera and stays in the centre of the frame. Locked camera: no zoom, no pan, no cut.\nIn her French line, the first word, a name, rhymes with the English word box. She raises her left wrist with the watch toward the camera and says in French, with the voice [VOIX PICO], urgent and pressing, fast but clearly articulated, out of breath only before the first word, never inside the sentence: \"Nox ! Pourquoi ma montre fait des lumières vertes à la fin de mon run ?\" Early in the question, she shakes the wrist once. Then she keeps the wrist up and stares at the camera, mouth closed and silent, until the end.\nOnly her on screen; nobody else speaks. No subtitles, no on-screen text, no music: only her voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box."
+    },
+    {
+     "key": "aide_run",
+     "when_fr": "« run » mal dit (le mot anglais, avec un r français)",
+     "what_fr": "phrase d'aide en anglais ajoutée au début du paragraphe de la réplique : In her French line, the last word is the English word run, with a French r.",
+     "file": "prompts/prise3/G02_aide_run.txt",
+     "hint": "In her French line, the last word is the English word run, with a French r.",
+     "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nThe young woman from the reference image [IMAGE PICO] (bright red hair in a high ponytail with a green elastic, long strands framing her face, brown eyes, mustard-yellow sweatshirt, black headphones round her neck, a black smartwatch on her left wrist) has just burst into the open doorway of a workshop at night, out of breath after a run, as in the reference.\nMedium shot, waist up. She faces the camera and stays in the centre of the frame. Locked camera: no zoom, no pan, no cut.\nIn her French line, the last word is the English word run, with a French r. She raises her left wrist with the watch toward the camera and says in French, with the voice [VOIX PICO], urgent and pressing, fast but clearly articulated, out of breath only before the first word, never inside the sentence: \"Nox ! Pourquoi ma montre fait des lumières vertes à la fin de mon run ?\" Early in the question, she shakes the wrist once. Then she keeps the wrist up and stares at the camera, mouth closed and silent, until the end.\nOnly her on screen; nobody else speaks. No subtitles, no on-screen text, no music: only her voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box."
+    },
+    {
+     "key": "geste",
+     "when_fr": "lèvres décalées, visage qui se déforme ou geste raté",
+     "what_fr": "sans le geste du poignet ; la voix et les pauses ne changent pas",
+     "file": "prompts/prise3/G02_geste.txt",
+     "old": "Early in the question, she shakes the wrist once. ",
+     "new": "",
+     "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nThe young woman from the reference image [IMAGE PICO] (bright red hair in a high ponytail with a green elastic, long strands framing her face, brown eyes, mustard-yellow sweatshirt, black headphones round her neck, a black smartwatch on her left wrist) has just burst into the open doorway of a workshop at night, out of breath after a run, as in the reference.\nMedium shot, waist up. She faces the camera and stays in the centre of the frame. Locked camera: no zoom, no pan, no cut.\nShe raises her left wrist with the watch toward the camera and says in French, with the voice [VOIX PICO], urgent and pressing, fast but clearly articulated, out of breath only before the first word, never inside the sentence: \"Nox ! Pourquoi ma montre fait des lumières vertes à la fin de mon run ?\" Then she keeps the wrist up and stares at the camera, mouth closed and silent, until the end.\nOnly her on screen; nobody else speaks. No subtitles, no on-screen text, no music: only her voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box."
+    }
+   ],
+   "after_three_fails_fr": "envoie-moi les prises ; c'est l'accroche, on décide ensemble.",
+   "notes": [
+    "Ce prompt diffère de celui de l'étape 1 sur quelques phrases : le souffle seulement avant la phrase, le geste du poignet sans mot entre guillemets, un silence final sans « attente de réponse », l'image pleine.",
+    "Clip étalon de la voix de Pico : il sert à comparer à l'oreille ; rien à joindre dans Flow."
+   ],
+   "why": [
+    "The step-1 prompt quoted \"ma montre\" a second time (quoted words may be spoken) and asked for a breathless delivery inside the line; the approved acting keeps the breath before the first word."
+   ]
+  },
+  {
+   "id": "G03",
+   "order": 1,
+   "group": "base",
+   "status": "À FAIRE EN PREMIER",
+   "title": "G03 — PLANS 3 ET 6 — le plan à deux (voix Nox)",
+   "what": "Le seul plan où l'on voit leurs deux visages, de profil : Nox, juste à gauche du centre, dit « Entre, fais comme chez toi. » ; Pico, juste à droite, vautrée sur l'établi, tend sa montre sous le nez de Nox et le fixe sans bouger ni parler.",
+   "shots": [
+    3,
+    6
+   ],
+   "mode": "Ingredients",
+   "model": "Omni Flash 1.2",
+   "ingredients": [
+    "ingredient_nox.png",
+    "ingredient_pico.png"
+   ],
+   "markers": [
+    "[IMAGE NOX]",
+    "[IMAGE PICO]",
+    "[VOIX NOX]"
+   ],
+   "voice": "Nox",
+   "duration_s": 6,
+   "resolution": "720p",
+   "outputs": 1,
+   "est_credits": 18,
+   "line": "Entre, fais comme chez toi.",
+   "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image of the young man: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference images: a profile two-shot from the side of the room, in his workshop at night, at the eye height of a seated person, waist up: the workbench top crosses the lower third of the frame between them.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) sits at the bench just left of the centre of the frame, in profile, facing toward the right edge of the frame, bowed over a small green circuit board; his hand holds a blue-handled soldering iron still, its tip on the board, a thin wisp of smoke rising.\nThe young woman from the reference image [IMAGE PICO] (bright red hair in a high ponytail with a green elastic, long strands framing her face, brown eyes, mustard-yellow sweatshirt, black headphones round her neck, a black smartwatch on her left wrist) is sprawled across his bench just right of the centre of the frame, making herself at home, in profile, facing toward the left edge of the frame: her right forearm lies flat among his components, her left elbow is planted on the bench and her left wrist is held up a hand's width in front of his glasses, between his face and the circuit board, never in front of his mouth.\nThey stay close together near the middle of the frame, with only the room on the outer sides. Behind them: a night window with city lights, a string of glowing green bulbs, dark bookshelves, an old monitor whose screen is a plain pale-blue glow with no windows, icons or writing. The only watch in the scene is the one on her wrist. Locked camera: no zoom, no pan, no cut.\nFor the first two seconds nobody moves: he stays bowed over his circuit board, she stares at him, unimpressed, one eyebrow raised. Then he lifts his head slightly, just enough to look at her over the watch, and says in French, with the voice [VOIX NOX], brisk and lively, at full voice, with warm, amused sarcasm, like an old habit between them: \"Entre, fais comme chez toi.\" Then he bows his head back over his circuit board; she keeps glaring at him, sulky, lips firmly closed, and both of them hold perfectly still until the end.\nOnly he speaks: her mouth stays closed and still for the whole clip and she never says a word. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box.",
+   "prompt_file": "prompts/G03.txt",
+   "checklist_fr": {
+    "relance_si": [
+     "autre chose que « Entre, fais comme chez toi. » : rien avant, rien après ;",
+     "la bouche de Pico bouge, même un peu : c'est le point le plus important de ce clip ;",
+     "leurs visages ou leurs vêtements se mélangent ; Nox n'est pas à gauche, tourné vers le bord droit, ou Pico pas à droite, tournée vers le bord gauche ;",
+     "la montre n'est pas au poignet de Pico, une montre est posée sur l'établi, ou il y a deux fers."
+    ],
+    "je_verifierai": [
+     "le moment immobile du plan 6, au début ou à la fin du clip (s'il n'y en a pas, je tiens une image fixe) ;",
+     "la voix vive et amusée, à pleine voix, la même que G01 ;",
+     "les lunettes : de profil, on ne voit qu'un œil à travers le verre, c'est normal."
+    ]
+   },
+   "take3": [],
+   "after_three_fails_fr": "ne fais ni G04 ni G06 ; fais à la place les cartes de secours G13 (plans 2 et 3 en un seul clip) et G14 (plan 7). Le plan 6 disparaît ; le film fait alors environ 30 s.",
+   "notes": [
+    "Dès qu'une prise te paraît bonne, envoie-la-moi tout de suite et continue avec G05 : je te dirai si G03 est bon avant que tu fasses G04 et G06.",
+    "Il sert deux plans : le plan 3 (la réplique) et le plan 6 (le face-à-face muet, que je découpe au début ou à la fin du clip, son coupé)."
+   ],
+   "why": [
+    "Shot 6 is cut from this clip: 2 s of stillness are asked at the start, and the end shows him back at his board with her sulky glare (the look that ends shot 5), which is the preferred source.",
+    "Its success decides plan B (G13 + G14), so G04 and G06 wait for Claude's confirmation."
+   ]
+  },
+  {
+   "id": "G04",
+   "order": 9,
+   "group": "base",
+   "status": "À FAIRE quand je t'ai confirmé que G03 est bon (si G03 rate, c'est G13 qui le remplace)",
+   "title": "G04 — PLAN 2 — Nox à sa soudure, vu d'en bas (voix Nox)",
+   "what": "Gros plan en contre-plongée, caméra posée sur l'établi : Nox penché sur sa soudure ne réagit pas pendant une seconde et demie, puis dit « Bonsoir à toi aussi, Pico. » sans lever les yeux.",
+   "shots": [
+    2
+   ],
+   "mode": "Ingredients",
+   "model": "Omni Flash 1.2",
+   "ingredients": [
+    "ingredient_nox.png"
+   ],
+   "markers": [
+    "[IMAGE NOX]",
+    "[VOIX NOX]"
+   ],
+   "voice": "Nox",
+   "duration_s": 6,
+   "resolution": "720p",
+   "outputs": 1,
+   "est_credits": 18,
+   "line": "Bonsoir à toi aussi, Pico.",
+   "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference image: a low-angle close-up, the camera resting on the bench top near his hands and tilted up at his face, in his workshop at night.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) is bowed over his work, his body turned three-quarters toward the right edge of the frame; because the camera is low, his lowered face is seen almost from the front: eyes down behind the clear lenses, mouth fully visible.\nAt the bottom edge of the frame: only the blue handle of the soldering iron in his hand and a thin wisp of smoke.\nBehind and above him: dark bookshelves, a string of glowing green bulbs, an old monitor whose screen is a plain pale-blue glow with no windows, icons or writing. There is no watch anywhere on the bench and no second soldering iron. His face stays in the centre of the frame. Locked camera: no zoom, no pan, no cut.\nFor about a second and a half he does not react: eyes on his work, mouth closed. Then, without looking up, talking to his circuit board, he says in French, with the voice [VOIX NOX], brisk, at full voice, wry, exaggeratedly polite and mock-offended, with a smile in his voice: \"Bonsoir à toi aussi, Pico.\" His face does not react and his eyes never leave his work. Then he keeps working, mouth closed, until the end.\nOnly him on screen; nobody else speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box.",
+   "prompt_file": "prompts/G04.txt",
+   "checklist_fr": {
+    "relance_si": [
+     "autre chose que « Bonsoir à toi aussi, Pico. » : rien avant, rien après (s'il enchaîne « Entre, fais comme chez toi. », c'est à refaire) ; « Pico » doit sonner « pi-ko » ;",
+     "il lève les yeux, ou sa bouche est cachée ;",
+     "une voix marmonnée vers le circuit au lieu d'une voix pleine ;",
+     "le fer se tord ou change de longueur, les doigts fondent dans le circuit, la fumée devient du brouillard ;",
+     "une montre posée sur l'établi, ou deux fers."
+    ],
+    "je_verifierai": [
+     "la seconde et demie sans réaction avant la phrase (s'il parle tout de suite, je fige la première image au montage) ;",
+     "son visage qui ne réagit pas : c'est la blague ;",
+     "la voix, la même que G03 : écoute G04 puis G03 à la suite, ça doit sonner comme une seule phrase ;",
+     "les lunettes : yeux baissés, c'est normal ; pas de reflet blanc qui cache les yeux."
+    ]
+   },
+   "take3": [
+    {
+     "key": "aide_pico",
+     "when_fr": "« Pico » mal dit (« pi-ko »)",
+     "what_fr": "phrase d'aide en anglais ajoutée au début du paragraphe de la réplique : In his French line, the name is pronounced pee-ko.",
+     "file": "prompts/prise3/G04_aide_pico.txt",
+     "hint": "In his French line, the name is pronounced pee-ko.",
+     "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference image: a low-angle close-up, the camera resting on the bench top near his hands and tilted up at his face, in his workshop at night.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) is bowed over his work, his body turned three-quarters toward the right edge of the frame; because the camera is low, his lowered face is seen almost from the front: eyes down behind the clear lenses, mouth fully visible.\nAt the bottom edge of the frame: only the blue handle of the soldering iron in his hand and a thin wisp of smoke.\nBehind and above him: dark bookshelves, a string of glowing green bulbs, an old monitor whose screen is a plain pale-blue glow with no windows, icons or writing. There is no watch anywhere on the bench and no second soldering iron. His face stays in the centre of the frame. Locked camera: no zoom, no pan, no cut.\nIn his French line, the name is pronounced pee-ko. For about a second and a half he does not react: eyes on his work, mouth closed. Then, without looking up, talking to his circuit board, he says in French, with the voice [VOIX NOX], brisk, at full voice, wry, exaggeratedly polite and mock-offended, with a smile in his voice: \"Bonsoir à toi aussi, Pico.\" His face does not react and his eyes never leave his work. Then he keeps working, mouth closed, until the end.\nOnly him on screen; nobody else speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box."
+    },
+    {
+     "key": "sans_main",
+     "when_fr": "le fer ou la main se déforment",
+     "what_fr": "les mains et le fer hors du cadre ; seule la fumée monte du bas de l'image",
+     "file": "prompts/prise3/G04_sans_main.txt",
+     "old": "At the bottom edge of the frame: only the blue handle of the soldering iron in his hand and a thin wisp of smoke.",
+     "new": "His hands stay below the frame; only a thin wisp of smoke rises from the bottom edge.",
+     "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference image: a low-angle close-up, the camera resting on the bench top near his hands and tilted up at his face, in his workshop at night.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) is bowed over his work, his body turned three-quarters toward the right edge of the frame; because the camera is low, his lowered face is seen almost from the front: eyes down behind the clear lenses, mouth fully visible.\nHis hands stay below the frame; only a thin wisp of smoke rises from the bottom edge.\nBehind and above him: dark bookshelves, a string of glowing green bulbs, an old monitor whose screen is a plain pale-blue glow with no windows, icons or writing. There is no watch anywhere on the bench and no second soldering iron. His face stays in the centre of the frame. Locked camera: no zoom, no pan, no cut.\nFor about a second and a half he does not react: eyes on his work, mouth closed. Then, without looking up, talking to his circuit board, he says in French, with the voice [VOIX NOX], brisk, at full voice, wry, exaggeratedly polite and mock-offended, with a smile in his voice: \"Bonsoir à toi aussi, Pico.\" His face does not react and his eyes never leave his work. Then he keeps working, mouth closed, until the end.\nOnly him on screen; nobody else speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box."
+    }
+   ],
+   "after_three_fails_fr": "carte de secours G13 (je n'en garderai que la première phrase pour le plan 2).",
+   "notes": [],
+   "why": []
+  },
+  {
+   "id": "G05",
+   "order": 2,
+   "group": "base",
+   "status": "À FAIRE",
+   "title": "G05 — PLAN 4 — par-dessus l'épaule de Pico (voix Nox)",
+   "what": "Par-dessus l'épaule de Pico, de dos, vers Nox assis : « Tu portes cette montre depuis deux ans… et tu découvres qu'elle s'allume ? »",
+   "shots": [
+    4
+   ],
+   "mode": "Ingredients",
+   "model": "Omni Flash 1.2",
+   "ingredients": [
+    "ingredient_nox.png",
+    "ingredient_pico.png"
+   ],
+   "markers": [
+    "[IMAGE NOX]",
+    "[IMAGE PICO]",
+    "[VOIX NOX]"
+   ],
+   "voice": "Nox",
+   "duration_s": 8,
+   "resolution": "720p",
+   "outputs": 1,
+   "est_credits": 24,
+   "line": "Tu portes cette montre depuis deux ans… et tu découvres qu'elle s'allume ?",
+   "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image of the young man: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference images: an over-the-shoulder shot in his workshop at night, from just behind the young woman at her shoulder height, looking slightly down at the young man seated across his workbench.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) sits a little to the left of the centre of the frame, chest up, in three-quarter view, facing toward the right edge of the frame, head slightly bowed, eyes on her watch; his hands are below the frame.\nThe young woman from the reference image [IMAGE PICO] (bright red hair in a high ponytail with a green elastic, long strands framing her face, brown eyes, mustard-yellow sweatshirt, black headphones round her neck, a black smartwatch on her left wrist) is seen from behind, close to the camera: her back, her left shoulder, her headphones and her red ponytail form a large dark foreground shape that covers the right third of the frame and reaches well in toward the centre; her face is never visible. Her left arm comes forward from that shoulder across the bench, the raised forearm and the watch on her wrist turned toward him, just below his chin, never in front of his mouth.\nHis face and her wrist stay well inside the frame, away from its outer edges. Behind him: dark bookshelves, a string of glowing green bulbs, an old monitor whose screen is a plain pale-blue glow with no windows, icons or writing, a night window with city lights. Locked camera: no zoom, no pan, no cut.\nAfter a short beat, mouth closed, he says in French, with the voice [VOIX NOX], teasing and gently mocking, at full voice, brisk, with a smile in his voice: \"Tu portes cette montre depuis deux ans… et tu découvres qu'elle s'allume ?\" At the dots he makes a short held pause and lifts only his eyes to her, over the top of his glasses, with a corner smile, his head still bowed; then he finishes the question lightly, enjoying it. Then he holds the amused look, mouth closed, until the end.\nOnly he speaks; she never moves and never speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box.",
+   "prompt_file": "prompts/G05.txt",
+   "checklist_fr": {
+    "relance_si": [
+     "un mot changé, ou « deux ans » sans la liaison (« deu-zan ») ;",
+     "on voit le visage de Pico, ou son épaule ou son poignet bouge ;",
+     "au recadrage (le doigt à plat sur le bord droit), son épaule, son casque et sa queue de cheval disparaissent et son bras semble sortir de nulle part ;",
+     "la montre se détache, flotte ou cache la bouche de Nox ; des chiffres sur la montre."
+    ],
+    "je_verifierai": [
+     "la pause des points de suspension : courte, pas un ralentissement ;",
+     "sur la pause, seuls ses yeux se lèvent vers elle par-dessus les lunettes, avec un sourire en coin ; pas de sourcil levé (c'est le geste de Pico) ;",
+     "la voix vive et taquine, la même que G01."
+    ]
+   },
+   "take3": [
+    {
+     "key": "geste",
+     "when_fr": "lèvres décalées, visage qui se déforme ou geste raté",
+     "what_fr": "sans le regard par-dessus les lunettes ; la voix et les pauses ne changent pas",
+     "file": "prompts/prise3/G05_geste.txt",
+     "old": "At the dots he makes a short held pause and lifts only his eyes to her, over the top of his glasses, with a corner smile, his head still bowed; then",
+     "new": "At the dots he makes a short held pause; then",
+     "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image of the young man: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference images: an over-the-shoulder shot in his workshop at night, from just behind the young woman at her shoulder height, looking slightly down at the young man seated across his workbench.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) sits a little to the left of the centre of the frame, chest up, in three-quarter view, facing toward the right edge of the frame, head slightly bowed, eyes on her watch; his hands are below the frame.\nThe young woman from the reference image [IMAGE PICO] (bright red hair in a high ponytail with a green elastic, long strands framing her face, brown eyes, mustard-yellow sweatshirt, black headphones round her neck, a black smartwatch on her left wrist) is seen from behind, close to the camera: her back, her left shoulder, her headphones and her red ponytail form a large dark foreground shape that covers the right third of the frame and reaches well in toward the centre; her face is never visible. Her left arm comes forward from that shoulder across the bench, the raised forearm and the watch on her wrist turned toward him, just below his chin, never in front of his mouth.\nHis face and her wrist stay well inside the frame, away from its outer edges. Behind him: dark bookshelves, a string of glowing green bulbs, an old monitor whose screen is a plain pale-blue glow with no windows, icons or writing, a night window with city lights. Locked camera: no zoom, no pan, no cut.\nAfter a short beat, mouth closed, he says in French, with the voice [VOIX NOX], teasing and gently mocking, at full voice, brisk, with a smile in his voice: \"Tu portes cette montre depuis deux ans… et tu découvres qu'elle s'allume ?\" At the dots he makes a short held pause; then he finishes the question lightly, enjoying it. Then he holds the amused look, mouth closed, until the end.\nOnly he speaks; she never moves and never speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box."
+    }
+   ],
+   "after_three_fails_fr": "envoie-moi les prises. Si ton G01 (déjà fait) n'a ni sourcil levé ni montre posée sur l'établi, il devient le plan 4 : rien à générer ; sinon, refais G01 avec le prompt de sa carte (annexe, 8 s, 24 crédits).",
+   "notes": [
+    "G05 et G07 ont les mêmes images et la même voix : enchaîne-les."
+   ],
+   "why": []
+  },
+  {
+   "id": "G06",
+   "order": 10,
+   "group": "base",
+   "status": "À FAIRE quand je t'ai confirmé que G03 est bon (si G03 rate, c'est G14 qui le remplace)",
+   "title": "G06 — PLAN 7 — même cadre que G05 (voix Nox)",
+   "what": "Même cadre que G05 : « Bon. Laisse-moi t'expliquer. » Il rend les armes, puis s'éclaire : il adore expliquer.",
+   "shots": [
+    7
+   ],
+   "mode": "Ingredients",
+   "model": "Omni Flash 1.2",
+   "ingredients": [
+    "ingredient_nox.png",
+    "ingredient_pico.png"
+   ],
+   "markers": [
+    "[IMAGE NOX]",
+    "[IMAGE PICO]",
+    "[VOIX NOX]"
+   ],
+   "voice": "Nox",
+   "duration_s": 6,
+   "resolution": "720p",
+   "outputs": 1,
+   "est_credits": 18,
+   "line": "Bon. Laisse-moi t'expliquer.",
+   "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image of the young man: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference images: an over-the-shoulder shot in his workshop at night, from just behind the young woman at her shoulder height, looking slightly down at the young man seated across his workbench.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) sits a little to the left of the centre of the frame, chest up, in three-quarter view, facing toward the right edge of the frame, head slightly bowed, eyes on her watch; his hands are below the frame.\nThe young woman from the reference image [IMAGE PICO] (bright red hair in a high ponytail with a green elastic, long strands framing her face, brown eyes, mustard-yellow sweatshirt, black headphones round her neck, a black smartwatch on her left wrist) is seen from behind, close to the camera: her back, her left shoulder, her headphones and her red ponytail form a large dark foreground shape that covers the right third of the frame and reaches well in toward the centre; her face is never visible. Her left arm comes forward from that shoulder across the bench, the raised forearm and the watch on her wrist turned toward him, just below his chin, never in front of his mouth.\nHis face and her wrist stay well inside the frame, away from its outer edges. Behind him: dark bookshelves, a string of glowing green bulbs, an old monitor whose screen is a plain pale-blue glow with no windows, icons or writing, a night window with city lights. Locked camera: no zoom, no pan, no cut.\nAfter a short beat, mouth closed, eyes still on the watch, he says in French, with the voice [VOIX NOX], lively, at full voice: \"Bon. Laisse-moi t'expliquer.\" The first word is short and falling, amused and resigned, eyes still down; then he lifts his whole head toward her, toward the right edge of the frame, and the rest brightens, eager and brisk: he loves explaining. Then he holds a small eager smile, mouth closed, until the end.\nOnly he speaks; she never moves and never speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box.",
+   "prompt_file": "prompts/G06.txt",
+   "checklist_fr": {
+    "relance_si": [
+     "un mot changé ou ajouté ;",
+     "on voit le visage de Pico, ou son épaule ou son poignet bouge ;",
+     "au recadrage (le doigt à plat sur le bord droit), son épaule, son casque et sa queue de cheval disparaissent et son bras semble sortir de nulle part ;",
+     "la montre se détache, flotte ou cache la bouche de Nox ; des chiffres sur la montre."
+    ],
+    "je_verifierai": [
+     "« Bon. » court et qui retombe, puis la suite plus gaie ;",
+     "après « Bon. », toute la tête qui se relève vers elle ;",
+     "même décor et même voix que G05 : les deux plans doivent se ressembler."
+    ]
+   },
+   "take3": [
+    {
+     "key": "geste",
+     "when_fr": "lèvres décalées, visage qui se déforme ou geste raté",
+     "what_fr": "sans le mouvement de tête ; la voix et les pauses ne changent pas",
+     "file": "prompts/prise3/G06_geste.txt",
+     "old": "eyes still down; then he lifts his whole head toward her, toward the right edge of the frame, and the rest",
+     "new": "then the rest",
+     "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image of the young man: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference images: an over-the-shoulder shot in his workshop at night, from just behind the young woman at her shoulder height, looking slightly down at the young man seated across his workbench.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) sits a little to the left of the centre of the frame, chest up, in three-quarter view, facing toward the right edge of the frame, head slightly bowed, eyes on her watch; his hands are below the frame.\nThe young woman from the reference image [IMAGE PICO] (bright red hair in a high ponytail with a green elastic, long strands framing her face, brown eyes, mustard-yellow sweatshirt, black headphones round her neck, a black smartwatch on her left wrist) is seen from behind, close to the camera: her back, her left shoulder, her headphones and her red ponytail form a large dark foreground shape that covers the right third of the frame and reaches well in toward the centre; her face is never visible. Her left arm comes forward from that shoulder across the bench, the raised forearm and the watch on her wrist turned toward him, just below his chin, never in front of his mouth.\nHis face and her wrist stay well inside the frame, away from its outer edges. Behind him: dark bookshelves, a string of glowing green bulbs, an old monitor whose screen is a plain pale-blue glow with no windows, icons or writing, a night window with city lights. Locked camera: no zoom, no pan, no cut.\nAfter a short beat, mouth closed, eyes still on the watch, he says in French, with the voice [VOIX NOX], lively, at full voice: \"Bon. Laisse-moi t'expliquer.\" The first word is short and falling, amused and resigned, then the rest brightens, eager and brisk: he loves explaining. Then he holds a small eager smile, mouth closed, until the end.\nOnly he speaks; she never moves and never speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box."
+    }
+   ],
+   "after_three_fails_fr": "carte de secours G14.",
+   "notes": [
+    "Si je te dis qu'on enlève le plan 6 au montage, fais G14 à la place."
+   ],
+   "why": []
+  },
+  {
+   "id": "G07",
+   "order": 3,
+   "group": "base",
+   "status": "À FAIRE (c'est la voix du plan 9)",
+   "title": "G07 — LA VOIX DU PLAN 9 — même cadre que G05 (voix Nox)",
+   "what": "Même cadre que G05 : « Ta montre envoie de la lumière verte… dans ta peau. » Au montage, on garde surtout le son : c'est la voix hors champ de Nox sous l'image de Pico (G12).",
+   "shots": [
+    9
+   ],
+   "mode": "Ingredients",
+   "model": "Omni Flash 1.2",
+   "ingredients": [
+    "ingredient_nox.png",
+    "ingredient_pico.png"
+   ],
+   "markers": [
+    "[IMAGE NOX]",
+    "[IMAGE PICO]",
+    "[VOIX NOX]"
+   ],
+   "voice": "Nox",
+   "duration_s": 8,
+   "resolution": "720p",
+   "outputs": 1,
+   "est_credits": 24,
+   "line": "Ta montre envoie de la lumière verte… dans ta peau.",
+   "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image of the young man: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference images: an over-the-shoulder shot in his workshop at night, from just behind the young woman at her shoulder height, looking slightly down at the young man seated across his workbench.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) sits a little to the left of the centre of the frame, chest up, in three-quarter view, facing toward the right edge of the frame, head slightly bowed, eyes on her watch; his hands are below the frame.\nThe young woman from the reference image [IMAGE PICO] (bright red hair in a high ponytail with a green elastic, long strands framing her face, brown eyes, mustard-yellow sweatshirt, black headphones round her neck, a black smartwatch on her left wrist) is seen from behind, close to the camera: her back, her left shoulder, her headphones and her red ponytail form a large dark foreground shape that covers the right third of the frame and reaches well in toward the centre; her face is never visible. Her left arm comes forward from that shoulder across the bench, the raised forearm and the watch on her wrist turned toward him, just below his chin, never in front of his mouth.\nHis face and her wrist stay well inside the frame, away from its outer edges. Behind him: dark bookshelves, a string of glowing green bulbs, an old monitor whose screen is a plain pale-blue glow with no windows, icons or writing, a night window with city lights. Locked camera: no zoom, no pan, no cut.\nAfter a short beat, mouth closed, he says in French, with the voice [VOIX NOX], lively, relishing the story, at full voice: \"Ta montre envoie de la lumière verte… dans ta peau.\" A short suspense pause at the dots, then the last three words a little lower and closer, with mock mystery, still fully voiced and clearly articulated, never whispered. Then he holds a faint smile, mouth closed, until the end.\nOnly he speaks; she never moves and never speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box.",
+   "prompt_file": "prompts/G07.txt",
+   "checklist_fr": {
+    "relance_si": [
+     "un mot changé ; « peau » doit sonner comme « pot » ;",
+     "« dans ta peau » chuchoté, avalé ou à peine audible ;",
+     "de l'écho : c'est ce son qui passera sous le plan 9."
+    ],
+    "je_verifierai": [
+     "la pause après « verte… » (je la règle au montage) ;",
+     "la voix, la même que G08 : c'est la même réplique coupée en deux ;",
+     "l'image : elle ne sert qu'en dernier recours (même cadre que G05)."
+    ]
+   },
+   "take3": [
+    {
+     "key": "aide_peau",
+     "when_fr": "« peau » mal dit (comme « pot »)",
+     "what_fr": "phrase d'aide en anglais ajoutée au début du paragraphe de la réplique : In his French line, the last word is one short syllable that rhymes with the English word toe.",
+     "file": "prompts/prise3/G07_aide_peau.txt",
+     "hint": "In his French line, the last word is one short syllable that rhymes with the English word toe.",
+     "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image of the young man: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference images: an over-the-shoulder shot in his workshop at night, from just behind the young woman at her shoulder height, looking slightly down at the young man seated across his workbench.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) sits a little to the left of the centre of the frame, chest up, in three-quarter view, facing toward the right edge of the frame, head slightly bowed, eyes on her watch; his hands are below the frame.\nThe young woman from the reference image [IMAGE PICO] (bright red hair in a high ponytail with a green elastic, long strands framing her face, brown eyes, mustard-yellow sweatshirt, black headphones round her neck, a black smartwatch on her left wrist) is seen from behind, close to the camera: her back, her left shoulder, her headphones and her red ponytail form a large dark foreground shape that covers the right third of the frame and reaches well in toward the centre; her face is never visible. Her left arm comes forward from that shoulder across the bench, the raised forearm and the watch on her wrist turned toward him, just below his chin, never in front of his mouth.\nHis face and her wrist stay well inside the frame, away from its outer edges. Behind him: dark bookshelves, a string of glowing green bulbs, an old monitor whose screen is a plain pale-blue glow with no windows, icons or writing, a night window with city lights. Locked camera: no zoom, no pan, no cut.\nIn his French line, the last word is one short syllable that rhymes with the English word toe. After a short beat, mouth closed, he says in French, with the voice [VOIX NOX], lively, relishing the story, at full voice: \"Ta montre envoie de la lumière verte… dans ta peau.\" A short suspense pause at the dots, then the last three words a little lower and closer, with mock mystery, still fully voiced and clearly articulated, never whispered. Then he holds a faint smile, mouth closed, until the end.\nOnly he speaks; she never moves and never speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box."
+    },
+    {
+     "key": "meme_niveau",
+     "when_fr": "« dans ta peau » chuchoté, avalé ou à peine audible",
+     "what_fr": "les trois derniers mots au même niveau que le reste, jamais chuchotés",
+     "file": "prompts/prise3/G07_meme_niveau.txt",
+     "old": "a little lower and closer, with mock mystery, still fully voiced and clearly articulated, never whispered",
+     "new": "at the same level, with mock mystery, fully voiced and clearly articulated, never whispered",
+     "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image of the young man: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference images: an over-the-shoulder shot in his workshop at night, from just behind the young woman at her shoulder height, looking slightly down at the young man seated across his workbench.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) sits a little to the left of the centre of the frame, chest up, in three-quarter view, facing toward the right edge of the frame, head slightly bowed, eyes on her watch; his hands are below the frame.\nThe young woman from the reference image [IMAGE PICO] (bright red hair in a high ponytail with a green elastic, long strands framing her face, brown eyes, mustard-yellow sweatshirt, black headphones round her neck, a black smartwatch on her left wrist) is seen from behind, close to the camera: her back, her left shoulder, her headphones and her red ponytail form a large dark foreground shape that covers the right third of the frame and reaches well in toward the centre; her face is never visible. Her left arm comes forward from that shoulder across the bench, the raised forearm and the watch on her wrist turned toward him, just below his chin, never in front of his mouth.\nHis face and her wrist stay well inside the frame, away from its outer edges. Behind him: dark bookshelves, a string of glowing green bulbs, an old monitor whose screen is a plain pale-blue glow with no windows, icons or writing, a night window with city lights. Locked camera: no zoom, no pan, no cut.\nAfter a short beat, mouth closed, he says in French, with the voice [VOIX NOX], lively, relishing the story, at full voice: \"Ta montre envoie de la lumière verte… dans ta peau.\" A short suspense pause at the dots, then the last three words at the same level, with mock mystery, fully voiced and clearly articulated, never whispered. Then he holds a faint smile, mouth closed, until the end.\nOnly he speaks; she never moves and never speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box."
+    }
+   ],
+   "after_three_fails_fr": "ne coupe jamais la réplique en deux clips. Envoie-moi les trois prises : au plan 9 on ne voit pas la bouche de Nox (on voit les yeux de Pico, G12), je peux donc prendre le début d'une prise et la fin d'une autre, et régler la pause au montage. Si aucune ne va, je t'envoie un prompt corrigé.",
+   "notes": [
+    "C'est la voix du plan 9 : on y voit les yeux de Pico (G12) et on entend Nox hors champ."
+   ],
+   "why": [
+    "Making Nox speak off-screen in Pico's clip could give the wrong voice or Pico's mouth speaking: so G12 is silent and the sound comes from here, where Nox is on screen.",
+    "If two takes must be combined, Claude joins the two halves into one sound file (pause about 0.5 s) before the edit: montage.py's audio_from takes one file per shot."
+   ]
+  },
+  {
+   "id": "G08",
+   "order": 4,
+   "group": "base",
+   "status": "À FAIRE",
+   "title": "G08 — PLAN 8 — Nox de face, le geste des lunettes (voix Nox)",
+   "what": "Nox de face : « Regarde de plus près. », puis, juste après la phrase, il remonte ses lunettes d'un doigt (petit reflet vert).",
+   "shots": [
+    8
+   ],
+   "mode": "Ingredients",
+   "model": "Omni Flash 1.2",
+   "ingredients": [
+    "ingredient_nox.png"
+   ],
+   "markers": [
+    "[IMAGE NOX]",
+    "[VOIX NOX]"
+   ],
+   "voice": "Nox",
+   "duration_s": 6,
+   "resolution": "720p",
+   "outputs": 1,
+   "est_credits": 18,
+   "line": "Regarde de plus près.",
+   "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) sits behind his cluttered electronics workbench in his workshop at night, as in the reference: bookshelves, a string of green bulbs, old monitors, a window on the city lights.\nMedium close-up, chest up, at his eye height; the bench top stays below the frame. He faces the camera and stays in the centre of the frame. The background stays still: the monitor screens show only a plain, still pale-blue glow with no windows, icons or writing, and the pinned notes are blank. Locked camera: no zoom, no pan, no cut.\nAfter a short beat, mouth closed, he looks into the camera and says in French, with the voice [VOIX NOX], playful and inviting, a grin in his voice, at full voice, brisk: \"Regarde de plus près.\" Right after the last word, within half a second, mouth closed, he pushes his glasses up his nose with one index finger and a small green glint flashes on the rim of one lens; his eyes stay visible through the lenses the whole time. Then his hand drops out of the frame and he holds a faint knowing smile until the end.\nOnly him on screen; nobody else speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box.",
+   "prompt_file": "prompts/G08.txt",
+   "checklist_fr": {
+    "relance_si": [
+     "un mot ajouté pour remplir le clip ;",
+     "la main arrive pendant la phrase ou cache ses yeux (après deux prises comme ça : carte de secours G15) ;",
+     "le doigt déforme les lunettes, ou des reflets blancs cachent ses yeux ;",
+     "une montre visible à l'image (posée sur l'établi ou ailleurs) ;",
+     "sur les écrans du fond, des lettres lisibles ou qui défilent (des fenêtres floues comme sur l'image de Nox : ça va)."
+    ],
+    "je_verifierai": [
+     "le geste des lunettes dans la seconde qui suit la phrase : s'il rate APRÈS la phrase, rien à refaire, je coupe juste après « près. » ;",
+     "le reflet vert : un bonus (le petit tintement est ajouté au montage) ;",
+     "la voix, la même que G07 : écoute G08 puis G07 à la suite, ça doit sonner comme une seule réplique."
+    ]
+   },
+   "take3": [],
+   "after_three_fails_fr": "si c'est la main (pendant la phrase ou devant ses yeux), passe à G15 dès la deuxième prise ratée pour ça ; pour un autre défaut, envoie-moi les trois prises.",
+   "notes": [],
+   "why": [
+    "The cut into shot 9 lands on the glint: the edit keeps 1.1 s after « près. », so the gesture must start within half a second."
+   ]
+  },
+  {
+   "id": "G09",
+   "order": 5,
+   "group": "base",
+   "status": "À FAIRE",
+   "title": "G09 — PLAN 11 — la chute, très gros plan de Nox (voix Nox)",
+   "what": "Très gros plan de Nox, la chute du film : environ deux secondes de regard fixe en silence, puis « Elle t'éclaire. Nuance. » et un petit sourire en coin.",
+   "shots": [
+    11
+   ],
+   "mode": "Ingredients",
+   "model": "Omni Flash 1.2",
+   "ingredients": [
+    "ingredient_nox.png"
+   ],
+   "markers": [
+    "[IMAGE NOX]",
+    "[VOIX NOX]"
+   ],
+   "voice": "Nox",
+   "duration_s": 6,
+   "resolution": "720p",
+   "outputs": 1,
+   "est_credits": 18,
+   "line": "Elle t'éclaire. Nuance.",
+   "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference image: a very close shot of his face from the front, at his eye height, in his workshop at night.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) sits at his workbench; his face fills the frame from the top of his hair to the collar of his turtleneck, both green eyes clearly visible through the clear lenses, with no glare. Behind him: only dark bookshelves and two or three glowing green bulbs. His face stays in the centre of the frame, his mouth well above the bottom edge. Locked camera: no zoom, no pan, no cut.\nHe looks just past the camera, slightly toward the right edge of the frame, at someone off-screen: a flat deadpan for about two seconds, mouth closed, with one slow blink. Then he says in French, with the voice [VOIX NOX], precise and amused, lively, at full voice, at a natural conversational pace, never slow: \"Elle t'éclaire. Nuance.\" A tiny pause after the first sentence, then the last word placed crisply with a falling tone, like a full stop. Then one corner of his mouth lifts into a small smirk, held, mouth closed, until the end.\nOnly him on screen; nobody else speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box.",
+   "prompt_file": "prompts/G09.txt",
+   "checklist_fr": {
+    "relance_si": [
+     "un mot changé ; « t'éclaire » doit sonner « té-clair », « Nuance » à la française (ni à l'anglaise, ni avalé, ni en question) ;",
+     "une voix lente ou robotique : impassible dans le visage, vivant dans la voix ;",
+     "sa bouche coupée par le bas de l'image, ou des reflets blancs sur les lunettes."
+    ],
+    "je_verifierai": [
+     "le regard fixe et le clignement avant de parler (s'il parle tout de suite, je fige la première image) ;",
+     "la petite pause avant « Nuance. » et la voix qui descend ;",
+     "le petit sourire en coin à la fin ;",
+     "son regard tourné vers le mauvais bord : je retourne l'image au montage."
+    ]
+   },
+   "take3": [
+    {
+     "key": "aide_teclaire",
+     "when_fr": "« t'éclaire » mal dit (« té-clair »)",
+     "what_fr": "phrase d'aide en anglais ajoutée au début du paragraphe de la réplique : In his French line, the second word is pronounced tay-clair.",
+     "file": "prompts/prise3/G09_aide_teclaire.txt",
+     "hint": "In his French line, the second word is pronounced tay-clair.",
+     "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference image: a very close shot of his face from the front, at his eye height, in his workshop at night.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) sits at his workbench; his face fills the frame from the top of his hair to the collar of his turtleneck, both green eyes clearly visible through the clear lenses, with no glare. Behind him: only dark bookshelves and two or three glowing green bulbs. His face stays in the centre of the frame, his mouth well above the bottom edge. Locked camera: no zoom, no pan, no cut.\nIn his French line, the second word is pronounced tay-clair. He looks just past the camera, slightly toward the right edge of the frame, at someone off-screen: a flat deadpan for about two seconds, mouth closed, with one slow blink. Then he says in French, with the voice [VOIX NOX], precise and amused, lively, at full voice, at a natural conversational pace, never slow: \"Elle t'éclaire. Nuance.\" A tiny pause after the first sentence, then the last word placed crisply with a falling tone, like a full stop. Then one corner of his mouth lifts into a small smirk, held, mouth closed, until the end.\nOnly him on screen; nobody else speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box."
+    },
+    {
+     "key": "aide_nuance",
+     "when_fr": "« Nuance » mal dit (à la française, ni à l'anglaise ni avalé)",
+     "what_fr": "phrase d'aide en anglais ajoutée au début du paragraphe de la réplique : In his French line, the last word is French, with a nasal vowel.",
+     "file": "prompts/prise3/G09_aide_nuance.txt",
+     "hint": "In his French line, the last word is French, with a nasal vowel.",
+     "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference image: a very close shot of his face from the front, at his eye height, in his workshop at night.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) sits at his workbench; his face fills the frame from the top of his hair to the collar of his turtleneck, both green eyes clearly visible through the clear lenses, with no glare. Behind him: only dark bookshelves and two or three glowing green bulbs. His face stays in the centre of the frame, his mouth well above the bottom edge. Locked camera: no zoom, no pan, no cut.\nIn his French line, the last word is French, with a nasal vowel. He looks just past the camera, slightly toward the right edge of the frame, at someone off-screen: a flat deadpan for about two seconds, mouth closed, with one slow blink. Then he says in French, with the voice [VOIX NOX], precise and amused, lively, at full voice, at a natural conversational pace, never slow: \"Elle t'éclaire. Nuance.\" A tiny pause after the first sentence, then the last word placed crisply with a falling tone, like a full stop. Then one corner of his mouth lifts into a small smirk, held, mouth closed, until the end.\nOnly him on screen; nobody else speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box."
+    }
+   ],
+   "after_three_fails_fr": "envoie-moi les prises ; je t'envoie une variante sur le cadre de G08 (de face, zoom au montage).",
+   "notes": [
+    "Le lent zoom avant (13 %) se fait au montage, d'où la caméra fixe ici. S'il est flou, je te demanderai la carte de secours G16."
+   ],
+   "why": []
+  },
+  {
+   "id": "G10",
+   "order": 6,
+   "group": "base",
+   "status": "À FAIRE",
+   "title": "G10 — PLAN 5 — gros plan de Pico (voix Pico)",
+   "what": "Gros plan de Pico penchée sur l'établi, qui répond du tac au tac : « J'ai jamais regardé dessous, ok ? »",
+   "shots": [
+    5
+   ],
+   "mode": "Ingredients",
+   "model": "Omni Flash 1.2",
+   "ingredients": [
+    "ingredient_pico.png"
+   ],
+   "markers": [
+    "[IMAGE PICO]",
+    "[VOIX PICO]"
+   ],
+   "voice": "Pico",
+   "duration_s": 6,
+   "resolution": "720p",
+   "outputs": 1,
+   "est_credits": 18,
+   "line": "J'ai jamais regardé dessous, ok ?",
+   "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference image: a close-up inside the workshop at night, at the eye height of someone seated across the workbench from her.\nThe young woman from the reference image [IMAGE PICO] (bright red hair in a high ponytail with a green elastic, long strands framing her face, brown eyes, mustard-yellow sweatshirt, black headphones round her neck, a black smartwatch on her left wrist) leans forward over the workbench, her shoulders hunched toward the camera, seen three-quarter from the front, framed from the top of her ponytail down to her collarbones: the headphones and the yellow collar at the bottom of the frame, her arms and the watch below the frame.\nBehind her, dark and simple: only a plain dark navy wall; no door or door frame anywhere near her. Her face stays in the centre of the frame, her chin well above the bottom edge. Locked camera: no zoom, no pan, no cut.\nShe looks level toward the left edge of the frame, at someone seated off-screen. After a very short beat, mouth closed, stung, she snaps back at once and says in French, with the voice [VOIX PICO], her breath back, no panting, fast, defensive, a little sulky: \"J'ai jamais regardé dessous, ok ?\" On the last word she lifts her chin and pouts, glaring toward the left edge of the frame. Then she holds the sulky glare, mouth closed, until the end.\nOnly her on screen; nobody else speaks. No subtitles, no on-screen text, no music: only her voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box.",
+   "prompt_file": "prompts/G10.txt",
+   "checklist_fr": {
+    "relance_si": [
+     "un mot changé : « J'ai jamais » (pas « Je n'ai jamais »), « dessous » (dé-sou, pas « dessus »), « ok » en deux syllabes (« o-ké ») ;",
+     "elle est dans l'encadrement d'une porte, ou une porte encadre son visage ;",
+     "ses bras ou sa montre à l'image ;",
+     "une voix enfantine ou criée."
+    ],
+    "je_verifierai": [
+     "la réponse du tac au tac, rapide et vexée ;",
+     "sur « ok ? », le menton qui se lève et la moue ;",
+     "pas d'essoufflement dans la voix (il n'appartient qu'au plan 1) ;",
+     "son regard vers le bord gauche de l'image (s'il part vers l'autre bord, je retourne l'image au montage)."
+    ]
+   },
+   "take3": [
+    {
+     "key": "aide_ok",
+     "when_fr": "« ok » mal dit (deux syllabes, « o-ké »)",
+     "what_fr": "phrase d'aide en anglais ajoutée au début du paragraphe de la réplique : In her French line, the last word is pronounced okay, in two syllables.",
+     "file": "prompts/prise3/G10_aide_ok.txt",
+     "hint": "In her French line, the last word is pronounced okay, in two syllables.",
+     "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference image: a close-up inside the workshop at night, at the eye height of someone seated across the workbench from her.\nThe young woman from the reference image [IMAGE PICO] (bright red hair in a high ponytail with a green elastic, long strands framing her face, brown eyes, mustard-yellow sweatshirt, black headphones round her neck, a black smartwatch on her left wrist) leans forward over the workbench, her shoulders hunched toward the camera, seen three-quarter from the front, framed from the top of her ponytail down to her collarbones: the headphones and the yellow collar at the bottom of the frame, her arms and the watch below the frame.\nBehind her, dark and simple: only a plain dark navy wall; no door or door frame anywhere near her. Her face stays in the centre of the frame, her chin well above the bottom edge. Locked camera: no zoom, no pan, no cut.\nIn her French line, the last word is pronounced okay, in two syllables. She looks level toward the left edge of the frame, at someone seated off-screen. After a very short beat, mouth closed, stung, she snaps back at once and says in French, with the voice [VOIX PICO], her breath back, no panting, fast, defensive, a little sulky: \"J'ai jamais regardé dessous, ok ?\" On the last word she lifts her chin and pouts, glaring toward the left edge of the frame. Then she holds the sulky glare, mouth closed, until the end.\nOnly her on screen; nobody else speaks. No subtitles, no on-screen text, no music: only her voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box."
+    },
+    {
+     "key": "geste",
+     "when_fr": "lèvres décalées, visage qui se déforme ou geste raté",
+     "what_fr": "sans la moue ; la voix et les pauses ne changent pas",
+     "file": "prompts/prise3/G10_geste.txt",
+     "old": " On the last word she lifts her chin and pouts, glaring toward the left edge of the frame.",
+     "new": "",
+     "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference image: a close-up inside the workshop at night, at the eye height of someone seated across the workbench from her.\nThe young woman from the reference image [IMAGE PICO] (bright red hair in a high ponytail with a green elastic, long strands framing her face, brown eyes, mustard-yellow sweatshirt, black headphones round her neck, a black smartwatch on her left wrist) leans forward over the workbench, her shoulders hunched toward the camera, seen three-quarter from the front, framed from the top of her ponytail down to her collarbones: the headphones and the yellow collar at the bottom of the frame, her arms and the watch below the frame.\nBehind her, dark and simple: only a plain dark navy wall; no door or door frame anywhere near her. Her face stays in the centre of the frame, her chin well above the bottom edge. Locked camera: no zoom, no pan, no cut.\nShe looks level toward the left edge of the frame, at someone seated off-screen. After a very short beat, mouth closed, stung, she snaps back at once and says in French, with the voice [VOIX PICO], her breath back, no panting, fast, defensive, a little sulky: \"J'ai jamais regardé dessous, ok ?\" Then she holds the sulky glare, mouth closed, until the end.\nOnly her on screen; nobody else speaks. No subtitles, no on-screen text, no music: only her voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box."
+    }
+   ],
+   "after_three_fails_fr": "envoie-moi toutes les prises ; si le son de l'une d'elles est bon, je le pose sur une image où sa bouche ne se voit pas (Nox qui écoute, à la fin de G05 ou de G06), sans rien générer.",
+   "notes": [
+    "G10 et G11 ont les mêmes images et la même voix : enchaîne-les."
+   ],
+   "why": []
+  },
+  {
+   "id": "G11",
+   "order": 7,
+   "group": "base",
+   "status": "À FAIRE",
+   "title": "G11 — PLAN 10 — même cadre que G10 (voix Pico)",
+   "what": "Même cadre que G10 : son double regard. « Attends… » les yeux baissés sur sa montre, puis la tête qui se redresse d'un coup : « quoi ?! Elle me scanne ?! »",
+   "shots": [
+    10
+   ],
+   "mode": "Ingredients",
+   "model": "Omni Flash 1.2",
+   "ingredients": [
+    "ingredient_pico.png"
+   ],
+   "markers": [
+    "[IMAGE PICO]",
+    "[VOIX PICO]"
+   ],
+   "voice": "Pico",
+   "duration_s": 6,
+   "resolution": "720p",
+   "outputs": 1,
+   "est_credits": 18,
+   "line": "Attends… quoi ?! Elle me scanne ?!",
+   "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference image: a close-up inside the workshop at night, at the eye height of someone seated across the workbench from her.\nThe young woman from the reference image [IMAGE PICO] (bright red hair in a high ponytail with a green elastic, long strands framing her face, brown eyes, mustard-yellow sweatshirt, black headphones round her neck, a black smartwatch on her left wrist) leans forward over the workbench, her shoulders hunched toward the camera, seen three-quarter from the front, framed from the top of her ponytail down to her collarbones: the headphones and the yellow collar at the bottom of the frame, her arms and the watch below the frame.\nBehind her, dark and simple: only a plain dark navy wall; no door or door frame anywhere near her. Her face stays in the centre of the frame, her chin well above the bottom edge. Locked camera: no zoom, no pan, no cut.\nAt the start she looks toward the left edge of the frame, then her eyes drop at once to her own wrist, below the frame. After a short beat, mouth closed, she says in French, with the voice [VOIX PICO], her breath back, no panting, spontaneous and quick: \"Attends… quoi ?! Elle me scanne ?!\" The first word is low and stunned, eyes down; on the second word her head jerks up and her wide eyes snap toward the left edge of the frame; the last question rises, louder, with a touch of panic, without shouting. Then she holds the shocked face, mouth closed, until the end.\nOnly her on screen; nobody else speaks. No subtitles, no on-screen text, no music: only her voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box.",
+   "prompt_file": "prompts/G11.txt",
+   "checklist_fr": {
+    "relance_si": [
+     "un mot changé ; « scanne » doit sonner comme l'anglais « scan » ;",
+     "elle est dans l'encadrement d'une porte ;",
+     "un cri saturé."
+    ],
+    "je_verifierai": [
+     "« Attends… » bas, les yeux baissés ; sur « quoi ?! », la tête qui se redresse d'un coup, les yeux écarquillés vers le bord gauche (s'ils partent vers l'autre bord, je retourne l'image) ;",
+     "la fin qui monte, sans cri ;",
+     "pas d'essoufflement dans la voix ; la même voix que G02 et G10."
+    ]
+   },
+   "take3": [
+    {
+     "key": "aide_scanne",
+     "when_fr": "« scanne » mal dit (comme l'anglais « scan »)",
+     "what_fr": "phrase d'aide en anglais ajoutée au début du paragraphe de la réplique : In her French line, the last verb is pronounced like the English word scan.",
+     "file": "prompts/prise3/G11_aide_scanne.txt",
+     "hint": "In her French line, the last verb is pronounced like the English word scan.",
+     "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference image: a close-up inside the workshop at night, at the eye height of someone seated across the workbench from her.\nThe young woman from the reference image [IMAGE PICO] (bright red hair in a high ponytail with a green elastic, long strands framing her face, brown eyes, mustard-yellow sweatshirt, black headphones round her neck, a black smartwatch on her left wrist) leans forward over the workbench, her shoulders hunched toward the camera, seen three-quarter from the front, framed from the top of her ponytail down to her collarbones: the headphones and the yellow collar at the bottom of the frame, her arms and the watch below the frame.\nBehind her, dark and simple: only a plain dark navy wall; no door or door frame anywhere near her. Her face stays in the centre of the frame, her chin well above the bottom edge. Locked camera: no zoom, no pan, no cut.\nIn her French line, the last verb is pronounced like the English word scan. At the start she looks toward the left edge of the frame, then her eyes drop at once to her own wrist, below the frame. After a short beat, mouth closed, she says in French, with the voice [VOIX PICO], her breath back, no panting, spontaneous and quick: \"Attends… quoi ?! Elle me scanne ?!\" The first word is low and stunned, eyes down; on the second word her head jerks up and her wide eyes snap toward the left edge of the frame; the last question rises, louder, with a touch of panic, without shouting. Then she holds the shocked face, mouth closed, until the end.\nOnly her on screen; nobody else speaks. No subtitles, no on-screen text, no music: only her voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box."
+    },
+    {
+     "key": "geste",
+     "when_fr": "lèvres décalées, visage qui se déforme ou geste raté",
+     "what_fr": "sans le mouvement de tête ; la voix et les pauses ne changent pas",
+     "file": "prompts/prise3/G11_geste.txt",
+     "old": "eyes down; on the second word her head jerks up and her wide eyes snap toward the left edge of the frame;",
+     "new": "then",
+     "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference image: a close-up inside the workshop at night, at the eye height of someone seated across the workbench from her.\nThe young woman from the reference image [IMAGE PICO] (bright red hair in a high ponytail with a green elastic, long strands framing her face, brown eyes, mustard-yellow sweatshirt, black headphones round her neck, a black smartwatch on her left wrist) leans forward over the workbench, her shoulders hunched toward the camera, seen three-quarter from the front, framed from the top of her ponytail down to her collarbones: the headphones and the yellow collar at the bottom of the frame, her arms and the watch below the frame.\nBehind her, dark and simple: only a plain dark navy wall; no door or door frame anywhere near her. Her face stays in the centre of the frame, her chin well above the bottom edge. Locked camera: no zoom, no pan, no cut.\nAt the start she looks toward the left edge of the frame, then her eyes drop at once to her own wrist, below the frame. After a short beat, mouth closed, she says in French, with the voice [VOIX PICO], her breath back, no panting, spontaneous and quick: \"Attends… quoi ?! Elle me scanne ?!\" The first word is low and stunned, then the last question rises, louder, with a touch of panic, without shouting. Then she holds the shocked face, mouth closed, until the end.\nOnly her on screen; nobody else speaks. No subtitles, no on-screen text, no music: only her voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box."
+    }
+   ],
+   "after_three_fails_fr": "envoie-moi toutes les prises ; si le son de l'une d'elles est bon, je le pose sur une image où sa bouche ne se voit pas (Nox qui écoute, à la fin de G05 ou de G06), sans rien générer.",
+   "notes": [
+    "Au montage, le plan commence quand ses yeux sont déjà baissés."
+   ],
+   "why": [
+    "Never split this line into two clips: the model would pad such short clips with invented words."
+   ]
+  },
+  {
+   "id": "G12",
+   "order": 8,
+   "group": "base",
+   "status": "À FAIRE",
+   "title": "G12 — IMAGE DU PLAN 9 — muet, sans voix",
+   "what": "Très gros plan muet au ras de l'établi : les yeux de Pico juste au-dessus de sa montre, la lumière verte sur sa peau. On y entendra la voix de Nox de G07.",
+   "shots": [
+    9
+   ],
+   "mode": "Ingredients",
+   "model": "Omni Flash 1.2",
+   "ingredients": [
+    "ingredient_pico.png"
+   ],
+   "markers": [
+    "[IMAGE PICO]"
+   ],
+   "voice": "none",
+   "duration_s": 6,
+   "resolution": "720p",
+   "outputs": 1,
+   "est_credits": 18,
+   "line": null,
+   "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference image: an extreme close-up at the height of the workbench top, in the workshop at night, the camera resting on the bench and looking straight across it.\nThe young woman from the reference image [IMAGE PICO] (bright red hair in a high ponytail with a green elastic, long strands framing her face, brown eyes, mustard-yellow sweatshirt, black headphones round her neck, a black smartwatch on her left wrist) crouches behind the bench so that only her eyes, eyebrows, forehead and red hair show above her own left forearm, which lies flat on the bench across the middle of the frame, coming in from the right edge of the frame, the hand loosely closed.\nThe black smartwatch on her wrist sits in the centre of the frame, seen edge-on, its screen facing up and not visible; bright green light leaks from under the watch onto her skin and onto the bench, and lights her eyes from below. Her nose, mouth and chin stay hidden behind her forearm for the whole clip. Her neck and her headphones stay below the bench, out of sight.\nThe bench top fills the bottom of the frame. Behind her: a plain dark navy wall. Her eyes and the watch stay in the centre of the frame. Locked camera: no zoom, no pan, no cut.\nFor about three seconds she squints at the watch, sceptical, without moving, while its green light pulses slowly. Then, once, her squint drops and her eyes go wide and round, still fixed on the watch; she freezes like that until the end. Her forearm never moves and her eyes never look at the camera.\nNobody speaks. No subtitles, no on-screen text, no music. The picture fills the whole frame: no black bars, no game interface, no dialogue box.",
+   "prompt_file": "prompts/G12.txt",
+   "checklist_fr": {
+    "relance_si": [
+     "on voit son nez, sa bouche ou son menton au-dessus du bras (il ne doit rester que ses yeux, ses sourcils, son front et ses cheveux) ;",
+     "un écran ou des chiffres sur la montre ;",
+     "l'avant-bras bouge, la main se déforme, ou la montre se détache du poignet ;",
+     "ses yeux regardent la caméra."
+    ],
+    "je_verifierai": [
+     "le moment où ses yeux s'arrondissent (je le cale sur « dans ta peau ») ;",
+     "la lumière verte sur sa peau ;",
+     "le son de ce clip ne compte pas : je mets celui de G07."
+    ]
+   },
+   "take3": [],
+   "after_three_fails_fr": "carte de secours G18 (l'insert de la montre) ; en dernier recours, l'image et le son de G07.",
+   "notes": [],
+   "why": [
+    "No other clip shows this frame, and it is the image of the subject (the green light on the skin). Veo 3.1 Lite would need a start image we do not have. 6 s rather than 4: the edit picks the moment her eyes go round so that it falls on « dans ta peau »."
+   ]
+  },
+  {
+   "id": "G13",
+   "order": null,
+   "group": "secours",
+   "status": "SECOURS — si G03 rate trois fois (il remplace alors les plans 2 et 3), ou si G04 rate trois fois (je n'en garde que la première phrase)",
+   "title": "G13 — SECOURS des plans 2 et 3 (voix Nox)",
+   "what": "Toute la réplique « Bonsoir à toi aussi, Pico. Entre, fais comme chez toi. » sur le gros plan de la soudure (le cadre de G04).",
+   "shots": [
+    2,
+    3
+   ],
+   "mode": "Ingredients",
+   "model": "Omni Flash 1.2",
+   "ingredients": [
+    "ingredient_nox.png"
+   ],
+   "markers": [
+    "[IMAGE NOX]",
+    "[VOIX NOX]"
+   ],
+   "voice": "Nox",
+   "duration_s": 8,
+   "resolution": "720p",
+   "outputs": 1,
+   "est_credits": 24,
+   "line": "Bonsoir à toi aussi, Pico. Entre, fais comme chez toi.",
+   "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference image: a low-angle close-up, the camera resting on the bench top near his hands and tilted up at his face, in his workshop at night.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) is bowed over his work, his body turned three-quarters toward the right edge of the frame; because the camera is low, his lowered face is seen almost from the front: eyes down behind the clear lenses, mouth fully visible.\nAt the bottom edge of the frame: only the blue handle of the soldering iron in his hand and a thin wisp of smoke.\nBehind and above him: dark bookshelves, a string of glowing green bulbs, an old monitor whose screen is a plain pale-blue glow with no windows, icons or writing. There is no watch anywhere on the bench and no second soldering iron. His face stays in the centre of the frame. Locked camera: no zoom, no pan, no cut.\nFor about a second and a half he does not react: eyes on his work, mouth closed. Then he says in French, with the voice [VOIX NOX], brisk, at full voice, wry, exaggeratedly polite and mock-offended, with a smile in his voice: \"Bonsoir à toi aussi, Pico. Entre, fais comme chez toi.\" He says the first sentence to his circuit board without looking up; on the second he glances up toward the right edge of the frame, with warm, amused sarcasm. Then he looks back down at his work, mouth closed, until the end.\nOnly him on screen; nobody else speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box.",
+   "prompt_file": "prompts/G13.txt",
+   "checklist_fr": {
+    "relance_si": [
+     "un mot changé ou ajouté ; « Pico » doit sonner « pi-ko » ;",
+     "il lève les yeux pendant la première phrase ;",
+     "une voix marmonnée vers le circuit au lieu d'une voix pleine ;",
+     "le fer se tord ou change de longueur, les doigts fondent dans le circuit, la fumée devient du brouillard ;",
+     "une montre posée sur l'établi, ou deux fers."
+    ],
+    "je_verifierai": [
+     "la seconde et demie sans réaction ;",
+     "sur la seconde phrase, le regard qui se lève vers le bord droit ;",
+     "la voix, la même que G01 ;",
+     "les lunettes : yeux baissés, c'est normal ; pas de reflet blanc qui cache les yeux."
+    ]
+   },
+   "take3": [
+    {
+     "key": "aide_pico",
+     "when_fr": "« Pico » mal dit (« pi-ko »)",
+     "what_fr": "phrase d'aide en anglais ajoutée au début du paragraphe de la réplique : In his French line, the name is pronounced pee-ko.",
+     "file": "prompts/prise3/G13_aide_pico.txt",
+     "hint": "In his French line, the name is pronounced pee-ko.",
+     "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference image: a low-angle close-up, the camera resting on the bench top near his hands and tilted up at his face, in his workshop at night.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) is bowed over his work, his body turned three-quarters toward the right edge of the frame; because the camera is low, his lowered face is seen almost from the front: eyes down behind the clear lenses, mouth fully visible.\nAt the bottom edge of the frame: only the blue handle of the soldering iron in his hand and a thin wisp of smoke.\nBehind and above him: dark bookshelves, a string of glowing green bulbs, an old monitor whose screen is a plain pale-blue glow with no windows, icons or writing. There is no watch anywhere on the bench and no second soldering iron. His face stays in the centre of the frame. Locked camera: no zoom, no pan, no cut.\nIn his French line, the name is pronounced pee-ko. For about a second and a half he does not react: eyes on his work, mouth closed. Then he says in French, with the voice [VOIX NOX], brisk, at full voice, wry, exaggeratedly polite and mock-offended, with a smile in his voice: \"Bonsoir à toi aussi, Pico. Entre, fais comme chez toi.\" He says the first sentence to his circuit board without looking up; on the second he glances up toward the right edge of the frame, with warm, amused sarcasm. Then he looks back down at his work, mouth closed, until the end.\nOnly him on screen; nobody else speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box."
+    },
+    {
+     "key": "sans_main",
+     "when_fr": "le fer ou la main se déforment",
+     "what_fr": "les mains et le fer hors du cadre ; seule la fumée monte du bas de l'image",
+     "file": "prompts/prise3/G13_sans_main.txt",
+     "old": "At the bottom edge of the frame: only the blue handle of the soldering iron in his hand and a thin wisp of smoke.",
+     "new": "His hands stay below the frame; only a thin wisp of smoke rises from the bottom edge.",
+     "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference image: a low-angle close-up, the camera resting on the bench top near his hands and tilted up at his face, in his workshop at night.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) is bowed over his work, his body turned three-quarters toward the right edge of the frame; because the camera is low, his lowered face is seen almost from the front: eyes down behind the clear lenses, mouth fully visible.\nHis hands stay below the frame; only a thin wisp of smoke rises from the bottom edge.\nBehind and above him: dark bookshelves, a string of glowing green bulbs, an old monitor whose screen is a plain pale-blue glow with no windows, icons or writing. There is no watch anywhere on the bench and no second soldering iron. His face stays in the centre of the frame. Locked camera: no zoom, no pan, no cut.\nFor about a second and a half he does not react: eyes on his work, mouth closed. Then he says in French, with the voice [VOIX NOX], brisk, at full voice, wry, exaggeratedly polite and mock-offended, with a smile in his voice: \"Bonsoir à toi aussi, Pico. Entre, fais comme chez toi.\" He says the first sentence to his circuit board without looking up; on the second he glances up toward the right edge of the frame, with warm, amused sarcasm. Then he looks back down at his work, mouth closed, until the end.\nOnly him on screen; nobody else speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box."
+    },
+    {
+     "key": "geste",
+     "when_fr": "lèvres décalées, visage qui se déforme ou geste raté",
+     "what_fr": "sans le regard levé ; la voix et les pauses ne changent pas",
+     "file": "prompts/prise3/G13_geste.txt",
+     "old": "on the second he glances up toward the right edge of the frame, with",
+     "new": "the second with",
+     "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference image: a low-angle close-up, the camera resting on the bench top near his hands and tilted up at his face, in his workshop at night.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) is bowed over his work, his body turned three-quarters toward the right edge of the frame; because the camera is low, his lowered face is seen almost from the front: eyes down behind the clear lenses, mouth fully visible.\nAt the bottom edge of the frame: only the blue handle of the soldering iron in his hand and a thin wisp of smoke.\nBehind and above him: dark bookshelves, a string of glowing green bulbs, an old monitor whose screen is a plain pale-blue glow with no windows, icons or writing. There is no watch anywhere on the bench and no second soldering iron. His face stays in the centre of the frame. Locked camera: no zoom, no pan, no cut.\nFor about a second and a half he does not react: eyes on his work, mouth closed. Then he says in French, with the voice [VOIX NOX], brisk, at full voice, wry, exaggeratedly polite and mock-offended, with a smile in his voice: \"Bonsoir à toi aussi, Pico. Entre, fais comme chez toi.\" He says the first sentence to his circuit board without looking up; the second with warm, amused sarcasm. Then he looks back down at his work, mouth closed, until the end.\nOnly him on screen; nobody else speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box."
+    }
+   ],
+   "after_three_fails_fr": "envoie-moi les prises.",
+   "notes": [
+    "Avec G13, le plan 6 disparaît et le plan 7 passe sur G14 : le film fait alors environ 30 s."
+   ],
+   "why": []
+  },
+  {
+   "id": "G14",
+   "order": null,
+   "group": "secours",
+   "status": "SECOURS — si G03 a raté trois fois (avec G13), si G06 rate trois fois, ou si je te dis qu'on enlève le plan 6",
+   "title": "G14 — SECOURS du plan 7 (voix Nox)",
+   "what": "« Bon. Laisse-moi t'expliquer. » sur le gros plan de la soudure (le cadre de G04).",
+   "shots": [
+    7
+   ],
+   "mode": "Ingredients",
+   "model": "Omni Flash 1.2",
+   "ingredients": [
+    "ingredient_nox.png"
+   ],
+   "markers": [
+    "[IMAGE NOX]",
+    "[VOIX NOX]"
+   ],
+   "voice": "Nox",
+   "duration_s": 6,
+   "resolution": "720p",
+   "outputs": 1,
+   "est_credits": 18,
+   "line": "Bon. Laisse-moi t'expliquer.",
+   "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference image: a low-angle close-up, the camera resting on the bench top near his hands and tilted up at his face, in his workshop at night.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) is bowed over his work, his body turned three-quarters toward the right edge of the frame; because the camera is low, his lowered face is seen almost from the front: eyes down behind the clear lenses, mouth fully visible.\nAt the bottom edge of the frame: only the blue handle of the soldering iron in his hand and a thin wisp of smoke.\nBehind and above him: dark bookshelves, a string of glowing green bulbs, an old monitor whose screen is a plain pale-blue glow with no windows, icons or writing. There is no watch anywhere on the bench and no second soldering iron. His face stays in the centre of the frame. Locked camera: no zoom, no pan, no cut.\nAfter a short beat, mouth closed, he says in French, with the voice [VOIX NOX], lively, at full voice: \"Bon. Laisse-moi t'expliquer.\" The first word is short and falling, amused and resigned, said to his circuit board; then he lifts his head toward the right edge of the frame, to his friend off-screen, and the rest brightens, eager and brisk. Then he holds a small eager smile, mouth closed, until the end.\nOnly him on screen; nobody else speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box.",
+   "prompt_file": "prompts/G14.txt",
+   "checklist_fr": {
+    "relance_si": [
+     "un mot changé ou ajouté ;",
+     "le fer se tord ou change de longueur, les doigts fondent dans le circuit, la fumée devient du brouillard ;",
+     "une montre posée sur l'établi, ou deux fers."
+    ],
+    "je_verifierai": [
+     "« Bon. » court et qui retombe ;",
+     "la tête qui se relève vers le bord droit après « Bon. » ;",
+     "la voix, la même que G04 (ou G13) ;",
+     "les lunettes : yeux baissés, c'est normal ; pas de reflet blanc qui cache les yeux."
+    ]
+   },
+   "take3": [
+    {
+     "key": "sans_main",
+     "when_fr": "le fer ou la main se déforment",
+     "what_fr": "les mains et le fer hors du cadre ; seule la fumée monte du bas de l'image",
+     "file": "prompts/prise3/G14_sans_main.txt",
+     "old": "At the bottom edge of the frame: only the blue handle of the soldering iron in his hand and a thin wisp of smoke.",
+     "new": "His hands stay below the frame; only a thin wisp of smoke rises from the bottom edge.",
+     "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference image: a low-angle close-up, the camera resting on the bench top near his hands and tilted up at his face, in his workshop at night.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) is bowed over his work, his body turned three-quarters toward the right edge of the frame; because the camera is low, his lowered face is seen almost from the front: eyes down behind the clear lenses, mouth fully visible.\nHis hands stay below the frame; only a thin wisp of smoke rises from the bottom edge.\nBehind and above him: dark bookshelves, a string of glowing green bulbs, an old monitor whose screen is a plain pale-blue glow with no windows, icons or writing. There is no watch anywhere on the bench and no second soldering iron. His face stays in the centre of the frame. Locked camera: no zoom, no pan, no cut.\nAfter a short beat, mouth closed, he says in French, with the voice [VOIX NOX], lively, at full voice: \"Bon. Laisse-moi t'expliquer.\" The first word is short and falling, amused and resigned, said to his circuit board; then he lifts his head toward the right edge of the frame, to his friend off-screen, and the rest brightens, eager and brisk. Then he holds a small eager smile, mouth closed, until the end.\nOnly him on screen; nobody else speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box."
+    },
+    {
+     "key": "geste",
+     "when_fr": "lèvres décalées, visage qui se déforme ou geste raté",
+     "what_fr": "sans le mouvement de tête ; la voix et les pauses ne changent pas",
+     "file": "prompts/prise3/G14_geste.txt",
+     "old": "then he lifts his head toward the right edge of the frame, to his friend off-screen, and the rest",
+     "new": "then the rest",
+     "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference image: a low-angle close-up, the camera resting on the bench top near his hands and tilted up at his face, in his workshop at night.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) is bowed over his work, his body turned three-quarters toward the right edge of the frame; because the camera is low, his lowered face is seen almost from the front: eyes down behind the clear lenses, mouth fully visible.\nAt the bottom edge of the frame: only the blue handle of the soldering iron in his hand and a thin wisp of smoke.\nBehind and above him: dark bookshelves, a string of glowing green bulbs, an old monitor whose screen is a plain pale-blue glow with no windows, icons or writing. There is no watch anywhere on the bench and no second soldering iron. His face stays in the centre of the frame. Locked camera: no zoom, no pan, no cut.\nAfter a short beat, mouth closed, he says in French, with the voice [VOIX NOX], lively, at full voice: \"Bon. Laisse-moi t'expliquer.\" The first word is short and falling, amused and resigned, said to his circuit board; then the rest brightens, eager and brisk. Then he holds a small eager smile, mouth closed, until the end.\nOnly him on screen; nobody else speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box."
+    }
+   ],
+   "after_three_fails_fr": "envoie-moi les prises.",
+   "notes": [],
+   "why": []
+  },
+  {
+   "id": "G15",
+   "order": null,
+   "group": "secours",
+   "status": "SECOURS — si, sur deux prises de G08, la main arrive pendant la phrase ou cache ses yeux",
+   "title": "G15 — SECOURS du plan 8, sans la main (voix Nox)",
+   "what": "« Regarde de plus près. » sans le geste des lunettes : il se penche à peine vers nous.",
+   "shots": [
+    8
+   ],
+   "mode": "Ingredients",
+   "model": "Omni Flash 1.2",
+   "ingredients": [
+    "ingredient_nox.png"
+   ],
+   "markers": [
+    "[IMAGE NOX]",
+    "[VOIX NOX]"
+   ],
+   "voice": "Nox",
+   "duration_s": 6,
+   "resolution": "720p",
+   "outputs": 1,
+   "est_credits": 18,
+   "line": "Regarde de plus près.",
+   "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) sits behind his cluttered electronics workbench in his workshop at night, as in the reference: bookshelves, a string of green bulbs, old monitors, a window on the city lights.\nMedium close-up, chest up, at his eye height; the bench top stays below the frame. He faces the camera and stays in the centre of the frame. The background stays still: the monitor screens show only a plain, still pale-blue glow with no windows, icons or writing, and the pinned notes are blank. Locked camera: no zoom, no pan, no cut.\nHis hands stay below the frame for the whole clip. After a short beat, mouth closed, he looks into the camera and says in French, with the voice [VOIX NOX], playful and inviting, a grin in his voice, at full voice, brisk: \"Regarde de plus près.\" As he says it, he leans very slightly toward the camera; his eyes stay clearly visible through the lenses. Then he holds a faint knowing smile, mouth closed, until the end.\nOnly him on screen; nobody else speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box.",
+   "prompt_file": "prompts/G15.txt",
+   "checklist_fr": {
+    "relance_si": [
+     "un mot ajouté ;",
+     "une main à l'image ;",
+     "sur les écrans du fond, des lettres lisibles ou qui défilent (des fenêtres floues : ça va)."
+    ],
+    "je_verifierai": [
+     "il se penche à peine vers nous ;",
+     "la voix, la même que G07."
+    ]
+   },
+   "take3": [],
+   "after_three_fails_fr": "envoie-moi les prises.",
+   "notes": [
+    "Le reflet des lunettes devient alors un simple son au montage."
+   ],
+   "why": []
+  },
+  {
+   "id": "G16",
+   "order": null,
+   "group": "secours",
+   "status": "SECOURS — si je te dis que le zoom fait au montage sur G09 est flou",
+   "title": "G16 — SECOURS du plan 11, avec zoom de Flow (voix Nox)",
+   "what": "La chute de G09, avec le lent zoom avant fait par Flow au lieu du montage.",
+   "shots": [
+    11
+   ],
+   "mode": "Ingredients",
+   "model": "Omni Flash 1.2",
+   "ingredients": [
+    "ingredient_nox.png"
+   ],
+   "markers": [
+    "[IMAGE NOX]",
+    "[VOIX NOX]"
+   ],
+   "voice": "Nox",
+   "duration_s": 6,
+   "resolution": "720p",
+   "outputs": 1,
+   "est_credits": 18,
+   "line": "Elle t'éclaire. Nuance.",
+   "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference image: a very close shot of his face from the front, at his eye height, in his workshop at night.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) sits at his workbench; his face fills the frame from the top of his hair to the collar of his turtleneck, both green eyes clearly visible through the clear lenses, with no glare. Behind him: only dark bookshelves and two or three glowing green bulbs. His face stays in the centre of the frame, his mouth well above the bottom edge. Camera: one very slow, steady push-in toward his face over the whole clip; no pan, no cut.\nHe looks just past the camera, slightly toward the right edge of the frame, at someone off-screen: a flat deadpan for about two seconds, mouth closed, with one slow blink. Then he says in French, with the voice [VOIX NOX], precise and amused, lively, at full voice, at a natural conversational pace, never slow: \"Elle t'éclaire. Nuance.\" A tiny pause after the first sentence, then the last word placed crisply with a falling tone, like a full stop. Then one corner of his mouth lifts into a small smirk, held, mouth closed, until the end.\nOnly him on screen; nobody else speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box.",
+   "prompt_file": "prompts/G16.txt",
+   "checklist_fr": {
+    "relance_si": [
+     "tout ce qui fait relancer G09 ;",
+     "un zoom qui saute ou s'arrête, ou un visage qui devient flou."
+    ],
+    "je_verifierai": [
+     "tout ce que je vérifie sur G09 (s'il regarde vers le mauvais bord, je retourne l'image)."
+    ]
+   },
+   "take3": [
+    {
+     "key": "aide_teclaire",
+     "when_fr": "« t'éclaire » mal dit (« té-clair »)",
+     "what_fr": "phrase d'aide en anglais ajoutée au début du paragraphe de la réplique : In his French line, the second word is pronounced tay-clair.",
+     "file": "prompts/prise3/G16_aide_teclaire.txt",
+     "hint": "In his French line, the second word is pronounced tay-clair.",
+     "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference image: a very close shot of his face from the front, at his eye height, in his workshop at night.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) sits at his workbench; his face fills the frame from the top of his hair to the collar of his turtleneck, both green eyes clearly visible through the clear lenses, with no glare. Behind him: only dark bookshelves and two or three glowing green bulbs. His face stays in the centre of the frame, his mouth well above the bottom edge. Camera: one very slow, steady push-in toward his face over the whole clip; no pan, no cut.\nIn his French line, the second word is pronounced tay-clair. He looks just past the camera, slightly toward the right edge of the frame, at someone off-screen: a flat deadpan for about two seconds, mouth closed, with one slow blink. Then he says in French, with the voice [VOIX NOX], precise and amused, lively, at full voice, at a natural conversational pace, never slow: \"Elle t'éclaire. Nuance.\" A tiny pause after the first sentence, then the last word placed crisply with a falling tone, like a full stop. Then one corner of his mouth lifts into a small smirk, held, mouth closed, until the end.\nOnly him on screen; nobody else speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box."
+    },
+    {
+     "key": "aide_nuance",
+     "when_fr": "« Nuance » mal dit (à la française, ni à l'anglaise ni avalé)",
+     "what_fr": "phrase d'aide en anglais ajoutée au début du paragraphe de la réplique : In his French line, the last word is French, with a nasal vowel.",
+     "file": "prompts/prise3/G16_aide_nuance.txt",
+     "hint": "In his French line, the last word is French, with a nasal vowel.",
+     "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference image: a very close shot of his face from the front, at his eye height, in his workshop at night.\nThe young man from the reference image [IMAGE NOX] (spiky blue-black hair with one strand sticking up, thin rectangular glasses with transparent pale-green lenses so his green eyes stay clearly visible, black turtleneck, charcoal bomber jacket with a bright green zip) sits at his workbench; his face fills the frame from the top of his hair to the collar of his turtleneck, both green eyes clearly visible through the clear lenses, with no glare. Behind him: only dark bookshelves and two or three glowing green bulbs. His face stays in the centre of the frame, his mouth well above the bottom edge. Camera: one very slow, steady push-in toward his face over the whole clip; no pan, no cut.\nIn his French line, the last word is French, with a nasal vowel. He looks just past the camera, slightly toward the right edge of the frame, at someone off-screen: a flat deadpan for about two seconds, mouth closed, with one slow blink. Then he says in French, with the voice [VOIX NOX], precise and amused, lively, at full voice, at a natural conversational pace, never slow: \"Elle t'éclaire. Nuance.\" A tiny pause after the first sentence, then the last word placed crisply with a falling tone, like a full stop. Then one corner of his mouth lifts into a small smirk, held, mouth closed, until the end.\nOnly him on screen; nobody else speaks. No subtitles, no on-screen text, no music: only his voice in a quiet room. The picture fills the whole frame: no black bars, no game interface, no dialogue box."
+    }
+   ],
+   "after_three_fails_fr": "envoie-moi les prises.",
+   "notes": [],
+   "why": []
+  },
+  {
+   "id": "G17",
+   "order": null,
+   "group": "secours",
+   "status": "SECOURS — seulement si je te le demande (si G03 n'a aucun moment immobile pour le plan 6 et que son image fixe paraît trop figée)",
+   "title": "G17 — SECOURS muet du plan 6 (Veo 3.1 Lite, mode Frames)",
+   "what": "Le face-à-face muet du plan 6, animé à partir d'une image de G03 que je t'envoie (G03_plan6.png).",
+   "shots": [
+    6
+   ],
+   "mode": "Frames",
+   "model": "Veo 3.1 Lite",
+   "ingredients": [],
+   "start_image": "G03_plan6.png",
+   "markers": [],
+   "voice": "none",
+   "duration_s": 4,
+   "resolution": "720p",
+   "outputs": 1,
+   "est_credits": 10,
+   "line": null,
+   "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the start image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nContinue exactly from the start image, a profile two-shot at his workbench at night; nothing in the frame changes.\nThe young man in the start image stays bowed over his circuit board, eyes down, mouth closed.\nThe young woman in the start image stays sprawled over the bench, her left wrist held up in front of his glasses, keeping exactly the expression she has in the start image, mouth closed.\nBoth hold perfectly still; the only movement is the thin wisp of smoke rising from the soldering iron and, at most, one slow blink. Locked camera: no zoom, no pan, no cut.\nNobody speaks. No subtitles, no on-screen text, no music. The picture fills the whole frame: no black bars, no game interface, no dialogue box.",
+   "prompt_file": "prompts/G17.txt",
+   "checklist_fr": {
+    "relance_si": [
+     "une bouche qui s'ouvre ;",
+     "un visage, une place ou une montre qui changent par rapport à l'image de départ."
+    ],
+    "je_verifierai": [
+     "rien ne bouge sauf la fumée (un clignement au plus) ;",
+     "le son ne compte pas : je le coupe."
+    ]
+   },
+   "take3": [],
+   "after_three_fails_fr": "envoie-moi les prises.",
+   "notes": [],
+   "why": [
+    "Exception to the default model: the shot is silent, so it needs neither a voice nor Ingredients mode; Veo 3.1 Lite in Frames mode costs 10 credits and starts from a real frame of G03 (same faces, same room). Its resolution setting is assumed to be 720p."
+   ]
+  },
+  {
+   "id": "G18",
+   "order": null,
+   "group": "secours",
+   "status": "SECOURS — si G12 rate trois fois",
+   "title": "G18 — SECOURS muet du plan 9 — insert de la montre",
+   "what": "L'avant-bras de Pico posé sur l'établi, la montre au centre, la lumière verte qui pulse ; aucun visage.",
+   "shots": [
+    9
+   ],
+   "mode": "Ingredients",
+   "model": "Omni Flash 1.2",
+   "ingredients": [
+    "ingredient_pico.png"
+   ],
+   "markers": [
+    "[IMAGE PICO]"
+   ],
+   "voice": "none",
+   "duration_s": 6,
+   "resolution": "720p",
+   "outputs": 1,
+   "est_credits": 18,
+   "line": null,
+   "prompt": "A cutscene from an early-2000s video game, in exactly the same art style as the reference image: cel-shaded 3D with flat colours, clean thin dark outlines, chunky faceted hair, slightly aliased edges and a dark night palette with neon-green accents. Not photorealistic.\nNew camera angle in the same room, not the composition of the reference image: an insert at the height of the workbench top, in the workshop at night.\nOnly the left forearm of the young woman from the reference image [IMAGE PICO] is in the frame, in her mustard-yellow sleeve, with her black smartwatch on the wrist: it lies flat on the cream workbench across the middle of the frame, coming in from the right edge of the frame, the hand loosely closed. No face, no hair, nothing else of her in the frame.\nThe black smartwatch sits in the centre of the frame, its screen facing up and not visible; bright green light pulses slowly from under the watch onto her skin and onto the bench. The forearm never moves. Locked camera: no zoom, no pan, no cut.\nNobody speaks. No subtitles, no on-screen text, no music. The picture fills the whole frame: no black bars, no game interface, no dialogue box.",
+   "prompt_file": "prompts/G18.txt",
+   "checklist_fr": {
+    "relance_si": [
+     "un visage, des cheveux ou un corps à l'image ;",
+     "un écran ou des chiffres sur la montre ;",
+     "l'avant-bras bouge, la main se déforme, ou la montre se détache."
+    ],
+    "je_verifierai": [
+     "la lumière verte qui pulse sous la montre ;",
+     "le son ne compte pas : je mets celui de G07."
+    ]
+   },
+   "take3": [],
+   "after_three_fails_fr": "envoie-moi les prises ; en dernier recours, je prends l'image et le son de G07.",
+   "notes": [
+    "On perd ses yeux qui s'arrondissent : sa réaction passe alors au plan 10."
+   ],
+   "why": [
+    "6 s, like G12: shot 9 lasts the G07 line plus 0.85 s and its picture starts near 0.3 s; with 4 s, a slow take of G07 would freeze the last frame. Omni Flash rather than Veo 3.1 Lite: the ingredient keeps the style, the yellow sleeve and the watch."
+   ]
+  }
+ ],
+ "shots_map": [
+  {
+   "shot": 1,
+   "setup": "pico_porte",
+   "speaker": "pico",
+   "line_id": "l01",
+   "text": "Nox ! Pourquoi ma montre fait des lumières vertes à la fin de mon run ?",
+   "generations": [
+    "G02"
+   ],
+   "clip_part": "G02 : de 0,15 s avant « Nox ! » à 0,45 s après « run ? » (montage.py cale la coupe sur la parole).",
+   "captions": [
+    "Nox ! Pourquoi ma montre fait des lumières vertes à la fin de mon run ?"
+   ],
+   "sfx": "Door bang on the first frame; a short sneaker squeak under it (optional).",
+   "sfx_fr": "Claquement de porte sur la première image ; petit crissement de basket (facultatif).",
+   "edit": {
+    "clip": "G02.mp4",
+    "lead": 0.15,
+    "tail": 0.45
+   },
+   "fallback": "Pas de plan de secours : c'est l'accroche. Si le G02 de l'étape 1 ne va pas, G02 refait avec le prompt de sa carte (trois prises au plus)."
+  },
+  {
+   "shot": 2,
+   "setup": "nox_soudure",
+   "speaker": "nox",
+   "line_id": "l02",
+   "text": "Bonsoir à toi aussi, Pico.",
+   "generations": [
+    "G04"
+   ],
+   "clip_part": "G04 : 1 s avant « Bonsoir » (si le clip parle trop tôt, la première image est figée le temps qui manque, réglage hold_start) jusqu'à 0,45 s après « Pico. ».",
+   "captions": [
+    "Bonsoir à toi aussi, Pico."
+   ],
+   "sfx": "Faint soldering sizzle; Pico's quick steps approaching under the silent second and the line, cut dead by the clatter on the cut into shot 3.",
+   "sfx_fr": "Léger grésillement de la soudure ; pas rapides de Pico qui approche, coupés net par le fracas du plan 3.",
+   "edit": {
+    "clip": "G04.mp4",
+    "lead": 1.0,
+    "tail": 0.45
+   },
+   "fallback": "Si G03 rate : G13 remplace les plans 2 et 3, avec deux cartons de sous-titres. Si seul G04 rate : la première phrase de G13."
+  },
+  {
+   "shot": 3,
+   "setup": "deux_etabli",
+   "speaker": "nox",
+   "line_id": "l02",
+   "text": "Entre, fais comme chez toi.",
+   "generations": [
+    "G03"
+   ],
+   "clip_part": "G03 : de 0,9 s avant « Entre » (le tableau immobile) à 0,45 s après « toi. ».",
+   "captions": [
+    "Entre, fais comme chez toi."
+   ],
+   "sfx": "A short clatter of components exactly on the cut (her elbows landing on the bench); the footsteps stop on it.",
+   "sfx_fr": "Petit fracas de composants pile sur la coupe (ses coudes qui atterrissent sur l’établi) ; les pas s’arrêtent dessus.",
+   "edit": {
+    "clip": "G03.mp4",
+    "lead": 0.9,
+    "tail": 0.45
+   },
+   "fallback": "Si G03 rate : plans 2 et 3 sur G13, plan 6 retiré, plan 7 sur G14."
+  },
+  {
+   "shot": 4,
+   "setup": "ots_nox",
+   "speaker": "nox",
+   "line_id": "l02b",
+   "text": "Tu portes cette montre depuis deux ans… et tu découvres qu'elle s'allume ?",
+   "generations": [
+    "G05",
+    "G01"
+   ],
+   "clip_part": "G05 : de 0,25 s avant « Tu » à 0,45 s après « s'allume ? ». Secours : G01, même découpe.",
+   "captions": [
+    "Tu portes cette montre depuis deux ans…",
+    "et tu découvres qu’elle s’allume ?"
+   ],
+   "sfx": "",
+   "sfx_fr": "—",
+   "edit": {
+    "clip": "G05.mp4",
+    "lead": 0.25,
+    "tail": 0.45
+   },
+   "fallback": "G01 (déjà fait) seulement si Nox n'y lève pas le sourcil et si aucune montre n'est posée sur l'établi ; sinon G01 refait avec le prompt de sa carte."
+  },
+  {
+   "shot": 5,
+   "setup": "pico_gp",
+   "speaker": "pico",
+   "line_id": "l02c",
+   "text": "J'ai jamais regardé dessous, ok ?",
+   "generations": [
+    "G10"
+   ],
+   "clip_part": "G10 : de 0,15 s avant « J'ai » à 0,45 s après « ok ? ».",
+   "captions": [
+    "J’ai jamais regardé dessous, ok ?"
+   ],
+   "sfx": "",
+   "sfx_fr": "—",
+   "edit": {
+    "clip": "G10.mp4",
+    "lead": 0.15,
+    "tail": 0.45
+   },
+   "fallback": "Le son d'une prise ratée à l'image se pose sur Nox qui écoute (fin de G05 ou de G06), où sa bouche à elle ne se voit pas. Prise bonne mais à l'envers : image retournée (hflip)."
+  },
+  {
+   "shot": 6,
+   "setup": "deux_etabli",
+   "speaker": "none",
+   "line_id": "",
+   "text": "",
+   "generations": [
+    "G03"
+   ],
+   "clip_part": "G03 réutilisé, son coupé, rien à générer : 1,3 s où tout est immobile, de préférence à la fin du clip (il est revenu à son circuit, elle le fusille du regard : réglage edit, in = durée du clip − 1,4, out = durée − 0,1), sinon de 0,0 à 1,3 s, avant qu'il relève la tête (edit_alt) ; sinon une image fixe extraite de G03, tenue 1,3 s (réglage still). Écrire in et out (avec in seul, montage.py garde silent_s à partir de in).",
+   "captions": [],
+   "sfx": "Soldering sizzle and room tone only (the clip is generated without sound). Optional: one short amused breath through the nose from Nox on the last frames, leading into his \"Bon.\".",
+   "sfx_fr": "Grésillement de la soudure et ambiance de pièce seulement (le clip est généré sans son). Facultatif : un petit souffle amusé de Nox, par le nez, sur les dernières images, qui amène son « Bon. ».",
+   "edit": {
+    "clip": "G03.mp4",
+    "in": 4.6,
+    "out": 5.9,
+    "mute": true
+   },
+   "edit_alt": {
+    "clip": "G03.mp4",
+    "in": 0.0,
+    "out": 1.3,
+    "mute": true
+   },
+   "fallback": "Image fixe de G03 tenue 1,3 s ; dernier recours G17 (Veo 3.1 Lite, 10 crédits). Si le plan 6 est retiré, le plan 7 passe sur G14."
+  },
+  {
+   "shot": 7,
+   "setup": "ots_nox",
+   "speaker": "nox",
+   "line_id": "l02d",
+   "text": "Bon. Laisse-moi t'expliquer.",
+   "generations": [
+    "G06"
+   ],
+   "clip_part": "G06 : de 0,25 s avant « Bon. » à 0,45 s après « t'expliquer. ».",
+   "captions": [
+    "Bon. Laisse-moi t’expliquer."
+   ],
+   "sfx": "",
+   "sfx_fr": "—",
+   "edit": {
+    "clip": "G06.mp4",
+    "lead": 0.25,
+    "tail": 0.45
+   },
+   "fallback": "G14 (gros plan de la soudure), aussi quand le plan 6 est retiré."
+  },
+  {
+   "shot": 8,
+   "setup": "nox_face",
+   "speaker": "nox",
+   "line_id": "l03",
+   "text": "Regarde de plus près.",
+   "generations": [
+    "G08"
+   ],
+   "clip_part": "G08 : de 0,25 s avant « Regarde » à 1,1 s après « près. » (le geste des lunettes ; la coupe tombe sur le reflet). Si le geste rate : 0,45 s après « près. ».",
+   "captions": [
+    "Regarde de plus près."
+   ],
+   "sfx": "A tiny glint sound on the glasses.",
+   "sfx_fr": "Petit tintement sur le reflet des lunettes.",
+   "edit": {
+    "clip": "G08.mp4",
+    "lead": 0.25,
+    "tail": 1.1
+   },
+   "fallback": "G15 (sans la main) si la main gêne pendant la phrase."
+  },
+  {
+   "shot": 9,
+   "setup": "pico_yeux_montre",
+   "speaker": "nox",
+   "line_id": "l03",
+   "text": "Ta montre envoie de la lumière verte… dans ta peau.",
+   "generations": [
+    "G12",
+    "G07"
+   ],
+   "clip_part": "Image : G12, son coupé, à partir de « in » (vers 0,3 s, à régler pour que ses yeux s'arrondissent sur « dans ta peau »). Son : G07, de 0,4 s avant « Ta » à 0,45 s après « peau. ». Si le son doit venir de deux prises de G07, je les colle d'abord en un seul fichier (montage.py ne prend qu'un fichier son par plan).",
+   "captions": [
+    "Ta montre envoie de la lumière verte…",
+    "dans ta peau."
+   ],
+   "sfx": "A soft, low electronic pulse in time with the green light (optional).",
+   "sfx_fr": "Pulsation électronique douce et grave, calée sur la lumière verte (facultatif).",
+   "edit": {
+    "clip": "G12.mp4",
+    "audio_from": "G07.mp4",
+    "in": 0.3,
+    "lead": 0.4,
+    "tail": 0.45
+   },
+   "fallback": "Image G18 (insert de la montre, 6 s) avec le même son ; dernier recours : G07 image et son."
+  },
+  {
+   "shot": 10,
+   "setup": "pico_gp",
+   "speaker": "pico",
+   "line_id": "l04",
+   "text": "Attends… quoi ?! Elle me scanne ?!",
+   "generations": [
+    "G11"
+   ],
+   "clip_part": "G11 : à partir du moment où ses yeux sont déjà baissés (réglage in, à la main), jusqu'à 0,45 s après « scanne ?! ».",
+   "captions": [
+    "Attends… quoi ?! Elle me scanne ?!"
+   ],
+   "sfx": "",
+   "sfx_fr": "—",
+   "edit": {
+    "clip": "G11.mp4",
+    "lead": 0.3,
+    "tail": 0.45
+   },
+   "fallback": "Le son d'une prise ratée à l'image se pose sur Nox qui écoute (fin de G05 ou de G06). Prise bonne mais à l'envers : image retournée (hflip)."
+  },
+  {
+   "shot": 11,
+   "setup": "nox_tgp",
+   "speaker": "nox",
+   "line_id": "l04b",
+   "text": "Elle t'éclaire. Nuance.",
+   "generations": [
+    "G09"
+   ],
+   "clip_part": "G09 : de 1,2 s avant « Elle » (le regard fixe) à 0,9 s après « Nuance. » (le petit sourire) ; lent zoom avant de 13 % fait au montage.",
+   "captions": [
+    "Elle t’éclaire.",
+    "Nuance."
+   ],
+   "sfx": "None: the music bed stops on the cut into this shot, so that the stare and the line play over silence.",
+   "sfx_fr": "Aucun : la musique s’arrête sur la coupe d’entrée dans ce plan ; le regard et la réplique se jouent dans le silence.",
+   "edit": {
+    "clip": "G09.mp4",
+    "lead": 1.2,
+    "tail": 0.9,
+    "push_in": 0.13
+   },
+   "fallback": "G16 (zoom fait par Flow ; alors pas de zoom au montage) si le zoom du montage est flou ; si G09 rate trois fois, une variante sur le cadre de G08. Prise bonne mais à l'envers : image retournée (hflip)."
+  }
+ ],
+ "edit_notes": [
+  "Shot 6 (muted reuse of G03): give both \"in\" and \"out\" (with \"in\" alone, montage.py keeps \"silent_s\" seconds from \"in\", default 1.6).",
+  "Mirrored takes (G09, G10, G11, G16 only: no watch, text or hand side in frame) can be flipped with montage.py's \"hflip\": true on that shot. Never flip G02, G03, G05-G07, G12 or G18 (the watch would move to her right wrist) nor the soldering shots (the iron would change hands).",
+  "Shot 9: when the sound must come from two takes of G07, join the two halves into one file first (about 0.5 s of pause before « dans ta peau »): audio_from takes a single file.",
+  "Clip lengths: \"in\"/\"out\" values assume the requested duration; Flow's files can be a few hundredths longer or shorter, and montage.py clamps to the real length."
+ ],
+ "budget": {
+  "rates": {
+   "Omni Flash 1.2, 720p": "about 3 credits per second: 4 s = 12, 6 s = 18, 8 s = 24, 10 s = 30",
+   "Omni Flash 1.2, 360p": "1 credit per second: never used (a good 360p take cannot be reproduced at 720p)",
+   "Veo 3.1 Lite": "10 credits per clip of 4-8 s, Frames or text, silent clips only (only in secours card G17)",
+   "note": "Flow shows the exact cost before each generation; these figures are the ones given for November 2026."
+  },
+  "allowance": {
+   "monthly_credits": 1000,
+   "daily_free_credits": 50
+  },
+  "etape1_already_spent": {
+   "G01": 24,
+   "G02": 24,
+   "total": 48
+  },
+  "etape2_one_take_each": {
+   "G03": 18,
+   "G05": 24,
+   "G07": 24,
+   "G08": 18,
+   "G09": 18,
+   "G10": 18,
+   "G11": 18,
+   "G12": 18,
+   "G04": 18,
+   "G06": 18,
+   "total": 192
+  },
+  "secours_one_take_each": {
+   "G13": 24,
+   "G14": 18,
+   "G15": 18,
+   "G16": 18,
+   "G17": 10,
+   "G18": 18,
+   "total": 106
+  },
+  "etape2_realistic": {
+   "assumptions": [
+    "1.5 takes per speaking clip of step 2 (9 clips, 174 credits for one take of each): 261",
+    "2 takes of the silent clip G12, the hardest framing: 36",
+    "provision for one or two secours cards, half of their total: 53"
+   ],
+   "total": 350,
+   "with_etape1": 398,
+   "left_of_monthly_after_both": 602
+  },
+  "etape2_three_takes_of_every_card": 576,
+  "stop_rule_credits_for_etape2": 450,
+  "plan_b_difference": "G13 + G14 instead of G04 + G06: +6 credits per take",
+  "not_included": "A redo of G01 or G02, only if Claude asks (24 credits per take, three takes at most).",
+  "daily_free_note": "The 50 free credits of each day pay for about two clips; whether Flow spends them before the monthly credits is not known."
+ },
+ "fallbacks": [
+  {
+   "when": "Règle des prises.",
+   "do": "Trois prises au plus par carte. Prise 1 : le prompt tel quel. Prise 2 : le même prompt (le hasard joue beaucoup). Prise 3 : la correction que la carte donne pour ce défaut (un fichier du dossier prompts/prise3, ou une durée changée, voir ci-dessous), sinon le même prompt. Si la prise 3 rate aussi : fais ce que dit la ligne « Après trois prises ratées » de la carte, puis passe à la carte suivante et envoie-moi les trois prises. Jamais de prise 4 sans mon accord. Seule exception : G08 passe à G15 dès la deuxième prise où la main arrive pendant la phrase."
+  },
+  {
+   "when": "Tu hésites sur une prise.",
+   "do": "Ne relance pas : garde-la, passe à la carte suivante et envoie-la-moi."
+  },
+  {
+   "when": "Flow affiche une erreur et ne donne pas de vidéo.",
+   "do": "Relance une fois (si aucun crédit n'a été pris, ça ne compte pas comme une prise) ; si l'erreur revient, envoie-moi une capture du message et dis-moi si des crédits ont été pris."
+  },
+  {
+   "when": "La voix n'est pas la bonne.",
+   "do": "Vérifie que le repère [VOIX …] a été remplacé par la VOIX, pas par l'image ingredient_…, puis relance. Une prise bonne à l'image mais pas à la voix : garde-la et dis-le-moi."
+  },
+  {
+   "when": "Un mot est mal prononcé.",
+   "do": "Prise 3 : le fichier « aide » de la carte (le même prompt, avec une phrase d'aide en anglais au début du paragraphe de la réplique). Ne change jamais l'orthographe de la réplique."
+  },
+  {
+   "when": "Des mots sont ajoutés, le débit traîne, ou la fin du clip part en vrille.",
+   "do": "Prise 3 : le même prompt avec 2 s de moins (8 → 6, 6 → 4). Sauf G03, G08, G09, G12 et G16 : garde leur durée (le moment immobile du plan 6, le geste des lunettes, le regard fixe et la pause, les yeux qui s'arrondissent en ont besoin)."
+  },
+  {
+   "when": "La réplique est coupée avant la fin, ou le clip s'arrête juste sur le dernier mot.",
+   "do": "Prise suivante avec 2 s de plus (6 → 8, 8 → 10). N'utilise jamais « Extend » (Prolonger) ni « Add to scene »."
+  },
+  {
+   "when": "Lèvres décalées, visage qui se déforme ou geste raté.",
+   "do": "Prise 3 : le fichier « geste » de la carte s'il y en a un (il enlève seulement le geste, jamais la voix ni les pauses) ; sinon le même prompt."
+  },
+  {
+   "when": "Flow recopie l'image ingrédient (Pico dans la porte, Nox de face comme sur son image) au lieu du cadre demandé.",
+   "do": "Relance ; si ça revient, arrête cette carte et envoie-moi les prises."
+  },
+  {
+   "when": "Plan à deux (G03, G05, G06, G07) : leurs visages ou leurs vêtements se mélangent.",
+   "do": "Vérifie que [IMAGE NOX] a bien été remplacé par l'image de Nox et [IMAGE PICO] par celle de Pico, puis relance ; si ça revient, envoie-moi les prises."
+  },
+  {
+   "when": "Du texte, des chiffres ou de faux sous-titres (écran, montre, mur).",
+   "do": "Relance ; si ça revient, envoie-moi le clip : j'adapte la phrase du décor. Les petites fenêtres floues des écrans du fond, comme sur l'image de Nox, sont acceptées."
+  },
+  {
+   "when": "De la musique sous la voix.",
+   "do": "Relance : une musique sous la voix ne s'enlève pas au montage. Si elle revient aux trois prises, envoie-les-moi."
+  },
+  {
+   "when": "Des bandes noires en haut ou en bas, une interface de jeu ou une boîte de dialogue.",
+   "do": "Relance."
+  },
+  {
+   "when": "Flow refuse le prompt ou le coupe (trop long).",
+   "do": "Supprime la phrase du décor, celle qui commence par « Behind », puis relance. G01, G02, G08, G15, G17 et G18 n'en ont pas : envoie-moi le message de Flow."
+  },
+  {
+   "when": "Pico essoufflée sur G10 ou G11 à chaque prise.",
+   "do": "Dis-le-moi : on verra s'il faut retirer « sometimes a little out of breath after running » de la description de la voix Pico (et revérifier G02)."
+  },
+  {
+   "when": "Une voix doit être recréée (elle a disparu, ou je te le demande).",
+   "do": "Reprends la description de l'étape 1. Si la liste des voix de base de Flow propose « Umbriel » et « Laomedeia » (les voix validées de la série), prends Umbriel pour Nox et Laomedeia pour Pico ; sinon, comme à l'étape 1."
+  },
+  {
+   "when": "Le français est mauvais sur tous les clips (accent étranger, mots inventés).",
+   "do": "Arrête-toi et dis-le-moi avant de dépenser plus."
+  },
+  {
+   "when": "Les crédits fondent.",
+   "do": "Règle d'arrêt : si cette étape a pris plus de 450 crédits (ton solde de départ moins ton solde actuel), arrête-toi et envoie-moi ce que tu as ; on choisit ensemble les reprises."
+  }
+ ]
+}

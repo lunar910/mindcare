@@ -1,0 +1,16 @@
+# gros fichiers recréés par setup.sh
+blender-venv/
+dl/
+mh-pkg/
+mh-data/
+mh-assets/
+mh-extra/
+cache/
+__pycache__/
+*.pyc
+# rendus de travail
+hero/out*/
+hero/base/
+hero/final*/
+*.blend
+*.blend1

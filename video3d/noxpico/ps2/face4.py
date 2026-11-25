@@ -1,0 +1,244 @@
+"""Faces of version 4: lip-sync, blinks and expressions with the timings measured on the reference video.
+
+    F = FaceTrack(E, who, perf, base=[...], events=[...], blinks=[...], amp=1.0)
+    F.values(t)        -> {shape key: value} for facemorph (expressions + speech + blink); the eyes come from perf.eyes(t)
+
+Targets (study/reports/face-data.md):
+  - mouth: opens and closes in about 70 ms (2 frames at 30 fps); lips really closed (>= 100 ms) on m / b / p and at
+    commas and full stops; no 1-frame shape; the jaw drops (lip gap 7-10 % of the face height, more on stressed words);
+    mouth corners neutral while speaking
+  - blinks: on every head turn of 15 deg or more, closed at the turn's peak speed (held longer for 30 deg or more);
+    otherwise sparse (about one per 4 s); close in 3-4 frames, reopen in 5-7
+  - brows: still during calm speech; a quick raise of both brows (about 0.17 s up, held, 0.3 s down) on a stressed word
+"""
+import math
+
+import numpy as np
+
+import acting as AC
+
+RATE = 120.0
+VIS = {
+    'aa': {'jawOpen': 1.0},
+    'E': {'jawOpen': 0.55, 'mouthWide': 0.45},
+    'I': {'jawOpen': 0.30, 'mouthWide': 0.75, 'lipsUp': 0.25},
+    'O': {'jawOpen': 0.62, 'mouthNarrow': 0.85},
+    'U': {'jawOpen': 0.32, 'mouthNarrow': 1.0},
+    'PP': {},
+    'FF': {'jawOpen': 0.12, 'lipsUp': 0.35},
+    'DD': {'jawOpen': 0.32, 'mouthWide': 0.15},
+    'nn': {'jawOpen': 0.28, 'mouthWide': 0.1},
+    'SS': {'jawOpen': 0.18, 'mouthWide': 0.35},
+    'kk': {'jawOpen': 0.36},
+    'RR': {'jawOpen': 0.34, 'mouthNarrow': 0.25},
+    'CH': {'jawOpen': 0.22, 'mouthNarrow': 0.6},
+    'TH': {'jawOpen': 0.25},
+    'sil': {},
+}
+MOUTH_KEYS = ('jawOpen', 'mouthWide', 'mouthNarrow', 'lipsUp')
+OPEN = {k: v.get('jawOpen', 0.0) for k, v in VIS.items()}             # how open each sound is (to find the stressed vowels)
+
+# Version 6 faces (face6.py: real teeth, a jaw that turns, lips with their own keys).  Measured on the reference: when
+# a character speaks, the lips do most of the work (the lower lip moves about twice as much as the chin), the upper
+# teeth show under the upper lip, the nose, cheeks and forehead do not move.  jawOpen = 1 is 10 degrees of jaw.
+VIS6 = {
+    # open vowels: the gap comes from the lips more than from the jaw; each consonant between two vowels closes the
+    # mouth to a third or less, so every syllable is one pulse of the mouth
+    'aa': {'jawOpen': 0.36, 'lipLowerDown': 0.80, 'lipUpperUp': 0.50},
+    'E': {'jawOpen': 0.22, 'mouthWide': 0.35, 'lipLowerDown': 0.50, 'lipUpperUp': 0.40},
+    'I': {'jawOpen': 0.10, 'mouthWide': 0.60, 'lipLowerDown': 0.30, 'lipUpperUp': 0.45},
+    'O': {'jawOpen': 0.34, 'mouthNarrow': 0.60, 'lipLowerDown': 0.60, 'lipUpperUp': 0.25},
+    'U': {'jawOpen': 0.16, 'mouthNarrow': 1.00, 'lipLowerDown': 0.30, 'lipUpperUp': 0.15},
+    'PP': {'lipsPress': 1.0},
+    'FF': {'jawOpen': 0.05, 'lipsPress': 0.45, 'lipUpperUp': 0.35},
+    'DD': {'jawOpen': 0.08, 'lipLowerDown': 0.20, 'lipUpperUp': 0.20, 'tongueUp': 0.8},
+    'nn': {'jawOpen': 0.07, 'lipLowerDown': 0.18, 'lipUpperUp': 0.18, 'tongueUp': 0.8},
+    'SS': {'jawOpen': 0.05, 'mouthWide': 0.25, 'lipLowerDown': 0.25, 'lipUpperUp': 0.30},
+    'kk': {'jawOpen': 0.10, 'lipLowerDown': 0.15, 'lipUpperUp': 0.15},
+    'RR': {'jawOpen': 0.10, 'mouthNarrow': 0.15, 'lipLowerDown': 0.18, 'lipUpperUp': 0.15},
+    'CH': {'jawOpen': 0.14, 'mouthNarrow': 0.45, 'lipLowerDown': 0.40, 'lipUpperUp': 0.40},
+    'TH': {'jawOpen': 0.08, 'lipLowerDown': 0.15, 'lipUpperUp': 0.15},
+    'sil': {},
+}
+MOUTH_KEYS6 = ('jawOpen', 'mouthWide', 'mouthNarrow', 'lipLowerDown', 'lipUpperUp', 'lipsPress', 'tongueUp')
+VERSION = 4
+
+
+def use_version(v):
+    """4: the stretched-skin faces (facemorph.py); 6: the faces made of parts (face6.py)."""
+    global VERSION
+    VERSION = v
+
+
+def _vis():
+    return (VIS6, MOUTH_KEYS6) if VERSION == 6 else (VIS, MOUTH_KEYS)
+
+
+def line_segments(E, lid, min_close=0.10, min_vis=0.067):
+    """[(t0, t1, viseme)] for a line, phrase by phrase; closures (PP, commas, full stops) last at least min_close,
+    nothing is shorter than min_vis (2 frames)."""
+    import speech_fr as SP
+    phrases = getattr(E, 'PHRASES', None)
+    if phrases is None:
+        import script4
+        phrases = script4.PHRASES
+    out = []
+    for text, p0, p1 in phrases[lid]:
+        seq = list(SP.french_visemes(text))
+        while seq and seq[-1][0] == 'sil':                   # the phrase ends when its last sound ends
+            seq.pop()
+        segs = [[v, d] for v, d in seq]
+        tot = sum(d for _, d in segs)
+        k = (p1 - p0) / tot
+        VOW = ('aa', 'E', 'I', 'O', 'U')
+        for sg in segs:
+            sg[1] *= k
+            need = min_close if sg[0] in ('PP', 'sil') else (min_vis if sg[0] in VOW else 0.033)
+            if sg[1] < need:
+                sg[1] = need
+        extra = sum(d for _, d in segs) - (p1 - p0)
+        if extra > 0:                                       # take the overflow from the non-labial consonants (v4-face F6)
+            flex = [sg for sg in segs if sg[0] not in VOW + ('PP', 'FF', 'sil') and sg[1] > 0.034]
+            if not flex:
+                flex = [sg for sg in segs if sg[0] in VOW]
+            tf = sum(sg[1] - 0.033 for sg in flex) or 1.0
+            for sg in flex:
+                sg[1] -= min(sg[1] - 0.033, extra * (sg[1] - 0.033) / tf) if sg[0] not in VOW else extra * sg[1] / tf
+        t = p0
+        for v, d in segs:
+            out.append((t, t + d, v))
+            t += d
+    return out
+
+
+def stressed_vowels(E, lid, words):
+    """Times of the loudest vowel of each word given (the head nods and brow raises land on them)."""
+    chore = getattr(E, 'CHORE', None)
+    if chore is None:
+        import chore4 as chore
+    segs = line_segments(E, lid)
+    out = []
+    for w in words:
+        ws = chore.word(E, lid, w)
+        we = next(e for ww, s, e in chore.word_times(E, lid) if abs(s - ws) < 1e-6)
+        best = None
+        for t0, t1, v in segs:
+            if t1 > ws and t0 < we and OPEN.get(v, 0) >= 0.5:
+                c = (t0 + t1) / 2
+                if best is None or OPEN[v] > best[1]:
+                    best = (c, OPEN[v])
+        out.append(best[0] if best else (ws + we) / 2)
+    return out
+
+
+class FaceTrack:
+    def __init__(self, E, who, perf, base, events=(), blinks=(), amp=1.0, t_end=None, stress=()):
+        """base: [(t, expression dict)] held expressions, minimum-jerk transitions between keys (0.25 s before a key
+        to the key); events: [(t_peak, expression dict, rise, hold, fall)] quick accents on top; blinks: extra blink
+        times; stress: [(line_id, [words])] whose vowels open wider."""
+        self.E, self.who, self.perf, self.base, self.events, self.amp = E, who, perf, base, list(events), amp
+        self.t_end = t_end or E.T_END
+        self.stress_t = []
+        for lid, words in stress:
+            self.stress_t += stressed_vowels(E, lid, words)
+        self._bake_mouth()
+        self._blinks(list(blinks))
+
+    # ---- speech
+    def _bake_mouth(self):
+        n = int(math.ceil(self.t_end * RATE)) + 1
+        VIS, MOUTH_KEYS = _vis()
+        self.mouth_keys = MOUTH_KEYS
+        tgt = np.zeros((n, len(MOUTH_KEYS)))
+        talk = np.zeros(n)
+        for l in self.E.LINES:
+            if l[1] != self.who:
+                continue
+            for t0, t1, v in line_segments(self.E, l[0]):
+                t0, t1 = t0 - 0.06, t1 - 0.06               # the mouth moves about 2 frames before the sound
+                i0, i1 = max(int(round(t0 * RATE)), 0), int(round(t1 * RATE))
+                vals = VIS.get(v, {})
+                boost = 1.0
+                for ts in self.stress_t:
+                    if t0 - 0.02 <= ts <= t1 + 0.02:
+                        boost = 1.3
+                for j, key in enumerate(MOUTH_KEYS):
+                    x = vals.get(key, 0.0) * (self.amp if key == 'jawOpen' else 1.0)
+                    if key == 'jawOpen':
+                        x *= boost
+                    elif key in ('lipLowerDown', 'lipUpperUp'):
+                        x *= 1.0 + 0.5 * (boost - 1.0)
+                    tgt[i0:i1, j] = min(x, 1.0)
+                talk[i0:i1] = 1.0
+        # 10-90 % in about 70 ms: a critically damped follower with a 15 ms half-life
+        m = AC.spring_follow(tgt, RATE, 0.0145)
+        slow = AC.spring_follow(tgt, RATE, 0.035)                       # mouth width changes less often (v4-face F11)
+        for j, key in enumerate(MOUTH_KEYS):
+            if key in ('mouthWide', 'mouthNarrow'):
+                m[:, j] = slow[:, j]
+        self.mouth = AC.Baked(m.clip(0, 1), RATE)
+        self.talk = AC.Baked(AC.spring_follow(talk[:, None], RATE, 0.08)[:, 0], RATE)
+
+    # ---- blinks
+    def _blinks(self, extra):
+        items = []
+        if self.perf is not None and self.perf.gaze is not None and hasattr(self.perf.gaze, 'head_segs'):
+            for t_peak, deg, d in self.perf.gaze.turns(15.0):
+                hold = 0.20 if deg >= 30 else 0.035
+                close = 0.075
+                items.append((t_peak - close - hold / 2, close, hold, 0.14))
+        for t in extra:
+            items.append((t, 0.07, 0.035, 0.13))             # 2 frames down, 1 shut, 4 up
+        items.sort()
+        kept = []
+        for it in items:                                 # never two blinks closer than 0.6 s
+            if not kept or it[0] - kept[-1][0] > 0.6:
+                kept.append(it)
+        self.blink_items = kept
+
+    def blink(self, t):
+        return max([AC.bump(t, t0, c, h, o) for t0, c, h, o in self.blink_items] + [0.0])
+
+    # ---- expressions
+    def _base(self, t):
+        """Held expressions; key (t, expr[, change]) is reached at t after a change of `change` seconds (0.25 by
+        default; 0.07 = a 2-frame snap, as the reference's emotional switches)."""
+        keys = self.base
+        if t <= keys[0][0]:
+            return dict(keys[0][1])
+        for k0, k1 in zip(keys, keys[1:]):
+            t0, e0 = k0[0], k0[1]
+            t1, e1 = k1[0], k1[1]
+            ch = k1[2] if len(k1) > 2 else 0.25
+            if t < t1:
+                ts = max(t0, t1 - ch)
+                if t < ts:
+                    return dict(e0)
+                x = AC.snappy((t - ts) / (t1 - ts)) if ch <= 0.1 else AC.minjerk((t - ts) / (t1 - ts))
+                return {k: e0.get(k, 0.0) * (1 - x) + e1.get(k, 0.0) * x for k in set(e0) | set(e1)}
+        return dict(keys[-1][1])
+
+    def values(self, t):
+        import facemorph
+        vals = facemorph.expand(self._base(t))
+        for tp, ex, rise, hold, fall in self.events:
+            w = AC.bump(t, tp - rise, rise, hold, fall)
+            if w > 0:
+                for k, v in facemorph.expand(ex).items():
+                    vals[k] = vals.get(k, 0.0) + v * w
+        talk = self.talk.at(t)
+        if talk > 0:                                     # neutral mouth corners while speaking
+            for k in ('smile_L', 'smile_R', 'frown_L', 'frown_R'):
+                if k in vals:
+                    vals[k] *= 1.0 - 0.7 * talk
+        m = self.mouth.at(t)
+        for j, k in enumerate(self.mouth_keys):
+            vals[k] = min(1.0, vals.get(k, 0.0) + float(m[j]))
+        b = self.blink(t)
+        if b > 0:
+            for k in ('eyeClosed_L', 'eyeClosed_R'):
+                vals[k] = max(vals.get(k, 0.0), b)
+            for k in ('eyeWide_L', 'eyeWide_R', 'eyeSquint_L', 'eyeSquint_R'):
+                if k in vals:
+                    vals[k] *= 1 - b
+        return vals

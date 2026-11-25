@@ -1,0 +1,167 @@
+{
+ "size": [
+  960,
+  720
+ ],
+ "fps": 24,
+ "out": "sortie/nox_pico_sketch.mp4",
+ "vertical": true,
+ "music": {
+  "file": "sons/musique/cute.mp3",
+  "start": 0.9,
+  "under_voice_db": -16,
+  "enter_s": 0.6,
+  "stop_at_shot": 11
+ },
+ "shots": [
+  {
+   "n": 1,
+   "clip": "clips/G02.mp4",
+   "lead": 0.15,
+   "tail": 0.45,
+   "caption": [
+    "Nox ! Pourquoi ma montre fait des lumières vertes à la fin de mon run ?"
+   ]
+  },
+  {
+   "n": 2,
+   "clip": "clips/G04.mp4",
+   "lead": 1.0,
+   "tail": 0.45,
+   "caption": [
+    "Bonsoir à toi aussi, Pico."
+   ]
+  },
+  {
+   "n": 3,
+   "clip": "clips/G03.mp4",
+   "lead": 0.9,
+   "tail": 0.45,
+   "caption": [
+    "Entre, fais comme chez toi."
+   ]
+  },
+  {
+   "n": 4,
+   "clip": "clips/G05.mp4",
+   "lead": 0.25,
+   "tail": 0.45,
+   "caption": [
+    "Tu portes cette montre depuis deux ans…",
+    "et tu découvres qu’elle s’allume ?"
+   ]
+  },
+  {
+   "n": 5,
+   "clip": "clips/G10.mp4",
+   "lead": 0.15,
+   "tail": 0.45,
+   "caption": [
+    "J’ai jamais regardé dessous, ok ?"
+   ]
+  },
+  {
+   "n": 6,
+   "clip": "clips/G03.mp4",
+   "in": 4.6,
+   "out": 5.9,
+   "mute": true
+  },
+  {
+   "n": 7,
+   "clip": "clips/G06.mp4",
+   "lead": 0.25,
+   "tail": 0.45,
+   "caption": [
+    "Bon. Laisse-moi t’expliquer."
+   ]
+  },
+  {
+   "n": 8,
+   "clip": "clips/G08.mp4",
+   "lead": 0.25,
+   "tail": 1.1,
+   "caption": [
+    "Regarde de plus près."
+   ]
+  },
+  {
+   "n": 9,
+   "clip": "clips/G12.mp4",
+   "audio_from": "clips/G07.mp4",
+   "in": 0.3,
+   "lead": 0.4,
+   "tail": 0.45,
+   "caption": [
+    "Ta montre envoie de la lumière verte…",
+    "dans ta peau."
+   ]
+  },
+  {
+   "n": 10,
+   "clip": "clips/G11.mp4",
+   "lead": 0.3,
+   "tail": 0.45,
+   "caption": [
+    "Attends… quoi ?! Elle me scanne ?!"
+   ]
+  },
+  {
+   "n": 11,
+   "clip": "clips/G09.mp4",
+   "lead": 1.2,
+   "tail": 0.9,
+   "push_in": 0.13,
+   "caption": [
+    "Elle t’éclaire.",
+    "Nuance."
+   ]
+  }
+ ],
+ "sfx": [
+  {
+   "file": "sons/bruitages/door.mp3",
+   "shot": 1,
+   "offset": 0.0,
+   "from": 4.84,
+   "dur": 1.2,
+   "gain_db": -4
+  },
+  {
+   "file": "sons/bruitages/solder.mp3",
+   "shot": 2,
+   "offset": 0.0,
+   "until_shot": 3,
+   "gain_db": -38
+  },
+  {
+   "file": "sons/bruitages/footsteps.mp3",
+   "shot": 2,
+   "offset": 0.1,
+   "from": 2.4,
+   "until_shot": 3,
+   "gain_db": -6
+  },
+  {
+   "file": "sons/bruitages/solder.mp3",
+   "shot": 6,
+   "offset": 0.0,
+   "from": 3.0,
+   "until_shot": 7,
+   "gain_db": -38
+  },
+  {
+   "file": "sons/bruitages/sparkle.mp3",
+   "shot": 8,
+   "offset": 1.6,
+   "gain_db": -12
+  },
+  {
+   "file": "sons/bruitages/beep2.mp3",
+   "shot": 9,
+   "offset": 0.6,
+   "dur": 1.4,
+   "gain_db": -30
+  }
+ ]
+}

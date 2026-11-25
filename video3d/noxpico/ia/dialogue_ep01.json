@@ -1,0 +1,146 @@
+[
+ {
+  "id": "l00",
+  "who": "pico",
+  "text": "Hein ?… Elle vient d'où, cette lumière verte ?",
+  "dir": "Elle court, essoufflée, remarque une lumière bizarre sur sa montre : surprise, intriguée, à voix basse pour elle-même."
+ },
+ {
+  "id": "l01",
+  "who": "pico",
+  "text": "Nox ! Pourquoi ma montre fait des lumières vertes à la fin de mon run ?",
+  "dir": "Elle déboule chez son ami en courant, essoufflée, très intriguée, presque pressante."
+ },
+ {
+  "id": "l02",
+  "who": "nox",
+  "text": "Bonsoir à toi aussi, Pico. Entre, fais comme chez toi.",
+  "dir": "Ironique et faussement vexé, sans lever les yeux de sa soudure, puis la deuxième phrase avec un sarcasme amusé, comme une vieille habitude entre eux."
+ },
+ {
+  "id": "l02b",
+  "who": "nox",
+  "text": "Tu portes cette montre depuis deux ans… et tu découvres qu'elle s'allume ?",
+  "dir": "Taquin, pince-sans-rire, petit sourire dans la voix, légèrement moqueur."
+ },
+ {
+  "id": "l02c",
+  "who": "pico",
+  "text": "J'ai jamais regardé dessous, ok ?",
+  "dir": "Vexée, sur la défensive, un peu boudeuse."
+ },
+ {
+  "id": "l02d",
+  "who": "nox",
+  "text": "Bon. Laisse-moi t'expliquer.",
+  "dir": "Petit soupir amusé, puis il se lance, patient."
+ },
+ {
+  "id": "l03",
+  "who": "nox",
+  "text": "Regarde de plus près. Ta montre envoie de la lumière verte… dans ta peau.",
+  "dir": "Il explique calmement, captivant, avec une petite pause mystérieuse avant « dans ta peau »."
+ },
+ {
+  "id": "l04",
+  "who": "pico",
+  "text": "Attends… quoi ?! Elle me scanne ?!",
+  "dir": "Choquée et un peu paniquée, elle s'exclame."
+ },
+ {
+  "id": "l04b",
+  "who": "nox",
+  "text": "Elle t'éclaire. Nuance.",
+  "dir": "Il corrige avec un petit sourire en coin, très posé."
+ },
+ {
+  "id": "l05",
+  "who": "nox",
+  "text": "Juste en dessous, ton sang absorbe une partie du vert. À chaque battement, il y en a un peu plus… donc plus de lumière absorbée.",
+  "dir": "Il est passionné et ça s'entend : il explique avec entrain, mains qui bougent, rythme vivant."
+ },
+ {
+  "id": "l06",
+  "who": "pico",
+  "text": "Et elle voit ça comment ? Elle a des yeux ?",
+  "dir": "Sceptique et curieuse, un brin naïve, amusée."
+ },
+ {
+  "id": "l07",
+  "who": "nox",
+  "text": "… Presque. Un capteur mesure la lumière qui revient. Elle varie au rythme de ton pouls, et la montre en déduit tes battements par minute. C'est la photopléthysmographie.",
+  "dir": "Petit rire étouffé sur « Presque », puis il s'emballe, enthousiaste et fluide ; il savoure le dernier mot, fier de lui."
+ },
+ {
+  "id": "l08",
+  "who": "pico",
+  "text": "La photo-quoi ? T'as inventé ce mot.",
+  "dir": "Elle se moque gentiment, incrédule, rieuse."
+ },
+ {
+  "id": "l09",
+  "who": "nox",
+  "text": "Photo, la lumière. Pléthysmo, le volume. Graphie, enregistrer. C'est du grec, pas de la magie.",
+  "dir": "Rapide et joueur, il égrène les trois morceaux du mot comme une évidence, puis conclut avec un sourire moqueur."
+ },
+ {
+  "id": "l10",
+  "who": "pico",
+  "text": "Pendant mon fractionné, elle clignotait encore plus.",
+  "dir": "Elle se souvient, enthousiaste et intriguée."
+ },
+ {
+  "id": "l10b",
+  "who": "nox",
+  "text": "Tu lis parfois les notices ?",
+  "dir": "Pince-sans-rire, faussement désespéré."
+ },
+ {
+  "id": "l10c",
+  "who": "pico",
+  "text": "Jamais. C'est pour ça que je t'ai, toi.",
+  "dir": "Fière et taquine, totalement assumée, avec un sourire."
+ },
+ {
+  "id": "l11",
+  "who": "nox",
+  "text": "… Selon le modèle, elle mesure plus souvent pendant l'effort. Et comme bouger brouille le signal, elle s'aide d'autres capteurs et d'algorithmes.",
+  "dir": "Il soupire en souriant, puis explique avec énergie, précis mais complice."
+ },
+ {
+  "id": "l12",
+  "who": "pico",
+  "text": "Et toi, t'en as une, de montre ? Fais voir !",
+  "dir": "Curieuse et joueuse, elle attrape son bras d'un coup, enthousiaste."
+ },
+ {
+  "id": "l13",
+  "who": "nox",
+  "text": "… Oui.",
+  "dir": "Très gêné, petit mot étranglé, à peine audible."
+ },
+ {
+  "id": "l14",
+  "who": "pico",
+  "text": "Cent vingt-huit ?! T'as encore enchaîné les cafés, toi.",
+  "dir": "Étonnée puis taquine, elle se moque gentiment, sans rien comprendre."
+ },
+ {
+  "id": "l15",
+  "who": "nox",
+  "text": "Euh… oui. C'est ça. Exactement.",
+  "dir": "Très gêné, il bafouille et hésite, puis parle vite pour cacher son embarras."
+ },
+ {
+  "id": "l16",
+  "who": "pico",
+  "text": "Tu le savais, toi ?",
+  "dir": "Complice, elle s'adresse directement au spectateur, souriante."
+ },
+ {
+  "id": "l17",
+  "who": "pico",
+  "text": "Et la prochaine fois, je lui demande quoi ? Dis-le en commentaire !",
+  "dir": "Joyeuse et engageante, elle interpelle le public avec énergie."
+ }
+]
