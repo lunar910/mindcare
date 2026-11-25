@@ -14,15 +14,19 @@ edit.json (chemins relatifs au dossier du fichier) :
     {"n": 1, "clip": "clips/s01.mp4", "caption": "Texte affiché",
      "in": null, "out": null,          # secondes dans le clip ; null = calé sur la parole
      "lead": 0.25, "tail": 0.45,       # marge avant le premier mot / après le dernier
-     "silent_s": 1.6,                  # durée gardée si le plan n'a pas de parole
+     "silent_s": 1.6,                  # durée gardée si le plan n'a pas de parole (à partir de "in" s'il est donné)
      "hold_start": 0.0,                # fige la première image pendant ce temps (silence avant la réplique)
      "push_in": 0.0,                   # zoom avant lent sur tout le plan (0.14 = +14 %)
      "mute": false,                    # coupe le son du clip
      "audio_from": "clips/autre.mp4",  # son pris sur une autre prise (voix hors champ)
+     "hflip": false,                   # image retournée gauche-droite (prise à l'envers)
      "gain_db": 0.0},
     {"n": 6, "still": "images/deux_etabli.png", "silent_s": 1.3}   # image fixe à la place d'un clip
   ],
-  "sfx": [{"file": "sfx/door.mp3", "shot": 1, "offset": 0.0, "gain_db": -6}]
+  "sfx": [{"file": "sfx/door.mp3", "shot": 1, "offset": 0.0, "gain_db": -6,
+           "from": 4.84,               # commence à ce moment du fichier son
+           "dur": 1.2,                 # durée maximale (fondu court à la fin)
+           "until_shot": 3}]           # ou : s'arrête net à l'entrée de ce plan
 }
 """
 import argparse
@@ -36,9 +40,15 @@ import tempfile
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
+HERE = os.path.dirname(os.path.abspath(__file__))
 FONTS = [
+    os.path.join(HERE, "polices", "Inter-SemiBold.otf"),          # police fournie avec l'outil
     "/usr/share/fonts/opentype/inter/Inter-SemiBold.otf",
     "/usr/share/fonts/opentype/inter/Inter-Bold.otf",
+    "C:/Windows/Fonts/segoeuib.ttf",                               # Windows
+    "C:/Windows/Fonts/arialbd.ttf",
+    "/System/Library/Fonts/Supplemental/Arial Bold.ttf",           # Mac
+    "/Library/Fonts/Arial Bold.ttf",
     "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
     "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
 ]
@@ -244,9 +254,10 @@ def build(edit_path):
             else:
                 if span:
                     a, b = max(0.0, span[0] - lead), min(vdur, span[1] + tail)
+                    a = sh["in"] if sh.get("in") is not None else a
                 else:
-                    a, b = 0.0, min(vdur, sh.get("silent_s", 1.6))
-                a = sh["in"] if sh.get("in") is not None else a
+                    a = sh["in"] if sh.get("in") is not None else 0.0
+                    b = a + sh.get("silent_s", 1.6)
                 b = sh["out"] if sh.get("out") is not None else b
                 a = max(0.0, min(a, vdur - 0.2))
                 b = max(a + 0.2, min(b, vdur))
@@ -260,6 +271,8 @@ def build(edit_path):
 
             # image
             vf = [f"fps={fps}", f"scale={W}:{H}:force_original_aspect_ratio=increase", f"crop={W}:{H}", "setsar=1"]
+            if sh.get("hflip"):
+                vf.append("hflip")
             vf.append(f"tpad=start_mode=clone:start_duration={hold:.3f}:stop_mode=clone:stop_duration=30")
             push = sh.get("push_in", 0.0)
             if push:
@@ -304,7 +317,7 @@ def build(edit_path):
         lst = os.path.join(tmp, "list.txt")
         with open(lst, "w") as f:
             for s in segs:
-                f.write(f"file '{s}'\n")
+                f.write("file '" + s.replace(os.sep, "/") + "'\n")
         body = os.path.join(tmp, "body.mkv")
         run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", lst, "-c", "copy", body])
 
@@ -342,9 +355,17 @@ def build(edit_path):
             if at is None:
                 r = next(r for r in report if r["n"] == fx["shot"])
                 at = r["start"] + fx.get("offset", 0.0)
-            cmd += ["-i", rel(fx["file"])]
+            dur = fx.get("dur")
+            if fx.get("until_shot") is not None:
+                end = next(r["start"] for r in report if r["n"] == fx["until_shot"]) - at
+                dur = min(dur, end) if dur else end
+            cmd += ["-ss", f"{max(0.0, fx.get('from', 0.0)):.3f}", "-i", rel(fx["file"])]
             ms = int(max(0.0, at) * 1000)
-            mix.append(f"[{n_in}:a]aresample=48000,aformat=channel_layouts=stereo,volume={fx.get('gain_db', -6.0):.2f}dB,adelay={ms}:all=1[fx{j}]")
+            cut = ""
+            if dur:
+                dur = max(0.05, dur)
+                cut = f"atrim=0:{dur:.3f},afade=t=out:st={max(0.0, dur - 0.08):.3f}:d=0.08,"
+            mix.append(f"[{n_in}:a]aresample=48000,aformat=channel_layouts=stereo,{cut}volume={fx.get('gain_db', -6.0):.2f}dB,adelay={ms}:all=1[fx{j}]")
             labels.append(f"[fx{j}]")
             n_in += 1
         mix.append("".join(labels) + f"amix=inputs={len(labels)}:normalize=0:duration=first,"
@@ -384,12 +405,28 @@ def qc(clip, sheet=None):
     else:
         print("  pas de parole détectée")
     sheet = sheet or os.path.splitext(clip)[0] + "_planche.jpg"
-    n = max(1, int(info["duration"] * 3))
-    cols = min(6, n)
-    rows = -(-n // cols)
-    run(["ffmpeg", "-v", "error", "-y", "-i", clip, "-vf",
-         f"fps=3,scale=480:-2,drawtext=text='%{{pts\\:hms}}':fontcolor=white:fontsize=20:box=1:boxcolor=black@0.6:x=6:y=6,tile={cols}x{rows}",
-         "-frames:v", "1", "-q:v", "3", sheet])
+    tmp = tempfile.mkdtemp(prefix="planche_")
+    try:
+        run(["ffmpeg", "-v", "error", "-y", "-i", clip, "-vf", "fps=3,scale=480:-2", os.path.join(tmp, "f%04d.png")])
+        frames = sorted(f for f in os.listdir(tmp) if f.endswith(".png"))
+        if not frames:
+            raise SystemExit("aucune image extraite")
+        first = Image.open(os.path.join(tmp, frames[0]))
+        w, h = first.size
+        cols = min(6, len(frames))
+        rows = -(-len(frames) // cols)
+        board = Image.new("RGB", (cols * w, rows * h), (0, 0, 0))
+        font = load_font(20)
+        for i, f in enumerate(frames):
+            im = Image.open(os.path.join(tmp, f)).convert("RGB")
+            d = ImageDraw.Draw(im)
+            label = f"{i / 3:.2f} s"
+            d.rectangle([0, 0, d.textlength(label, font=font) + 12, 28], fill=(0, 0, 0))
+            d.text((6, 3), label, font=font, fill=(255, 255, 255))
+            board.paste(im, ((i % cols) * w, (i // cols) * h))
+        board.save(sheet, quality=85)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
     print("  planche :", sheet)
 
 

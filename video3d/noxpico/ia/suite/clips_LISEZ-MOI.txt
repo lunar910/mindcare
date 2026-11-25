@@ -1,0 +1,7 @@
+Mets ici toutes les prises, sous le nom de leur carte :
+- G01.mp4 et G02.mp4 : les deux clips test de l'étape 1 (Nox, puis Pico) ;
+- G03.mp4, G03_prise2.mp4, G03_prise3.mp4, puis G05.mp4, etc. (voir flow/etape2_tous_les_plans.txt).
+
+montage.json prend la première prise de chaque carte. Si une autre prise est meilleure, change le nom dans montage.json (par exemple clips/G05_prise2.mp4).
+Le plan 6 n'a pas de clip à lui : il réutilise G03, son coupé.
+Ne supprime aucune prise, même ratée.

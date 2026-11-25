@@ -55,7 +55,19 @@ avec les consignes de `flow/`, puis renvoyés pour le montage.
 - Modèle : Omni Flash 1.2 en mode « Ingrédients » (les deux images validées comme références),
   seul mode où une voix créée dans Flow (« Nox », « Pico ») reste la même d'un clip à l'autre.
 - Format 16:9, recadré au centre en 4:3 au montage. Environ 3 crédits par seconde en 720p.
-- `flow/etape1_test_flow.txt` : création des deux voix et deux clips test.
+- `flow/etape1_test_flow.txt` : création des deux voix et deux clips test (G01 Nox, G02 Pico).
+- `flow/etape2_tous_les_plans.txt` : les 10 clips de l'étape 2 (cartes G03 à G12), les secours G13 à G18,
+  la règle des trois prises, le budget (192 crédits pour une prise de chaque, environ 350 avec les
+  reprises, arrêt à 450). `flow/prompts/` : un prompt prêt à copier par carte, plus les 3es prises.
+- `flow/flow_kit.json` : le même kit pour Claude, avec la découpe de chaque plan (`shots_map`).
+  Les trois fichiers sont produits par `flow/build_flow_kit.py`, qui vérifie chaque prompt.
+
+`suite/` contient le guide de reprise (`00_A_LIRE_EN_PREMIER.md`), le premier message pour une nouvelle
+conversation et `montage.json`, le montage prêt à lancer avec les clips nommés G01 à G12. Le zip
+envoyé à l'utilisateur contient aussi les images, les sons et l'outil de montage.
+
+`montage.py` sait aussi retourner une prise (`hflip`) et couper les bruitages (`from`, `dur`,
+`until_shot`) : sans ça, un bruitage jouait jusqu'au bout de son fichier.
 
 Le dossier `seedance/` garde la version des consignes écrite pour Higgsfield (Seedance), avec son
 mode d'emploi : elle sert si l'on revient à cet outil.
