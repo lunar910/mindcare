@@ -200,7 +200,8 @@ python t_face6.py noxR full tex                                  # tête seule, 
 NP_FACE=6 ./run_v5.sh out_v6 && ./finish_v5.sh out_v6 v6         # l'extrait avec les nouveaux visages (NP_FACE=5 : anciens)
 ```
 
-Aperçus : `apercus/v6_avant_apres.jpg`, `apercus/v6_expressions_nox.jpg`, `apercus/v6_expressions_pico.jpg`.
+Aperçus : `apercus/v6_images_cles.jpg` (les 11 plans), `apercus/v6_avant_apres.jpg`, `apercus/v6_expressions_nox.jpg`,
+`apercus/v6_expressions_pico.jpg`. Rendu complet : 738 images, coupes aux 10 changements de plan, aucun saut en plein plan.
 La version 6 a été relue par trois critiques indépendants (animation, défauts, style) ; corrigé depuis : dents en
 barre blanche, bouches trop peu ouvertes et formes de sons trop proches, reflets des verres devant les yeux de Nox,
 paupières fermées d'une autre couleur que la peau, clignements manquants, expressions trop symétriques.
